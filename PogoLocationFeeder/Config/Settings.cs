@@ -16,6 +16,9 @@ namespace PoGo.LocationFeeder.Settings
         public string ServerChannel = "";
         public string DiscordToken = "";
         public int Port = 0;
+        public bool useToken = false;
+        public string DiscordUser = "";
+        public string DiscordPassword = "";
 
         public static GlobalSettings Default => new GlobalSettings();
 

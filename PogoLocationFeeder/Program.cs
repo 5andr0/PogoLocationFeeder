@@ -137,7 +137,15 @@ namespace PogoLocationFeeder
             };
 
             _client.ExecuteAndWait(async () => {
-                await _client.Connect(settings.DiscordToken);
+                if(settings.useToken)
+                    await _client.Connect(settings.DiscordToken);
+                else
+                    await _client.Connect(settings.DiscordUser, settings.DiscordPassword);
+
+                if(!_client.Servers.Any(x => x.Id == settings.ServerId)) {
+                    Console.WriteLine("Please connect your account with the NecroBot discord server first");
+                    return;
+                }
             });
         }
     }
