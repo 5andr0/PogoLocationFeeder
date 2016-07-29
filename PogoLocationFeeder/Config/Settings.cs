@@ -13,7 +13,7 @@ namespace PoGo.LocationFeeder.Settings
     public class GlobalSettings
     {
         //public ulong ServerId = 206065054846681088;
-        public List<string> ServerChannels = new List<string> { "snipers", "high_iv_pokemon", "rare_pokemon" };
+        public List<string> ServerChannels = new List<string> { "sniping", "high_iv_pokemon", "rare_pokemon" };
         public string DiscordToken = "";
         public int Port = 16969;
         public bool useToken = false;

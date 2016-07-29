@@ -1,6 +1,7 @@
 ﻿using POGOProtos.Enums;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace PogoLocationFeeder.Helper
@@ -33,21 +34,21 @@ namespace PogoLocationFeeder.Helper
 
         private bool parseGeoCoordinates(string input)
         {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+(\.\d+)+),\s*(?<long>\-?\d+(\.\d+)+)");
+            Match match = Regex.Match(input, @"(?<lat>\-?\d+[\,\.]\d+),\s*(?<long>\-?\d+[\,\.]\d+)");
             if (match.Success)
             {
-                sniperInfo.latitude = Convert.ToDouble(match.Groups["lat"].Value);
-                sniperInfo.longitude = Convert.ToDouble(match.Groups["long"].Value);
+                sniperInfo.latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
+                sniperInfo.longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
             }
             return match.Success;
         }
 
         private void parseIV(string input)
         {
-            Match match = Regex.Match(input, @"(\d+\.?\d*)\%?\s?IV", RegexOptions.IgnoreCase);
+            Match match = Regex.Match(input, @"(\d+[\,\.]?\d*)\%?\s?IV", RegexOptions.IgnoreCase);
             if (match.Success)
             {
-                sniperInfo.iv = Convert.ToDouble(match.Groups[1].Value);
+                sniperInfo.iv = Convert.ToDouble(match.Groups[1].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
             }
         }
 
