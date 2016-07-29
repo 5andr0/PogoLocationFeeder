@@ -14,6 +14,7 @@ using System.IO;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
+using System.Globalization;
 
 namespace PogoLocationFeeder
 {
@@ -128,9 +129,7 @@ namespace PogoLocationFeeder
 
             _client.MessageReceived += async (s, e) =>
             {
-                if (!e.Message.IsAuthor 
-                    && e.Server.Id == settings.ServerId 
-                    && e.Channel.ToString() == settings.ServerChannel)
+                if (settings.ServerChannels.Any(x => x.Equals(e.Channel.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
                 {
                     await relayMessageToClients(e.Message.Text);
                 }
@@ -144,11 +143,6 @@ namespace PogoLocationFeeder
                 else
                 {
                     Console.WriteLine("Please set your logins in the config.json first");
-                }
-
-                if(!_client.Servers.Any(x => x.Id == settings.ServerId)) {
-                    Console.WriteLine("Please connect your account with the NecroBot discord server first");
-                    return;
                 }
             });
         }
