@@ -29,17 +29,35 @@ namespace PogoLoco
         static void Main(string[] args) => new Program().Start();
 
         private TcpListener listener;
-        ArrayList arrSocket = new ArrayList();
+        private List<TcpClient> arrSocket = new List<TcpClient>();
 
-        bool SocketConnected(Socket s)
+        // A socket is still connected if a nonblocking, zero-byte Send call either:
+        // 1) returns successfully or 
+        // 2) throws a WAEWOULDBLOCK error code(10035)
+        public static bool IsConnected(Socket client)
         {
-            bool part1 = s.Poll(1000, SelectMode.SelectRead);
-            bool part2 = (s.Available == 0);
-            if (part1 && part2)
-                return false;
-            else
+            // This is how you can determine whether a socket is still connected.
+            bool blockingState = client.Blocking;
+
+            try
+            {
+                byte[] tmp = new byte[1];
+
+                client.Blocking = false;
+                client.Send(tmp, 0, 0);
                 return true;
+            }
+            catch (SocketException e)
+            {
+                // 10035 == WSAEWOULDBLOCK
+                return (e.NativeErrorCode.Equals(10035));
+            }
+            finally
+            {
+                client.Blocking = blockingState;
+            }
         }
+
         public void StartNet()
         {
             listener = new TcpListener(IPAddress.Any, 16969);
@@ -55,7 +73,7 @@ namespace PogoLoco
         {
             StartAccept();
             TcpClient client = listener.EndAcceptTcpClient(res);
-            if (client != null && SocketConnected(client.Client))
+            if (client != null && IsConnected(client.Client))
             {
                 arrSocket.Add(client);
                 Console.WriteLine("new connection");
@@ -66,23 +84,25 @@ namespace PogoLoco
 
         private async Task feedToClients(PokemonInfo info)
         {
-            foreach (TcpClient obj in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+            // Remove any clients that have disconnected
+            arrSocket.RemoveAll(x => !IsConnected(x.Client));
+
+            foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
             {
-                TcpClient socket = obj;
-
-                if (!SocketConnected(socket.Client))
+                try
                 {
-                    //arrSocket.Remove(obj); // this is crashing, needs a fix
-                    continue;
+                    NetworkStream networkStream = socket.GetStream();
+
+                    JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriter(networkStream));
+
+                    JsonSerializer ser = new JsonSerializer();
+                    ser.Serialize(jsonWriter, info);
+                    jsonWriter.Flush();
                 }
-
-                NetworkStream networkStream = socket.GetStream();
-
-                JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriter(networkStream));
-
-                JsonSerializer ser = new JsonSerializer();
-                ser.Serialize(jsonWriter, info);
-                jsonWriter.Flush();
+                catch (SocketException e)
+                {
+                    Console.WriteLine("Caught unexpected disconnect");
+                }
             }
 
             // debug output
@@ -155,7 +175,7 @@ namespace PogoLoco
             var server = "PoGo Sniping";
             var channel = "snipers";
             var discordToken = "MjA4MzE2MjQxOTQzNzI0MDMz.Cnv5Hg.JpdTfgfIdw5445Cnnu6QbLHnZDc";
-
+            
             _client = new DiscordClient();
 
             StartNet();
