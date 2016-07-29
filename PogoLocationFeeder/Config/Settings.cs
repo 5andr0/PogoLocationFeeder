@@ -51,7 +51,8 @@ namespace PoGo.LocationFeeder.Settings
             if (firstRun 
                 || settings.Port == 0 
                 || settings.ServerChannels == null
-                || string.IsNullOrEmpty(settings.DiscordToken)
+                || (settings.useToken && string.IsNullOrEmpty(settings.DiscordToken))
+                || (!settings.useToken && string.IsNullOrEmpty(settings.DiscordUser))
                 )
             {
                 Console.WriteLine($"Invalid configuration detected. \nPlease edit {configFile} and try again");
