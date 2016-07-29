@@ -18,7 +18,7 @@ namespace PogoLocationFeeder.Helper
                 sniperInfo = new SniperInfo();
                 if (!parseGeoCoordinates(input))
                 {
-                    Console.WriteLine($"Can't get coords from line: {input}");
+                    //Console.WriteLine($"Can't get coords from line: {input}"); // debug output, too much spam
                     continue;
                 }
                 parseIV(input);
@@ -33,7 +33,7 @@ namespace PogoLocationFeeder.Helper
 
         private bool parseGeoCoordinates(string input)
         {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+(\.\d+)?),\s*(?<long>\-?\d+(\.\d+)?)");
+            Match match = Regex.Match(input, @"(?<lat>\-?\d+(\.\d+)+),\s*(?<long>\-?\d+(\.\d+)+)");
             if (match.Success)
             {
                 sniperInfo.latitude = Convert.ToDouble(match.Groups["lat"].Value);

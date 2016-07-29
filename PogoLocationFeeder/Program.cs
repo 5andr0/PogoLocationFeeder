@@ -83,7 +83,7 @@ namespace PogoLocationFeeder
 
         private DiscordClient _client;
 
-        private async Task feedToClients(List<SniperInfo> snipeList)
+        private async Task feedToClients(List<SniperInfo> snipeList, string channel)
         {
             // Remove any clients that have disconnected
             arrSocket.RemoveAll(x => !IsConnected(x.Client));
@@ -106,15 +106,16 @@ namespace PogoLocationFeeder
                     }
                 }
                 // debug output
-                Console.WriteLine(target.timeStamp);
-                Console.WriteLine($"ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
+                Console.WriteLine($"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
+                if (target.timeStamp != default(DateTime))
+                    Console.WriteLine($"Expires: {target.timeStamp}");
             }
         }
 
-        private async Task relayMessageToClients(string message)
+        private async Task relayMessageToClients(string message, string channel)
         {
             var snipeList = parser.parseMessage(message);
-            await feedToClients(snipeList);
+            await feedToClients(snipeList, channel);
         }
 
         public void Start()
@@ -131,7 +132,7 @@ namespace PogoLocationFeeder
             {
                 if (settings.ServerChannels.Any(x => x.Equals(e.Channel.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
                 {
-                    await relayMessageToClients(e.Message.Text);
+                    await relayMessageToClients(e.Message.Text, e.Channel.Name.ToString());
                 }
             };
 
