@@ -79,7 +79,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\ILogicSettings.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />
     <Compile Include="Program.cs" />

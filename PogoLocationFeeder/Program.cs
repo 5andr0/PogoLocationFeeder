@@ -137,10 +137,14 @@ namespace PogoLocationFeeder
             };
 
             _client.ExecuteAndWait(async () => {
-                if(settings.useToken)
+                if(settings.useToken && settings.DiscordToken != null)
                     await _client.Connect(settings.DiscordToken);
-                else
+                else if(settings.DiscordUser != null && settings.DiscordPassword != null)
                     await _client.Connect(settings.DiscordUser, settings.DiscordPassword);
+                else
+                {
+                    Console.WriteLine("Please set your logins in the config.json first");
+                }
 
                 if(!_client.Servers.Any(x => x.Id == settings.ServerId)) {
                     Console.WriteLine("Please connect your account with the NecroBot discord server first");

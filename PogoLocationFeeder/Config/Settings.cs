@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using PoGo.LocationFeeder.LogicSettings;
 
 #endregion
 
@@ -12,10 +11,10 @@ namespace PoGo.LocationFeeder.Settings
 {
     public class GlobalSettings
     {
-        public ulong ServerId = 0;
-        public string ServerChannel = "";
+        public ulong ServerId = 206065054846681088;
+        public string ServerChannel = "snipers";
         public string DiscordToken = "";
-        public int Port = 0;
+        public int Port = 16969;
         public bool useToken = false;
         public string DiscordUser = "";
         public string DiscordPassword = "";
@@ -77,13 +76,4 @@ namespace PoGo.LocationFeeder.Settings
         }
     }
 
-    public class LogicSettings : ILogicSettings
-    {
-        private readonly GlobalSettings _settings;
-
-        public ulong ServerId => _settings.ServerId;
-        public string ServerChannel => _settings.ServerChannel;
-        public string DiscordToken => _settings.DiscordToken;
-        public int Port => _settings.Port;
-    }
 }
