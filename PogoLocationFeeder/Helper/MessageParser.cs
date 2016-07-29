@@ -64,17 +64,10 @@ namespace PogoLocationFeeder.Helper
 
         private void parseTimestamp(string input)
         {
-            Match match = Regex.Match(input, @"(\d+)\s?s", RegexOptions.IgnoreCase);
+            Match match = Regex.Match(input, @"(\d+)\s?sec", RegexOptions.IgnoreCase);
             if (match.Success)
             {
                 sniperInfo.timeStamp = DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[1].Value));
-                return;
-            }
-
-            match = Regex.Match(input, @"(\d+)\s?min", RegexOptions.IgnoreCase);
-            if (match.Success)
-            {
-                sniperInfo.timeStamp = DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value));
                 return;
             }
 
@@ -92,7 +85,7 @@ namespace PogoLocationFeeder.Helper
                 return;
             }
 
-            match = Regex.Match(input, @"(\d+)s\s", RegexOptions.IgnoreCase); // Lickitung | 15s | 40.69465351234,-73.99434315197
+            match = Regex.Match(input, @"(\d+)\s?s\s", RegexOptions.IgnoreCase); // Lickitung | 15s | 40.69465351234,-73.99434315197
             if (match.Success)
             {
                 sniperInfo.timeStamp = DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value)).AddSeconds(Convert.ToDouble(match.Groups[2].Value));
