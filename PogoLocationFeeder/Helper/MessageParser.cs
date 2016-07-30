@@ -89,7 +89,7 @@ namespace PogoLocationFeeder.Helper
                 match = Regex.Match(input, @"(\d+)\s?s\s", RegexOptions.IgnoreCase); // Lickitung | 15s | 40.69465351234,-73.99434315197
                 if (match.Success)
                 {
-                    sniperInfo.timeStamp = DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value)).AddSeconds(Convert.ToDouble(match.Groups[2].Value));
+                    sniperInfo.timeStamp = DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[2].Value));
                     return;
                 }
             } catch (ArgumentOutOfRangeException)
