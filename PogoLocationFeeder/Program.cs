@@ -178,7 +178,11 @@ namespace PogoLocationFeeder
                     Thread.Sleep(delay);
                     for (int retrys = 0; retrys <= 3; retrys++)
                     {
+<<<<<<< HEAD
                         var pokeSniperList = pokeSniperReader.readAll();
+=======
+                        var pokeSniperList = await pokeSniperReader.readAll();
+>>>>>>> refs/remotes/5andr0/master
                         if (pokeSniperList != null)
                         {
                             if(pokeSniperList.Any()) {

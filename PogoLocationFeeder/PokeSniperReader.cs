@@ -3,9 +3,14 @@ using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using System;
 using System.Collections.Generic;
+<<<<<<< HEAD
 using System.IO;
 using System.Net;
 using System.Runtime.Caching;
+=======
+using System.Net.Http;
+using System.Net.Http.Headers;
+>>>>>>> refs/remotes/5andr0/master
 using System.Threading.Tasks;
 
 namespace PogoLocationFeeder
@@ -19,6 +24,12 @@ namespace PogoLocationFeeder
 
         public PokeSniperReader()
         {
+<<<<<<< HEAD
+=======
+            //TODO This is can blow up after time, we should use proper a proper cache
+            //This is only used to track which pokemon we already received.
+            _cache = new Dictionary<int, Result>();
+>>>>>>> refs/remotes/5andr0/master
         }
 
         public List<SniperInfo> readAll()
@@ -75,11 +86,19 @@ namespace PogoLocationFeeder
             sniperInfo.id = pokemonId;
             GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(result.coords);
             if (geoCoordinates == null)
+<<<<<<< HEAD
             {
                 return null;
             }
             else
             {
+=======
+            {
+                return null;
+            }
+            else
+            {
+>>>>>>> refs/remotes/5andr0/master
                 sniperInfo.latitude = geoCoordinates.latitude;
                 sniperInfo.longitude = geoCoordinates.longitude;
             }
