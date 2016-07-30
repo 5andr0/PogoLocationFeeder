@@ -161,7 +161,7 @@ namespace PogoLocationFeeder
             var token = cancellationTokenSource.Token;
             var listener = Task.Factory.StartNew(async () =>
             {
-                Thread.Sleep(delay);
+                Thread.Sleep(5 * 1000);
                 while (true)
                 {
                     Thread.Sleep(delay);
