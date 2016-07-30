@@ -105,41 +105,5 @@ namespace PogoLocationFeeder.Helper
 
             }
         }
-
-        private void parsePokemonId(string input)
-        {
-            if (input.IndexOf("Kadabra", StringComparison.OrdinalIgnoreCase) >= 0) // kadabra = abra
-            {
-                sniperInfo.id = PokemonId.Kadabra;
-                return;
-            }
-            else
-            if (input.IndexOf("Kabutops", StringComparison.OrdinalIgnoreCase) >= 0) // Kabutops = Kabuto
-            {
-                sniperInfo.id = PokemonId.Kabutops;
-                return;
-            }
-            else
-            if (input.IndexOf("Farfetch", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                sniperInfo.id = PokemonId.Farfetchd;
-                return;
-            }
-
-            foreach (string name in Enum.GetNames(typeof(PokemonId)))
-            {
-                if (input.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    sniperInfo.id = (PokemonId)Enum.Parse(typeof(PokemonId), name);
-                    return;
-                }
-            }
-
-            if (input.IndexOf("Mime", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                sniperInfo.id = PokemonId.MrMime;
-                return;
-            }
-        }
     }
 }
