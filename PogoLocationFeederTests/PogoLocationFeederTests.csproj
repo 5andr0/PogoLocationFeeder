@@ -57,10 +57,7 @@
   <ItemGroup>
     <Compile Include="GeoCoordinatesParserTest.cs" />
     <Compile Include="Helper\PokemonParserTests.cs" />
-<<<<<<< HEAD
     <Compile Include="PokeSniperReaderTests.cs" />
-=======
->>>>>>> refs/remotes/5andr0/master
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
