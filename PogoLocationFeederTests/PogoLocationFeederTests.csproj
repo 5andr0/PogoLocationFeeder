@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="GeoCoordinatesParserTest.cs" />
     <Compile Include="Helper\PokemonParserTests.cs" />
+    <Compile Include="PokeSniperReaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
