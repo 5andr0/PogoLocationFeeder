@@ -111,7 +111,7 @@ namespace PogoLocationFeeder.Helper
             else
             if (input.IndexOf("Kabutops", StringComparison.OrdinalIgnoreCase) >= 0) // Kabutops = Kabuto
             {
-                sniperInfo.id = PokemonId.Kadabra;
+                sniperInfo.id = PokemonId.Kabutops;
                 return;
             }
             else
