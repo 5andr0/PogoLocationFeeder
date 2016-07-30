@@ -23,7 +23,6 @@ namespace PogoLocationFeeder
         public PokeSniperReader()
         {
             _cache = new Dictionary<int, Result>();
-
         }
 
         public object MemoryCache { get; private set; }
@@ -54,7 +53,7 @@ namespace PogoLocationFeeder
                 return list;
             } else
             {
-                System.Console.WriteLine("Pokesnipers API down ({0})", response.StatusCode);
+                System.Console.WriteLine("Pokesnipers API down ({0})", response.ReasonPhrase);
             }
             return null;
         }
@@ -106,7 +105,8 @@ namespace PogoLocationFeeder
         public string coords { get; set; }
         [JsonProperty("until")]
         public string until { get; set; }
-
+        [JsonProperty("icon")]
+        public string icon { get; set; }
     }
 
     class Wrapper

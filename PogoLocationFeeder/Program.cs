@@ -59,7 +59,7 @@ namespace PogoLocationFeeder
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
             Console.WriteLine("Listening...");
-            StartAccept();
+            StartAccept(); 
         }
         private void StartAccept()
         {
@@ -83,19 +83,6 @@ namespace PogoLocationFeeder
         }
 
         private DiscordClient _client;
-
-        public PokeSniperReader PokeSniperReader
-        {
-            get
-            {
-                return pokeSniperReader;
-            }
-
-            set
-            {
-                pokeSniperReader = value;
-            }
-        }
 
         private async Task feedToClients(List<SniperInfo> snipeList, string channel)
         {
@@ -142,22 +129,10 @@ namespace PogoLocationFeeder
             _client = new DiscordClient();
 
             StartNet(settings.Port);
-            int delay = 5000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () =>
+            if (settings.usePokeSnipers)
             {
-                while (true)
-                {
-                    var pokeSniperList = await PokeSniperReader.readAll();
-                    await feedToClients(pokeSniperList, "PokeSniper");
-                    Thread.Sleep(delay);
-                    if (token.IsCancellationRequested)
-                        break;
-                }
-
-                //cleanup
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                pollPokesniperFeed();
+            }
             _client.MessageReceived += async (s, e) =>
             {
                 if (settings.ServerChannels.Any(x => x.Equals(e.Channel.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
@@ -177,8 +152,30 @@ namespace PogoLocationFeeder
                     Console.WriteLine("Please set your logins in the config.json first");
                 }
             });
+        }
 
+        private void pollPokesniperFeed()
+        {
+            int delay = 15 * 1000;
+            var cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+            var listener = Task.Factory.StartNew(async () =>
+            {
+                Thread.Sleep(delay);
+                while (true)
+                {
+                    Thread.Sleep(delay);
+                    var pokeSniperList = await pokeSniperReader.readAll();
+                    if (pokeSniperList != null)
+                    {
+                        await feedToClients(pokeSniperList, "PokeSniper");
+                    }
+                    if (token.IsCancellationRequested)
+                        break;
+                }
 
+                //cleanup
+            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
 
