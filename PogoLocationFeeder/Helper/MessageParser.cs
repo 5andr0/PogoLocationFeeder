@@ -38,7 +38,8 @@ namespace PogoLocationFeeder.Helper
             if (match.Success)
             {
                 return Convert.ToDouble(match.Groups[1].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-            } else
+            }
+            else
                 return default(double);
         }
 
@@ -56,7 +57,7 @@ namespace PogoLocationFeeder.Helper
         private void parseIV(string input)
         {
             sniperInfo.iv = parseRegexDouble(input, @"\s(\d\d?[\,\.]?\d\d?\d?)\s?\%?\s?IV"); // 52 IV 52% IV 52IV 52.5 IV
-            if(sniperInfo.iv == default(double))
+            if (sniperInfo.iv == default(double))
                 sniperInfo.iv = parseRegexDouble(input, @"(\d\d?[\,\.]?\d\d?\d?)\s?\%"); // 52% 52 %
             if (sniperInfo.iv == default(double))
                 sniperInfo.iv = parseRegexDouble(input, @"IV\s?(\d\d?[\,\.]?\d\d?\d?)");
@@ -64,7 +65,8 @@ namespace PogoLocationFeeder.Helper
 
         private void parseTimestamp(string input)
         {
-            try { 
+            try
+            {
                 Match match = Regex.Match(input, @"(\d+)\s?sec", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
@@ -89,10 +91,11 @@ namespace PogoLocationFeeder.Helper
                 match = Regex.Match(input, @"(\d+)\s?s\s", RegexOptions.IgnoreCase); // Lickitung | 15s | 40.69465351234,-73.99434315197
                 if (match.Success)
                 {
-                    sniperInfo.timeStamp = DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[2].Value));
+                    sniperInfo.timeStamp = DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[1].Value));
                     return;
                 }
-            } catch (ArgumentOutOfRangeException)
+            }
+            catch (ArgumentOutOfRangeException)
             {
 
             }
@@ -100,11 +103,12 @@ namespace PogoLocationFeeder.Helper
 
         private void parsePokemonId(string input)
         {
-            if(input.IndexOf("Kadabra", StringComparison.OrdinalIgnoreCase) >= 0) // kadabra = abra
+            if (input.IndexOf("Kadabra", StringComparison.OrdinalIgnoreCase) >= 0) // kadabra = abra
             {
                 sniperInfo.id = PokemonId.Kadabra;
                 return;
-            } else 
+            }
+            else
             if (input.IndexOf("Kabutops", StringComparison.OrdinalIgnoreCase) >= 0) // Kabutops = Kabuto
             {
                 sniperInfo.id = PokemonId.Kadabra;
