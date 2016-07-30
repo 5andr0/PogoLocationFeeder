@@ -25,6 +25,7 @@ namespace PogoLocationFeeder
         private TcpListener listener;
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
+        private PokeSniperReader pokeSniperReader = new PokeSniperReader();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
         // 1) returns successfully or 
@@ -58,7 +59,7 @@ namespace PogoLocationFeeder
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
             Console.WriteLine("Listening...");
-            StartAccept();
+            StartAccept(); 
         }
         private void StartAccept()
         {
@@ -118,16 +119,20 @@ namespace PogoLocationFeeder
             await feedToClients(snipeList, channel);
         }
 
-        public void Start()
+        public async void Start()
         {
             var settings = GlobalSettings.Load();
 
             if (settings == null) return;
 
+
             _client = new DiscordClient();
 
             StartNet(settings.Port);
-
+            if (settings.usePokeSnipers)
+            {
+                pollPokesniperFeed();
+            }
             _client.MessageReceived += async (s, e) =>
             {
                 if (settings.ServerChannels.Any(x => x.Equals(e.Channel.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
@@ -136,16 +141,41 @@ namespace PogoLocationFeeder
                 }
             };
 
-            _client.ExecuteAndWait(async () => {
-                if(settings.useToken && settings.DiscordToken != null)
+            _client.ExecuteAndWait(async () =>
+            {
+                if (settings.useToken && settings.DiscordToken != null)
                     await _client.Connect(settings.DiscordToken);
-                else if(settings.DiscordUser != null && settings.DiscordPassword != null)
+                else if (settings.DiscordUser != null && settings.DiscordPassword != null)
                     await _client.Connect(settings.DiscordUser, settings.DiscordPassword);
                 else
                 {
                     Console.WriteLine("Please set your logins in the config.json first");
                 }
             });
+        }
+
+        private void pollPokesniperFeed()
+        {
+            int delay = 15 * 1000;
+            var cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+            var listener = Task.Factory.StartNew(async () =>
+            {
+                Thread.Sleep(5 * 1000);
+                while (true)
+                {
+                    Thread.Sleep(delay);
+                    var pokeSniperList = await pokeSniperReader.readAll();
+                    if (pokeSniperList != null)
+                    {
+                        await feedToClients(pokeSniperList, "PokeSniper");
+                    }
+                    if (token.IsCancellationRequested)
+                        break;
+                }
+
+                //cleanup
+            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
 
