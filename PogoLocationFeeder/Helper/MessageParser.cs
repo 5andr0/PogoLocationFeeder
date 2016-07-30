@@ -105,6 +105,5 @@ namespace PogoLocationFeeder.Helper
 
             }
         }
-
     }
 }
