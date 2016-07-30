@@ -26,6 +26,8 @@ namespace PogoLocationFeeder.Tests
             testPokemonParsing("farfetched", PokemonId.Farfetchd);
             testPokemonParsing("Blastoise", PokemonId.Blastoise);
             testPokemonParsing("qsddqfsfqds", PokemonId.Missingno);
+            testPokemonParsing("Kabuto", PokemonId.Kabuto);
+            testPokemonParsing("Kabutops", PokemonId.Kabutops);
         }
 
 
