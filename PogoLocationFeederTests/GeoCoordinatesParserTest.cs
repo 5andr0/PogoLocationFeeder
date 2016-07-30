@@ -1,0 +1,43 @@
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PogoLocationFeeder.Helper;
+
+namespace PogoLocationFeederTests
+{
+    [TestClass]
+    public class GeoCoordinatesParserTest
+    {
+        
+        [TestMethod]
+        public void TestCoordinatesCoordBot()
+        {
+             testCoordinates("[192 seconds remaining] 55% IV - Porygon at 48.880245472813,2.3258381797353 [Moveset: TackleFast/Psybeam]", 48.880245472813, 2.3258381797353);
+        }
+
+        [TestMethod]
+        public void TestCoordinatesRandomPerson1()
+        {
+            testCoordinates("50.846499257055854,4.421932697296143 Lapras 11min 92IV Frosth Breath Dragon Pulse", 50.846499257055854, 4.421932697296143);
+        }
+
+        [TestMethod]
+        public void TestCoordinatesRandomPerson2()
+        {
+            testCoordinates("34.0392682838917,-118.494653181811, Eevee, 10min", 34.0392682838917, -118.494653181811);
+        }
+
+        [TestMethod]
+        public void TestCoordinatesPokeSniper()
+        {
+            testCoordinates("-33.8304880738,151.087396206",-33.8304880738, 151.087396206);
+        }
+
+        private void testCoordinates(String text, Double expectedLatitude, Double expectedLongitude)
+        {
+            GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(text);
+            Assert.IsNotNull(geoCoordinates);
+            Assert.AreEqual(expectedLatitude, geoCoordinates.latitude);
+            Assert.AreEqual(expectedLongitude, geoCoordinates.longitude);
+        }
+    }
+}

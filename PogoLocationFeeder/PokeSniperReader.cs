@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
+using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Caching;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PogoLocationFeeder
@@ -22,6 +19,8 @@ namespace PogoLocationFeeder
 
         public PokeSniperReader()
         {
+            //TODO This is can blow up after time, we should use proper a proper cache
+            //This is only used to track which pokemon we already received.
             _cache = new Dictionary<int, Result>();
         }
 
@@ -48,7 +47,10 @@ namespace PogoLocationFeeder
                 foreach (Result result in newResults)
                 {
                     SniperInfo sniperInfo = map(result);
-                    list.Add(sniperInfo);
+                    if (sniperInfo != null)
+                    {
+                        list.Add(sniperInfo);
+                    }
                 }
                 return list;
             } else
@@ -77,11 +79,17 @@ namespace PogoLocationFeeder
         {
             SniperInfo sniperInfo = new SniperInfo();
             sniperInfo.id = (PokemonId)Enum.Parse(typeof(PokemonId), result.name, true);
-            Match match = Regex.Match(result.coords, @"(?<lat>-?\d+\.?\d*)(?:\,|\s)+(?<long>-?\d+\.?\d*)");
-            if (match.Success)
+            PokemonId pokemonId = PokemonParser.parsePokemon(result.name);
+            sniperInfo.id = pokemonId;
+            GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(result.coords);
+            if (geoCoordinates == null)
             {
-                sniperInfo.latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-                sniperInfo.longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
+                return null;
+            }
+            else
+            {
+                sniperInfo.latitude = geoCoordinates.latitude;
+                sniperInfo.longitude = geoCoordinates.longitude;
             }
 
             sniperInfo.timeStamp = Convert.ToDateTime(result.until);
