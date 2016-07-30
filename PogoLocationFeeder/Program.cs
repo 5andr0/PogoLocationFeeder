@@ -146,7 +146,18 @@ namespace PogoLocationFeeder
                 if (settings.useToken && settings.DiscordToken != null)
                     await _client.Connect(settings.DiscordToken);
                 else if (settings.DiscordUser != null && settings.DiscordPassword != null)
-                    await _client.Connect(settings.DiscordUser, settings.DiscordPassword);
+                {
+                    try
+                    {
+                        await _client.Connect(settings.DiscordUser, settings.DiscordPassword);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Failed to authroize Discord user! Check your config.json and try again.");
+                        Console.ReadKey();
+                        return;
+                    }
+                }
                 else
                 {
                     Console.WriteLine("Please set your logins in the config.json first");
