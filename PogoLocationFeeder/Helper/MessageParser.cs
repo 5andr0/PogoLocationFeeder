@@ -1,9 +1,8 @@
-﻿using POGOProtos.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-
+using POGOProtos.Enums;
 namespace PogoLocationFeeder.Helper
 {
     internal class MessageParser
@@ -17,15 +16,21 @@ namespace PogoLocationFeeder.Helper
             foreach (var input in lines)
             {
                 sniperInfo = new SniperInfo();
-                if (!parseGeoCoordinates(input))
+                GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(input);
+                if (geoCoordinates == null)
                 {
                     //Console.WriteLine($"Can't get coords from line: {input}"); // debug output, too much spam
                     continue;
                 }
+                else
+                {
+                    sniperInfo.latitude = geoCoordinates.latitude;
+                    sniperInfo.longitude = geoCoordinates.longitude;
+                }
                 parseIV(input);
                 parseTimestamp(input);
-                parsePokemonId(input);
-
+                PokemonId pokemon = PokemonParser.parsePokemon(input);
+                sniperInfo.id = pokemon;
                 snipeList.Add(sniperInfo);
             }
 

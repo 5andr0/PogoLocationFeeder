@@ -167,7 +167,7 @@ namespace PogoLocationFeeder
 
         private void pollPokesniperFeed()
         {
-            int delay = 15 * 1000;
+            int delay = 30 * 1000;
             var cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
             var listener = Task.Factory.StartNew(async () =>
@@ -176,16 +176,25 @@ namespace PogoLocationFeeder
                 while (true)
                 {
                     Thread.Sleep(delay);
-                    var pokeSniperList = await pokeSniperReader.readAll();
-                    if (pokeSniperList != null)
+                    for (int retrys = 0; retrys <= 3; retrys++)
                     {
-                        await feedToClients(pokeSniperList, "PokeSniper");
+                        var pokeSniperList = await pokeSniperReader.readAll();
+                        if (pokeSniperList != null)
+                        {
+                            if(pokeSniperList.Any()) {
+                                await feedToClients(pokeSniperList, "PokeSnipers");
+                            } else
+                            {
+                                Console.WriteLine("No new pokemon on PokeSnipers");
+                            }
+                            break;
+                        }
+                        if (token.IsCancellationRequested)
+                            break;
+                        Thread.Sleep(1000);
                     }
-                    if (token.IsCancellationRequested)
-                        break;
                 }
 
-                //cleanup
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
