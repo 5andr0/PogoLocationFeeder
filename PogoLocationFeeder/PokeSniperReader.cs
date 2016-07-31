@@ -54,7 +54,6 @@ namespace PogoLocationFeeder
         private SniperInfo map(Result result)
         {
             SniperInfo sniperInfo = new SniperInfo();
-            sniperInfo.id = (PokemonId)Enum.Parse(typeof(PokemonId), result.name, true);
             PokemonId pokemonId = PokemonParser.parsePokemon(result.name);
             sniperInfo.id = pokemonId;
             GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(result.coords);
