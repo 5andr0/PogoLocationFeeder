@@ -26,7 +26,7 @@ namespace PogoLocationFeeder
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
         private PokeSniperReader pokeSniperReader = new PokeSniperReader();
-        private List<SniperInfo> sentMessages = new List<SniperInfo>();
+        private MessageCache messageCache = new MessageCache();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
         // 1) returns successfully or 
@@ -89,42 +89,28 @@ namespace PogoLocationFeeder
         {
             // Remove any clients that have disconnected
             arrSocket.RemoveAll(x => !IsConnected(x.Client));
-
-            foreach (var target in snipeList)
+            List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
+            foreach (var target in unsentMessages)
             {
-                var logMessage = $"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}";
-
-                if (sentMessages.Any(x => x.latitude == target.latitude && x.longitude == target.longitude && x.id == target.id))
+                foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
                 {
-                    logMessage += " DUPLICATE";
-                }
-                else
-                {
-                    sentMessages.Add(target);
-
-                    foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+                    try
                     {
-                        try
-                        {
-                            NetworkStream networkStream = socket.GetStream();
-                            StreamWriter s = new StreamWriter(networkStream);
+                        NetworkStream networkStream = socket.GetStream();
+                        StreamWriter s = new StreamWriter(networkStream);
 
-                            s.WriteLine(JsonConvert.SerializeObject(target));
-                            s.Flush();
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine($"Caught exception: {e.ToString()}");
-                        }
+                        s.WriteLine(JsonConvert.SerializeObject(target));
+                        s.Flush();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Caught exception: {e.ToString()}");
                     }
                 }
                 // debug output
-                if (target.expirationTime != default(DateTime)) logMessage += $" Expires: {target.expirationTime}";
-
-                Console.WriteLine(logMessage);
-
-                // remove old log entries (older than 1 minute)
-                sentMessages.RemoveAll(x => x.creationTime <= DateTime.Now.AddMinutes(-1));
+                Console.WriteLine($"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
+                if (target.timeStamp != default(DateTime))
+                    Console.WriteLine($"Expires: {target.timeStamp}");
             }
         }
 
@@ -193,7 +179,7 @@ namespace PogoLocationFeeder
                     Thread.Sleep(delay);
                     for (int retrys = 0; retrys <= 3; retrys++)
                     {
-                        var pokeSniperList = await pokeSniperReader.readAll();
+                        var pokeSniperList = pokeSniperReader.readAll();
                         if (pokeSniperList != null)
                         {
                             if(pokeSniperList.Any()) {
