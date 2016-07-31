@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using POGOProtos.Enums;
 namespace PogoLocationFeeder.Helper
 {
-    internal class MessageParser
+    public class MessageParser
     {
         private SniperInfo sniperInfo = null;
         public List<SniperInfo> parseMessage(string message)
@@ -46,17 +46,6 @@ namespace PogoLocationFeeder.Helper
             }
             else
                 return default(double);
-        }
-
-        private bool parseGeoCoordinates(string input)
-        {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+[\,\.]\d+),\s*(?<long>\-?\d+[\,\.]\d+)");
-            if (match.Success)
-            {
-                sniperInfo.latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-                sniperInfo.longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-            }
-            return match.Success;
         }
 
         private void parseIV(string input)
