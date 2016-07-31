@@ -17,7 +17,7 @@ namespace PogoLocationFeeder.Helper
             if (iv == default(double))
                 iv = parseRegexDouble(input, @"(?i)\bIV\W?(1?\d{1,2}[,.]?\d{0,3})");
             if (iv == default(double))
-                iv = parseRegexDouble(input, @"\b(1?\d{1,3}[,.]?\d{0,3})\W*\%?"); // 52% 52 %
+                iv = parseRegexDouble(input, @"\b(1?\d{1,3}[,.]?\d{0,3})\W*\%"); // 52% 52 %
 
             return iv;
         }

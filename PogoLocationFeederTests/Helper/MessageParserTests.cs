@@ -20,6 +20,8 @@ namespace PogoLocationFeeder.Helper.Tests
             
             verifyParsing("[239 seconds remaining] 52% IV - Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
                 42.877637631245, 74.620142194759, PokemonId.Jolteon, 52, DateTime.Now.AddSeconds(239));
+            verifyParsing("[239 seconds remaining] Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
+    42.877637631245, 74.620142194759, PokemonId.Jolteon, 0, DateTime.Now.AddSeconds(239));
 
 
         }

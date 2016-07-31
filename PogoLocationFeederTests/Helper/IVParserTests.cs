@@ -23,8 +23,14 @@ namespace PogoLocationFeeder.Helper.Tests
             Assert.AreEqual(85.11, IVParser.parseIV("IV 85,11"));
 
             Assert.AreEqual(100, IVParser.parseIV("100.00 %"));
-
-
         }
+
+        
+        [TestMethod()]
+        public void parseNoIV()
+        {
+            Assert.AreEqual(0, IVParser.parseIV("[239 seconds remaining] Jolteon at 42.877637631245, 74.620142194759[Moveset: ThunderShockFast / Thunderbolt]"));
+        }
+
     }
 }
