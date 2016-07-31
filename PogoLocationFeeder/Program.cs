@@ -26,6 +26,7 @@ namespace PogoLocationFeeder
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
         private PokeSniperReader pokeSniperReader = new PokeSniperReader();
+        private MessageCache messageCache = new MessageCache();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
         // 1) returns successfully or 
@@ -88,8 +89,8 @@ namespace PogoLocationFeeder
         {
             // Remove any clients that have disconnected
             arrSocket.RemoveAll(x => !IsConnected(x.Client));
-
-            foreach (var target in snipeList)
+            List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
+            foreach (var target in unsentMessages)
             {
                 foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
                 {
@@ -178,7 +179,7 @@ namespace PogoLocationFeeder
                     Thread.Sleep(delay);
                     for (int retrys = 0; retrys <= 3; retrys++)
                     {
-                        var pokeSniperList = await pokeSniperReader.readAll();
+                        var pokeSniperList = pokeSniperReader.readAll();
                         if (pokeSniperList != null)
                         {
                             if(pokeSniperList.Any()) {

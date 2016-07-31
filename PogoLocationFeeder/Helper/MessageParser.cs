@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using POGOProtos.Enums;
 namespace PogoLocationFeeder.Helper
 {
-    internal class MessageParser
+    public class MessageParser
     {
         private SniperInfo sniperInfo = null;
         public List<SniperInfo> parseMessage(string message)
@@ -27,7 +27,8 @@ namespace PogoLocationFeeder.Helper
                     sniperInfo.latitude = geoCoordinates.latitude;
                     sniperInfo.longitude = geoCoordinates.longitude;
                 }
-                parseIV(input);
+                double iv = IVParser.parseIV(input);
+                sniperInfo.iv = iv;
                 parseTimestamp(input);
                 PokemonId pokemon = PokemonParser.parsePokemon(input);
                 sniperInfo.id = pokemon;
@@ -37,36 +38,8 @@ namespace PogoLocationFeeder.Helper
             return snipeList;
         }
 
-        private double parseRegexDouble(string input, string regex)
-        {
-            Match match = Regex.Match(input, regex);
-            if (match.Success)
-            {
-                return Convert.ToDouble(match.Groups[1].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-            }
-            else
-                return default(double);
-        }
 
-        private bool parseGeoCoordinates(string input)
-        {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+[\,\.]\d+),\s*(?<long>\-?\d+[\,\.]\d+)");
-            if (match.Success)
-            {
-                sniperInfo.latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-                sniperInfo.longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-            }
-            return match.Success;
-        }
 
-        private void parseIV(string input)
-        {
-            sniperInfo.iv = parseRegexDouble(input, @"\s(\d\d?[\,\.]?\d\d?\d?)\s?\%?\s?IV"); // 52 IV 52% IV 52IV 52.5 IV
-            if (sniperInfo.iv == default(double))
-                sniperInfo.iv = parseRegexDouble(input, @"(\d\d?[\,\.]?\d\d?\d?)\s?\%"); // 52% 52 %
-            if (sniperInfo.iv == default(double))
-                sniperInfo.iv = parseRegexDouble(input, @"IV\s?(\d\d?[\,\.]?\d\d?\d?)");
-        }
 
         private void parseTimestamp(string input)
         {
@@ -103,42 +76,6 @@ namespace PogoLocationFeeder.Helper
             catch (ArgumentOutOfRangeException)
             {
 
-            }
-        }
-
-        private void parsePokemonId(string input)
-        {
-            if (input.IndexOf("Kadabra", StringComparison.OrdinalIgnoreCase) >= 0) // kadabra = abra
-            {
-                sniperInfo.id = PokemonId.Kadabra;
-                return;
-            }
-            else
-            if (input.IndexOf("Kabutops", StringComparison.OrdinalIgnoreCase) >= 0) // Kabutops = Kabuto
-            {
-                sniperInfo.id = PokemonId.Kabutops;
-                return;
-            }
-            else
-            if (input.IndexOf("Farfetch", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                sniperInfo.id = PokemonId.Farfetchd;
-                return;
-            }
-
-            foreach (string name in Enum.GetNames(typeof(PokemonId)))
-            {
-                if (input.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    sniperInfo.id = (PokemonId)Enum.Parse(typeof(PokemonId), name);
-                    return;
-                }
-            }
-
-            if (input.IndexOf("Mime", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                sniperInfo.id = PokemonId.MrMime;
-                return;
             }
         }
     }
