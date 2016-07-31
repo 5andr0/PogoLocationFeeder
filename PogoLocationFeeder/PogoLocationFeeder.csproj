@@ -100,6 +100,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\MessageCache.cs" />
     <Compile Include="Helper\GeoCoordinatesParser.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
     <Compile Include="PokeSniperReader.cs" />

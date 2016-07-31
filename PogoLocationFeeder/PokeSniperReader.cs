@@ -15,8 +15,6 @@ namespace PogoLocationFeeder
 
     public class PokeSniperReader
     {
-        const String pokesnipers_prefix = "pokesnipersid_";
-
         private const string URL = "http://pokesnipers.com/api/v1/pokemon.json";
 
         public PokeSniperReader()
@@ -35,9 +33,8 @@ namespace PogoLocationFeeder
                 var response = request.GetResponse();
                 var reader = new StreamReader(response.GetResponseStream());
                 Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
-                List<Result> newResults = storeInCache(wrapper.results);
                 List<SniperInfo> list = new List<SniperInfo>();
-                foreach (Result result in newResults)
+                foreach (Result result in wrapper.results)
                 {
                     SniperInfo sniperInfo = map(result);
                     if (sniperInfo != null)
@@ -52,21 +49,6 @@ namespace PogoLocationFeeder
                 System.Console.WriteLine("Pokesnipers API down: {0}", e.Message);
                 return null;
             }
-        }
-
-        private List<Result> storeInCache(List<Result> list)
-        {
-            var newResultList = new List<Result>();
-            foreach (Result result in list)
-            {
-                if (!MemoryCache.Default.Contains(pokesnipers_prefix + result.id.ToString()))
-                {
-                    var expiration = DateTimeOffset.Parse(result.until);
-                    MemoryCache.Default.Add(pokesnipers_prefix + result.id.ToString(), result, expiration);
-                    newResultList.Add(result);
-                }
-            }
-            return newResultList;
         }
 
         private SniperInfo map(Result result)
