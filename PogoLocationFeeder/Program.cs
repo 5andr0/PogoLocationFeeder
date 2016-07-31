@@ -59,6 +59,8 @@ namespace PogoLocationFeeder
         {
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
+            Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            Console.WriteLine("This software is 100% free and open-source.\n");
             Console.WriteLine("Listening...");
             StartAccept(); 
         }
