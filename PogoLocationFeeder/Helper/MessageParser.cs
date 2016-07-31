@@ -27,7 +27,8 @@ namespace PogoLocationFeeder.Helper
                     sniperInfo.latitude = geoCoordinates.latitude;
                     sniperInfo.longitude = geoCoordinates.longitude;
                 }
-                parseIV(input);
+                double iv = IVParser.parseIV(input);
+                sniperInfo.iv = iv;
                 parseTimestamp(input);
                 PokemonId pokemon = PokemonParser.parsePokemon(input);
                 sniperInfo.id = pokemon;
@@ -37,25 +38,8 @@ namespace PogoLocationFeeder.Helper
             return snipeList;
         }
 
-        private double parseRegexDouble(string input, string regex)
-        {
-            Match match = Regex.Match(input, regex);
-            if (match.Success)
-            {
-                return Convert.ToDouble(match.Groups[1].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-            }
-            else
-                return default(double);
-        }
 
-        private void parseIV(string input)
-        {
-            sniperInfo.iv = parseRegexDouble(input, @"(?i)\s(1?\d{1,2}[,.]?\d{0,3})\s?\%?\s?IV"); // 52 IV 52% IV 52IV 52.5 IV
-            if (sniperInfo.iv == default(double))
-                sniperInfo.iv = parseRegexDouble(input, @"(1?\d{1,2}[,.]?\d{0,3})\s?\%"); // 52% 52 %
-            if (sniperInfo.iv == default(double))
-                sniperInfo.iv = parseRegexDouble(input, @"(?i)IV\s?(1?\d{1,2}[,.]?\d{0,3})");
-        }
+
 
         private void parseTimestamp(string input)
         {
