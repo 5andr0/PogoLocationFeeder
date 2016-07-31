@@ -61,11 +61,11 @@ namespace PogoLocationFeeder.Helper
 
         private void parseIV(string input)
         {
-            sniperInfo.iv = parseRegexDouble(input, @"\s(\d\d?[\,\.]?\d\d?\d?)\s?\%?\s?IV"); // 52 IV 52% IV 52IV 52.5 IV
+            sniperInfo.iv = parseRegexDouble(input, @"(?i)\s(1?\d{1,2}[,.]?\d{0,3})\s?\%?\s?IV"); // 52 IV 52% IV 52IV 52.5 IV
             if (sniperInfo.iv == default(double))
-                sniperInfo.iv = parseRegexDouble(input, @"(\d\d?[\,\.]?\d\d?\d?)\s?\%"); // 52% 52 %
+                sniperInfo.iv = parseRegexDouble(input, @"(1?\d{1,2}[,.]?\d{0,3})\s?\%"); // 52% 52 %
             if (sniperInfo.iv == default(double))
-                sniperInfo.iv = parseRegexDouble(input, @"IV\s?(\d\d?[\,\.]?\d\d?\d?)");
+                sniperInfo.iv = parseRegexDouble(input, @"(?i)IV\s?(1?\d{1,2}[,.]?\d{0,3})");
         }
 
         private void parseTimestamp(string input)
