@@ -3,6 +3,9 @@ using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Runtime.Caching;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -12,39 +15,26 @@ namespace PogoLocationFeeder
 
     public class PokeSniperReader
     {
-
-        private static Dictionary<int, Result> _cache;
-
         private const string URL = "http://pokesnipers.com/api/v1/pokemon.json";
 
         public PokeSniperReader()
         {
-            //TODO This is can blow up after time, we should use proper a proper cache
-            //This is only used to track which pokemon we already received.
-            _cache = new Dictionary<int, Result>();
         }
 
-        public object MemoryCache { get; private set; }
-
-        public async Task<List<SniperInfo>> readAll()
+        public List<SniperInfo> readAll()
         {
-
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
-
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-
-
-            HttpResponseMessage response = await client.GetAsync(URL);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var wrapper = response.Content.ReadAsAsync<Wrapper>().Result;
-                List<Result> newResults = storeInCache(wrapper.results);
+                var request = WebRequest.CreateHttp(URL);
+                request.Accept = "application/json";
+                request.Method = "GET";
+                request.Timeout = 10000;
 
+                var response = request.GetResponse();
+                var reader = new StreamReader(response.GetResponseStream());
+                Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
                 List<SniperInfo> list = new List<SniperInfo>();
-                foreach (Result result in newResults)
+                foreach (Result result in wrapper.results)
                 {
                     SniperInfo sniperInfo = map(result);
                     if (sniperInfo != null)
@@ -53,26 +43,12 @@ namespace PogoLocationFeeder
                     }
                 }
                 return list;
-            } else
-            {
-                System.Console.WriteLine("Pokesnipers API down ({0})", response.ReasonPhrase);
             }
-            return null;
-        }
-
-        private List<Result> storeInCache(List<Result> list)
-        {
-            var newResultList = new List<Result>();
-            foreach (Result result in list)
+            catch (Exception e)
             {
-                if (!_cache.ContainsKey(result.id))
-                {
-                    var expiration = DateTimeOffset.Parse(result.until);
-                    _cache.Add(result.id, result);
-                    newResultList.Add(result);
-                }
+                System.Console.WriteLine("Pokesnipers API down: {0}", e.Message);
+                return null;
             }
-            return newResultList;
         }
 
         private SniperInfo map(Result result)
@@ -106,7 +82,7 @@ namespace PogoLocationFeeder
     class Result
     {
         [JsonProperty("id")]
-        public int id { get; set; }
+        public long id { get; set; }
         [JsonProperty("name")]
         public string name { get; set; }
         [JsonProperty("coords")]
