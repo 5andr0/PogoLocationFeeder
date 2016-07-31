@@ -26,6 +26,7 @@ namespace PogoLocationFeeder
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
         private PokeSniperReader pokeSniperReader = new PokeSniperReader();
+        private List<SniperInfo> sentMessages = new List<SniperInfo>();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
         // 1) returns successfully or 
@@ -91,25 +92,39 @@ namespace PogoLocationFeeder
 
             foreach (var target in snipeList)
             {
-                foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
-                {
-                    try
-                    {
-                        NetworkStream networkStream = socket.GetStream();
-                        StreamWriter s = new StreamWriter(networkStream);
+                var logMessage = $"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}";
 
-                        s.WriteLine(JsonConvert.SerializeObject(target));
-                        s.Flush();
-                    }
-                    catch (Exception e)
+                if (sentMessages.Any(x => x.latitude == target.latitude && x.longitude == target.longitude && x.id == target.id))
+                {
+                    logMessage += " DUPLICATE";
+                }
+                else
+                {
+                    sentMessages.Add(target);
+
+                    foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
                     {
-                        Console.WriteLine($"Caught exception: {e.ToString()}");
+                        try
+                        {
+                            NetworkStream networkStream = socket.GetStream();
+                            StreamWriter s = new StreamWriter(networkStream);
+
+                            s.WriteLine(JsonConvert.SerializeObject(target));
+                            s.Flush();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Caught exception: {e.ToString()}");
+                        }
                     }
                 }
                 // debug output
-                Console.WriteLine($"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
-                if (target.timeStamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.timeStamp}");
+                if (target.expirationTime != default(DateTime)) logMessage += $" Expires: {target.expirationTime}";
+
+                Console.WriteLine(logMessage);
+
+                // remove old log entries (older than 1 minute)
+                sentMessages.RemoveAll(x => x.creationTime <= DateTime.Now.AddMinutes(-1));
             }
         }
 

@@ -92,7 +92,7 @@ namespace PogoLocationFeeder
                 sniperInfo.longitude = geoCoordinates.longitude;
             }
 
-            sniperInfo.timeStamp = Convert.ToDateTime(result.until);
+            sniperInfo.expirationTime = Convert.ToDateTime(result.until);
             return sniperInfo;
         }
 
