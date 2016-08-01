@@ -16,19 +16,14 @@ using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
 using System.Globalization;
 using PogoLocationFeeder.Repository;
-using log4net;
-using log4net.Config;
 
 namespace PogoLocationFeeder
 {
     class Program
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
 
         static void Main(string[] args)
         {
-            BasicConfigurator.Configure();
-
             Console.Title = "PogoLocationFeeder";
             new Program().Start();
             
@@ -71,8 +66,8 @@ namespace PogoLocationFeeder
             listener.Start();
             Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
             Log.Plain("This software is 100% free and open-source.\n");
-            log.Info("Starting server ...");
-            log.Info("Listening...");
+            Log.Info("Starting server ...");
+            Log.Info("Listening...");
             StartAccept(); 
         }
         private void StartAccept()

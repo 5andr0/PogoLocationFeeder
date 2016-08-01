@@ -21,7 +21,7 @@ namespace PoGo.LocationFeeder.Settings
         public string DiscordUser = "";
         public string DiscordPassword = "";
         public bool usePokeSnipers = false;
-        public bool useTrackermon = false;
+        public bool useTrackemon = false;
 
         public static GlobalSettings Default => new GlobalSettings();
 

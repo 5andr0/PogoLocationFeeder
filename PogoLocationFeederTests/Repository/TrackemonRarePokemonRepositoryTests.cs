@@ -12,13 +12,13 @@ namespace PogoLocationFeeder.Repository.Tests
     [TestClass()]
     public class TrackemonRarePokemonRepositoryTests
     {
-        RarePokemonRepository trackermonRarePokemonRepository = new TrackermonRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+        RarePokemonRepository trackemonRarePokemonRepository = new TrackemonRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
 
         [TestMethod()]
         [Ignore]
         public void FindAll()
         {
-            List<SniperInfo> sniperInfos = trackermonRarePokemonRepository.FindAll();
+            List<SniperInfo> sniperInfos = trackemonRarePokemonRepository.FindAll();
             Assert.IsNotNull(sniperInfos);
             Assert.IsTrue(sniperInfos.Any());
             foreach(SniperInfo sniperInfo in sniperInfos)
@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Repository.Tests
         [TestMethod()]
         public void GetChannel()
         {
-            Assert.AreEqual("Trackermon", trackermonRarePokemonRepository.GetChannel());
+            Assert.AreEqual("Trackemon", trackemonRarePokemonRepository.GetChannel());
         }
     }
 }

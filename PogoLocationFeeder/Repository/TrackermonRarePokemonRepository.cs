@@ -15,20 +15,20 @@ using System.Text;
 namespace PogoLocationFeeder.Repository
 {
 
-    public class TrackermonRarePokemonRepository : RarePokemonRepository
+    public class TrackemonRarePokemonRepository : RarePokemonRepository
     {
         const int timeout = 20000;
-        const String channel = "Trackermon";
+        const String channel = "Trackemon";
         List<PokemonId> pokemonIdsToFind;
 
-        public TrackermonRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
+        public TrackemonRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
         {
             this.pokemonIdsToFind = pokemonIdsToFind;
         }
         
         public List<SniperInfo> FindAll()
         {
-            TrackermonSession session = FindSessionId();
+            TrackemonSession session = FindSessionId();
             if (session == null || !session.validate())
             {
                 session = FindSessionId();
@@ -53,7 +53,7 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
-        private List<SniperInfo> findSubSetOfPokemon(List<PokemonId> pokemomnIds, TrackermonSession session)
+        private List<SniperInfo> findSubSetOfPokemon(List<PokemonId> pokemomnIds, TrackemonSession session)
         {
             String pokemonTypeIds = buildPokemonTypeIds(pokemomnIds);
             List<SniperInfo> list = new List<SniperInfo>();
@@ -70,8 +70,8 @@ namespace PogoLocationFeeder.Repository
                 {
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        List<TrackermonResult> resultList = JsonConvert.DeserializeObject<List<TrackermonResult>>(reader.ReadToEnd());
-                        foreach (TrackermonResult result in resultList)
+                        List<TrackemonResult> resultList = JsonConvert.DeserializeObject<List<TrackemonResult>>(reader.ReadToEnd());
+                        foreach (TrackemonResult result in resultList)
                         {
                             SniperInfo sniperInfo = map(result);
                             if (sniperInfo != null)
@@ -86,12 +86,12 @@ namespace PogoLocationFeeder.Repository
             }
             catch (Exception e)
             {
-                Log.Warn("Trackermon API error: {0}", e.Message);
+                Log.Warn("Trackemon API error: {0}", e.Message);
                 return null;
             }
         }
 
-        private SniperInfo map(TrackermonResult result)
+        private SniperInfo map(TrackemonResult result)
         {
             SniperInfo sniperInfo = new SniperInfo();
             PokemonId pokemonId = PokemonParser.parseById(result.id);
@@ -110,9 +110,9 @@ namespace PogoLocationFeeder.Repository
             return (PokemonId)Enum.Parse(typeof(PokemonId), pokemonName);
         }
 
-        public TrackermonSession FindSessionId()
+        public TrackemonSession FindSessionId()
         {
-            TrackermonSession trackermonSession = new TrackermonSession();
+            TrackemonSession TrackemonSession = new TrackemonSession();
             try
             {
                 var cookieContainer = new CookieContainer();
@@ -124,7 +124,7 @@ namespace PogoLocationFeeder.Repository
                 using (var response = request.GetResponse())
                 {
                     String cookieHeader = cookieContainer.GetCookieHeader(new Uri("https://www.trackemon.com"));
-                    trackermonSession.cookieHeader = cookieHeader;
+                    TrackemonSession.cookieHeader = cookieHeader;
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
                         String line;
@@ -134,15 +134,15 @@ namespace PogoLocationFeeder.Repository
                             Match match = Regex.Match(line, @"var\s+sessionId\s*=\s*\'(1?.*)\'\s*;");
                             if (match.Success)
                             {
-                                trackermonSession.sessionId = match.Groups[1].Value;
-                                return trackermonSession;
+                                TrackemonSession.sessionId = match.Groups[1].Value;
+                                return TrackemonSession;
                             }
                         }
                     }
                 }
             } catch(Exception e)
             {
-                Log.Warn("Error trying to get a sessionId for trackermon: {0}", e.Message);
+                Log.Warn("Error trying to get a sessionId for Trackemon: {0}", e.Message);
             }
             return null;
         }
@@ -160,7 +160,7 @@ namespace PogoLocationFeeder.Repository
     }
 
 
-    class TrackermonResult
+    class TrackemonResult
     {
         [JsonProperty("pokedexTypeId")]
         public long id { get; set; }
@@ -172,7 +172,7 @@ namespace PogoLocationFeeder.Repository
         public long expiration { get; set; }
     }
 
-    public class TrackermonSession
+    public class TrackemonSession
     {
         public String cookieHeader { get; set; }
         public String sessionId { get; set; }

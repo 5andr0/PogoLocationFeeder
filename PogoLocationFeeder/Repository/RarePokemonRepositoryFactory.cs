@@ -20,9 +20,9 @@ namespace PogoLocationFeeder.Repository
             {
                 rarePokemonRepositories.Add(new PokeSniperRarePokemonRepository(pokemonIds));
             }
-            if (globalSettings.useTrackermon)
+            if (globalSettings.useTrackemon)
             {
-                rarePokemonRepositories.Add(new TrackermonRarePokemonRepository(pokemonIds));
+                rarePokemonRepositories.Add(new TrackemonRarePokemonRepository(pokemonIds));
             }
             return rarePokemonRepositories;
         }
