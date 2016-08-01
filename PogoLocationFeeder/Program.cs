@@ -16,13 +16,19 @@ using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
 using System.Globalization;
 using PogoLocationFeeder.Repository;
+using log4net;
+using log4net.Config;
 
 namespace PogoLocationFeeder
 {
     class Program
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+
         static void Main(string[] args)
         {
+            BasicConfigurator.Configure();
+
             Console.Title = "PogoLocationFeeder";
             new Program().Start();
             
@@ -63,9 +69,10 @@ namespace PogoLocationFeeder
         {
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
-            Log.plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
-            Log.plain("This software is 100% free and open-source.\n");
-            Log.info("Listening...");
+            Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            Log.Plain("This software is 100% free and open-source.\n");
+            log.Info("Starting server ...");
+            log.Info("Listening...");
             StartAccept(); 
         }
         private void StartAccept()
@@ -79,7 +86,7 @@ namespace PogoLocationFeeder
             if (client != null && IsConnected(client.Client))
             {
                 arrSocket.Add(client);
-                Log.info($"New connection from {getIp(client.Client)}");
+                Log.Info($"New connection from {getIp(client.Client)}");
             }
         }
 
@@ -110,13 +117,14 @@ namespace PogoLocationFeeder
                     }
                     catch (Exception e)
                     {
-                        Log.error($"Caught exception: {e.ToString()}");
+                        Log.Error($"Caught exception: {e.ToString()}");
                     }
                 }
                 // debug output
-                Log.pokemon($"Channel: {channel}, ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}" 
-                    + (target.iv != default(double) ? $", IV:{target.iv}": "")
-                    + (target.timeStamp != default(DateTime) ? $", Expires:{target.timeStamp}" : ""));
+                String timeFormat = "HH:mm:ss";
+                Log.Pokemon($"{channel}: {target.id} at {target.latitude},{target.longitude}" 
+                    + " with " + (target.iv != default(double) ? "{target.iv}%IV": "unknown IV")
+                    + (target.timeStamp != default(DateTime) ? $" until {target.timeStamp.ToString(timeFormat)}" : ""));
             }
         }
 
@@ -159,14 +167,14 @@ namespace PogoLocationFeeder
                     }
                     catch
                     {
-                        Log.error("Failed to authroize Discord user! Check your config.json and try again.");
+                        Log.Error("Failed to authroize Discord user! Check your config.json and try again.");
                         Console.ReadKey();
                         return;
                     }
                 }
                 else
                 {
-                    Log.error("Please set your logins in the config.json first");
+                    Log.Error("Please set your logins in the config.json first");
                 }
             });
         }
@@ -196,7 +204,7 @@ namespace PogoLocationFeeder
                                 }
                                 else
                                 {
-                                    Log.debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                                    Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
                                 }
                                 break;
                             }

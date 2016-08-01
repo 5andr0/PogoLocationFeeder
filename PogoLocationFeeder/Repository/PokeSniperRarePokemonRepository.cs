@@ -35,23 +35,27 @@ namespace PogoLocationFeeder.Repository
                 request.Method = "GET";
                 request.Timeout = 20000;
 
-                var response = request.GetResponse();
-                var reader = new StreamReader(response.GetResponseStream());
-                Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
-                List<SniperInfo> list = new List<SniperInfo>();
-                foreach (Result result in wrapper.results)
+                using (var response = request.GetResponse())
                 {
-                    SniperInfo sniperInfo = map(result);
-                    if (sniperInfo != null)
+                    using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        list.Add(sniperInfo);
+                        Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
+                        List<SniperInfo> list = new List<SniperInfo>();
+                        foreach (Result result in wrapper.results)
+                        {
+                            SniperInfo sniperInfo = map(result);
+                            if (sniperInfo != null)
+                            {
+                                list.Add(sniperInfo);
+                            }
+                        }
+                        return list;
                     }
                 }
-                return list;
             }
             catch (Exception e)
             {
-                Log.warn("Pokesnipers API error: {0}", e.Message);
+                Log.Warn("Pokesnipers API error: {0}", e.Message);
                 return null;
             }
         }

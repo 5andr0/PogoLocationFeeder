@@ -1,31 +1,46 @@
-﻿using System;
+﻿using log4net;
+using log4net.Config;
+using log4net.Layout.Pattern;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using log4net.Core;
+using System.IO;
+using log4net.Appender;
 
 namespace PogoLocationFeeder.Helper
 {
-    public class Log
+
+    public static class Log
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(Log));
+        public static readonly log4net.Core.Level pokemonLevel = new log4net.Core.Level(log4net.Core.Level.Info.Value + 1000, "PKMN");
+
+        static Log()
+        {
+            XmlConfigurator.Configure();
+        }
         const String timeFormat = "HH:mm:ss";
         private static object _MessageLock = new object();
-        public static void debug(String message)
+
+        public static void Trace(String message, params string[] args)
         {
-            debug(message, null);
+            logger.DebugFormat(message, args);
         }
 
-        public static void debug(String message, params string[] args)
+        public static void Debug(String message, params string[] args)
         {
-            writeMessage("[DEBUG] " + message, ConsoleColor.DarkCyan, args);
+            logger.DebugFormat(message, args);
         }
 
-        public static void info(String message, params string[] args)
+        public static void Info(String message, params string[] args)
         {
-            writeMessage("[INFO] " + message, ConsoleColor.DarkCyan, args);
+            logger.InfoFormat( message, args);
         }
 
-        public static void plain(String message, params  string[] args)
+        public static void Plain(String message, params  string[] args)
         {
             lock (_MessageLock)
             {
@@ -35,42 +50,60 @@ namespace PogoLocationFeeder.Helper
             }
         }
 
-        public static void pokemon(String message, params string[] args)
+        public static void Pokemon(String message, params string[] args)
         {
-            writeMessage("[PKMN] " + message, ConsoleColor.Green, args);
+
+            LogPokemonFormat(logger, message, args);
         }
-        public static void warn(String message, params string[] args)
+        public static void Warn(String message, params string[] args)
         {
-            writeMessage("[WARN] " + message, ConsoleColor.DarkYellow, args);
+            logger.WarnFormat(message, args);
         }
 
-        public static void error(String message, params string[] args)
+        public static void Error(String message, params string[] args)
         {
-            writeMessage("[ERROR] " + message, ConsoleColor.Red, args);
-        }
-        private static void writeMessage(String message, string[] args)
-        {
-            lock (_MessageLock)
-            {
-                writeToConsole(message, args);
-            }
+            logger.ErrorFormat(message, args);
         }
 
-        private static void writeMessage(String message, ConsoleColor consoleColor, params string[] args)
+        public static void Error(String message, Exception e)
         {
-            lock (_MessageLock)
-            {
-                Console.ForegroundColor = consoleColor;
-                writeToConsole(message, args);
-                Console.ResetColor();
-            }
+            logger.Error(message, e);
         }
 
-        private static void writeToConsole(String message, params string[] args)
+        public static void Fatal(String message, params string[] args)
         {
-            Console.WriteLine($"[{DateTime.Now.ToString(timeFormat)}]" + message, args);
-
+            logger.FatalFormat(message, args);
         }
+
+        public static void Fatal(String message, Exception e)
+        {
+            logger.Fatal(message, e);
+        }
+        private static void LogPokemon(this ILog log, string message)
+        {
+            log.Logger.Log(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+                pokemonLevel, message, null);
+        }
+
+        public static void LogPokemonFormat(this ILog log, string message, params object[] args)
+        {
+            string formattedMessage = string.Format(message, args);
+            log.Logger.Log(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+                pokemonLevel, formattedMessage, null);
+        }
+
+
     }
 
+    public class CustomColoredConsoleAppender : ColoredConsoleAppender
+    {
+        public CustomColoredConsoleAppender()
+        {
+            AddMapping(new ColoredConsoleAppender.LevelColors
+            {
+                Level = Log.pokemonLevel,
+                ForeColor = ColoredConsoleAppender.Colors.Green
+            });
+        }
+    }
 }

@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
                 session = FindSessionId();
                 if (session == null)
                 {
-                    Log.warn("Trackemon: No valid session found!");
+                    Log.Warn("Trackemon: No valid session found!");
                     return null;
                 }
             }
@@ -66,22 +66,27 @@ namespace PogoLocationFeeder.Repository
                 request.Method = "GET";
                 request.Timeout = timeout;
                 request.Headers.Add("Cookie:" + session.cookieHeader);
-                var response = request.GetResponse();
-                var reader = new StreamReader(response.GetResponseStream());
-                List<TrackemonResult> resultList = JsonConvert.DeserializeObject<List<TrackemonResult>>(reader.ReadToEnd());
-                foreach (TrackemonResult result in resultList)
+                using (var response = request.GetResponse())
                 {
-                    SniperInfo sniperInfo = map(result);
-                    if (sniperInfo != null)
+                    using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        list.Add(sniperInfo);
+                        List<TrackemonResult> resultList = JsonConvert.DeserializeObject<List<TrackemonResult>>(reader.ReadToEnd());
+                        foreach (TrackemonResult result in resultList)
+                        {
+                            SniperInfo sniperInfo = map(result);
+                            if (sniperInfo != null)
+                            {
+                                list.Add(sniperInfo);
+                            }
+                        }
                     }
+            
+                    return list;
                 }
-                return list;
             }
             catch (Exception e)
             {
-                Log.warn("Trackermon API error: {0}", e.Message);
+                Log.Warn("Trackermon API error: {0}", e.Message);
                 return null;
             }
         }
@@ -108,7 +113,6 @@ namespace PogoLocationFeeder.Repository
         public TrackermonSession FindSessionId()
         {
             TrackermonSession trackermonSession = new TrackermonSession();
-
             try
             {
                 var cookieContainer = new CookieContainer();
@@ -117,25 +121,30 @@ namespace PogoLocationFeeder.Repository
                 request.Method = "GET";
                 request.Timeout = timeout;
                 request.CookieContainer = cookieContainer;
-                var response = request.GetResponse();
-                String cookieHeader = cookieContainer.GetCookieHeader(new Uri("https://www.trackemon.com"));
-                trackermonSession.cookieHeader = cookieHeader;
-                var reader = new StreamReader(response.GetResponseStream());
-                String line;
-
-                while ((line = reader.ReadLine()) != null)
+                using (var response = request.GetResponse())
                 {
-                    Match match = Regex.Match(line, @"var\s+sessionId\s*=\s*\'(1?.*)\'\s*;");
-                    if (match.Success)
+                    String cookieHeader = cookieContainer.GetCookieHeader(new Uri("https://www.trackemon.com"));
+                    trackermonSession.cookieHeader = cookieHeader;
+                    using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        trackermonSession.sessionId = match.Groups[1].Value;
+                        String line;
+
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            Match match = Regex.Match(line, @"var\s+sessionId\s*=\s*\'(1?.*)\'\s*;");
+                            if (match.Success)
+                            {
+                                trackermonSession.sessionId = match.Groups[1].Value;
+                                return trackermonSession;
+                            }
+                        }
                     }
                 }
             } catch(Exception e)
             {
-                Log.warn("Error trying to get a sessionId for trackermon: {0}", e.Message);
+                Log.Warn("Error trying to get a sessionId for trackermon: {0}", e.Message);
             }
-            return trackermonSession;
+            return null;
         }
 
         

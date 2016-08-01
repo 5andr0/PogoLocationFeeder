@@ -58,7 +58,7 @@ namespace PoGo.LocationFeeder.Settings
                 || (!settings.useToken && string.IsNullOrEmpty(settings.DiscordUser))
                 )
             {
-                Log.error($"Invalid configuration detected. \nPlease edit {configFile} and try again");
+                Log.Error($"Invalid configuration detected. \nPlease edit {configFile} and try again");
                 return null;
             }
 
