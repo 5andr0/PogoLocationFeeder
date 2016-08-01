@@ -14,11 +14,11 @@ namespace PogoLocationFeeder
 
         public override string ToString()
         {
-            return "SniperInfo: id:" + id + ", "
-                + "latitude: " + latitude + ", "
-                + "longitude: " + longitude + ", "
-                + "IV: " + iv + ", "
-                + "timestamp: " + timeStamp;
+            return "SniperInfo: id: " + id
+                + ", latitude: " + latitude 
+                + ", longitude: " + longitude 
+                + (iv != default(double) ? ", IV: " + iv + "%" : "")
+                + (timeStamp != default (DateTime) ? ", expiration: " + timeStamp : "");
 
         }
     }
