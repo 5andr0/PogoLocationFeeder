@@ -70,8 +70,8 @@ namespace PogoLocationFeeder.Repository
                 {
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        List<TrackemonResult> resultList = JsonConvert.DeserializeObject<List<TrackemonResult>>(reader.ReadToEnd());
-                        foreach (TrackemonResult result in resultList)
+                        List<TrackermonResult> resultList = JsonConvert.DeserializeObject<List<TrackermonResult>>(reader.ReadToEnd());
+                        foreach (TrackermonResult result in resultList)
                         {
                             SniperInfo sniperInfo = map(result);
                             if (sniperInfo != null)
@@ -91,7 +91,7 @@ namespace PogoLocationFeeder.Repository
             }
         }
 
-        private SniperInfo map(TrackemonResult result)
+        private SniperInfo map(TrackermonResult result)
         {
             SniperInfo sniperInfo = new SniperInfo();
             PokemonId pokemonId = PokemonParser.parseById(result.id);
@@ -160,7 +160,7 @@ namespace PogoLocationFeeder.Repository
     }
 
 
-    class TrackemonResult
+    class TrackermonResult
     {
         [JsonProperty("pokedexTypeId")]
         public long id { get; set; }

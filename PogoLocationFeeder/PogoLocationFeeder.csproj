@@ -111,7 +111,7 @@
     <Compile Include="Helper\PokemonParser.cs" />
     <Compile Include="Repository\RarePokemonsFactory.cs" />
     <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
-    <Compile Include="Repository\TrackemonRarePokemonRepository.cs" />
+    <Compile Include="Repository\TrackermonRarePokemonRepository.cs" />
     <Compile Include="Repository\PokeSniperRarePokemonRepository.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />
