@@ -14,7 +14,7 @@ namespace PogoLocationFeeder
             { PokemonAlternativeNames.createAllMatches(PokemonId.MrMime,  new HashSet<String> { "mr.Mime", "mr mime" }, new HashSet<String> { "Mime" })},
         };
 
-        public static PokemonId parsePokemon(string input)
+        public static PokemonId parsePokemon(String input)
         {
             foreach (string name in Enum.GetNames(typeof(PokemonId)))
             {
