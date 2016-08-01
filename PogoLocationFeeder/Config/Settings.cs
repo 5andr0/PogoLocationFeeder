@@ -82,10 +82,12 @@ namespace PoGo.LocationFeeder.Settings
 
     public class EchoEncounter
     {
-        public string Format = "{0:0.00000000},{1:0.00000000} {2:0.00}% IV {3}";
+        public string Format = "{0:0.00000000},{1:0.00000000} {2:0.00}% IV {4} {5} {6}";
         public bool Always = false;
         public double MinimumIv = 0.0;
         public HashSet<PokemonId> Ids;
+        public HashSet<PokemonMove> Moves;
+        public int MovesToMatch = 0;
         public Dictionary<string, HashSet<string>> Channels;
     }
 }

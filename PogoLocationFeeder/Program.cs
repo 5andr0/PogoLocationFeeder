@@ -96,7 +96,7 @@ namespace PogoLocationFeeder
 
                     var info = JsonConvert.DeserializeObject<SniperInfo>(line);
 
-                    Console.WriteLine($"Encounter: ID: {info.id}, Lat:{info.latitude}, Lng:{info.longitude}, IV:{info.iv}");
+                    Console.WriteLine($"Encounter: ID: {info.id}, Lat:{info.latitude}, Lng:{info.longitude}, IV:{info.iv}, Move1:{info.move1}, Move2:{info.move2}");
 
                     // Make sure EchoSettings exists in the Settings
                     if (settings.EchoEncounters != null)
@@ -105,7 +105,8 @@ namespace PogoLocationFeeder
                         foreach (var entry in settings.EchoEncounters.Where(e =>
                             e.Always ||
                             ((e.MinimumIv < 0.1 || e.MinimumIv <= info.iv) &&
-                            (e.Ids == null || e.Ids.Contains(info.id)))))
+                            (e.Ids == null || e.Ids.Contains(info.id)) &&
+                            (e.MovesToMatch < 1 || e.Moves == null || (e.MovesToMatch <= (e.Moves.Contains(info.move1) ? 1 : 0) + (e.Moves.Contains(info.move2) ? 1 : 0))))))
                         {
                             // Format the message
                             string msg = string.Format(entry.Format, info.latitude, info.longitude, info.iv, info.timeStamp, info.id);
