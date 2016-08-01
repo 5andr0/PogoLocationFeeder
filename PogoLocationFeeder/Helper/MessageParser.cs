@@ -19,7 +19,7 @@ namespace PogoLocationFeeder.Helper
                 GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(input);
                 if (geoCoordinates == null)
                 {
-                    //Console.WriteLine($"Can't get coords from line: {input}"); // debug output, too much spam
+                    //Log.warn($"Can't get coords from line: {input}"); // debug output, too much spam
                     continue;
                 }
                 else

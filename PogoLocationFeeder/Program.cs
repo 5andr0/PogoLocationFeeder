@@ -15,17 +15,21 @@ using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
 using System.Globalization;
+using PogoLocationFeeder.Repository;
 
 namespace PogoLocationFeeder
 {
     class Program
     {
-        static void Main(string[] args) => new Program().Start();
-
+        static void Main(string[] args)
+        {
+            Console.Title = "PogoLocationFeeder";
+            new Program().Start();
+            
+        }
         private TcpListener listener;
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
-        private PokeSniperReader pokeSniperReader = new PokeSniperReader();
         private MessageCache messageCache = new MessageCache();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
@@ -59,9 +63,9 @@ namespace PogoLocationFeeder
         {
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
-            Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
-            Console.WriteLine("This software is 100% free and open-source.\n");
-            Console.WriteLine("Listening...");
+            Log.plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            Log.plain("This software is 100% free and open-source.\n");
+            Log.info("Listening...");
             StartAccept(); 
         }
         private void StartAccept()
@@ -75,7 +79,7 @@ namespace PogoLocationFeeder
             if (client != null && IsConnected(client.Client))
             {
                 arrSocket.Add(client);
-                Console.WriteLine($"New connection from {getIp(client.Client)}");
+                Log.info($"New connection from {getIp(client.Client)}");
             }
         }
 
@@ -106,13 +110,13 @@ namespace PogoLocationFeeder
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Caught exception: {e.ToString()}");
+                        Log.error($"Caught exception: {e.ToString()}");
                     }
                 }
                 // debug output
-                Console.WriteLine($"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
-                if (target.timeStamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.timeStamp}");
+                Log.pokemon($"Channel: {channel}, ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}" 
+                    + (target.iv != default(double) ? $", IV:{target.iv}": "")
+                    + (target.timeStamp != default(DateTime) ? $", Expires:{target.timeStamp}" : ""));
             }
         }
 
@@ -132,10 +136,9 @@ namespace PogoLocationFeeder
             _client = new DiscordClient();
 
             StartNet(settings.Port);
-            if (settings.usePokeSnipers)
-            {
-                pollPokesniperFeed();
-            }
+
+            pollRarePokemonRepositories(settings);
+            
             _client.MessageReceived += async (s, e) =>
             {
                 if (settings.ServerChannels.Any(x => x.Equals(e.Channel.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
@@ -156,49 +159,56 @@ namespace PogoLocationFeeder
                     }
                     catch
                     {
-                        Console.WriteLine("Failed to authroize Discord user! Check your config.json and try again.");
+                        Log.error("Failed to authroize Discord user! Check your config.json and try again.");
                         Console.ReadKey();
                         return;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Please set your logins in the config.json first");
+                    Log.error("Please set your logins in the config.json first");
                 }
             });
         }
 
-        private void pollPokesniperFeed()
+        private void pollRarePokemonRepositories(GlobalSettings globalSettings)
         {
-            int delay = 30 * 1000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () =>
-            {
-                Thread.Sleep(5 * 1000);
-                while (true)
-                {
-                    Thread.Sleep(delay);
-                    for (int retrys = 0; retrys <= 3; retrys++)
-                    {
-                        var pokeSniperList = pokeSniperReader.readAll();
-                        if (pokeSniperList != null)
-                        {
-                            if(pokeSniperList.Any()) {
-                                await feedToClients(pokeSniperList, "PokeSnipers");
-                            } else
-                            {
-                                Console.WriteLine("No new pokemon on PokeSnipers");
-                            }
-                            break;
-                        }
-                        if (token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(1000);
-                    }
-                }
+            List<RarePokemonRepository> rarePokemonRepositories = RarePokemonRepositoryFactory.createRepositories(globalSettings);
 
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            int delay = 30 * 1000;
+            foreach(RarePokemonRepository rarePokemonRepository in rarePokemonRepositories) {
+                var cancellationTokenSource = new CancellationTokenSource();
+                var token = cancellationTokenSource.Token;
+                var listener = Task.Factory.StartNew(async () =>
+                {
+                    Thread.Sleep(5 * 1000);
+                    while (true)
+                    {
+                        Thread.Sleep(delay);
+                        for (int retrys = 0; retrys <= 3; retrys++)
+                        {
+                            var pokeSniperList = rarePokemonRepository.FindAll();
+                            if (pokeSniperList != null)
+                            {
+                                if (pokeSniperList.Any())
+                                {
+                                    await feedToClients(pokeSniperList, rarePokemonRepository.GetChannel());
+                                }
+                                else
+                                {
+                                    Log.debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                                }
+                                break;
+                            }
+                            if (token.IsCancellationRequested)
+                                break;
+                            Thread.Sleep(1000);
+                        }
+                    }
+
+                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+            
         }
     }
 

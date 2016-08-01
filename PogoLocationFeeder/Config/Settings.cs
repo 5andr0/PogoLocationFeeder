@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using PogoLocationFeeder.Helper;
 
 #endregion
 
@@ -20,6 +21,7 @@ namespace PoGo.LocationFeeder.Settings
         public string DiscordUser = "";
         public string DiscordPassword = "";
         public bool usePokeSnipers = false;
+        public bool useTrackermon = false;
 
         public static GlobalSettings Default => new GlobalSettings();
 
@@ -56,7 +58,7 @@ namespace PoGo.LocationFeeder.Settings
                 || (!settings.useToken && string.IsNullOrEmpty(settings.DiscordUser))
                 )
             {
-                Console.WriteLine($"Invalid configuration detected. \nPlease edit {configFile} and try again");
+                Log.error($"Invalid configuration detected. \nPlease edit {configFile} and try again");
                 return null;
             }
 
