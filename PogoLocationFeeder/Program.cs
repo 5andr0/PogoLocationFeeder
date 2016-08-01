@@ -104,8 +104,8 @@ namespace PogoLocationFeeder
                         // Find which entries match this Pokemon
                         foreach (var entry in settings.EchoEncounters.Where(e =>
                             e.Always ||
-                            e.MinimumIv <= info.iv ||
-                            (e.Ids != null && e.Ids.Contains(info.id))))
+                            ((e.MinimumIv < 0.1 || e.MinimumIv <= info.iv) &&
+                            (e.Ids == null || e.Ids.Contains(info.id)))))
                         {
                             // Format the message
                             string msg = string.Format(entry.Format, info.latitude, info.longitude, info.iv, info.timeStamp, info.id);
