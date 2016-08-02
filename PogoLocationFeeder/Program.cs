@@ -133,20 +133,18 @@ namespace PogoLocationFeeder
 
             var discordWebReader = new DiscordWebReader();
 
-            while(true)
+            while (true)
             {
                 try
                 {
-                    Console.WriteLine($"Connection issues. Retrying...");
-                    discordWebReader.InitializeWebClient();
-                    Thread.Sleep(10 * 1000);
-                    Console.WriteLine($"Connection established. Waiting for data...");
+                    Thread.Sleep(5 * 1000);
                     pollDiscordFeed(discordWebReader.stream);
                 }
                 catch (WebException e)
                 {
                     Console.WriteLine($"Experiencing connection issues. Throttling...");
                     Thread.Sleep(30 * 1000);
+                    discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
                 {
