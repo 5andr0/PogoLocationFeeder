@@ -63,5 +63,27 @@
     "id": "206238613040660490",
     "Server": "PokemonGo Rare Hunting",
     "Name": "other_pokemon"
+  },
+
+
+  {
+    "id": "208754684414918656",
+    "Server": "100IV CLUB",
+    "Name": "95-iv-and-up"
+  },
+  {
+    "id": "209077347503046656",
+    "Server": "100IV CLUB",
+    "Name": "rare-coords-bot "
+  },
+  {
+    "id": "208752256999227393",
+    "Server": "100IV CLUB",
+    "Name": "100-iv "
+  },
+  {
+    "id": "208836707057926144",
+    "Server": "100IV CLUB",
+    "Name": "rare-pokemon "
   }
 ]

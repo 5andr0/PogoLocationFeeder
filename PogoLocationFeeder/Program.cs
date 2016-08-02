@@ -163,7 +163,7 @@ namespace PogoLocationFeeder
             {
                 try
                 {
-                    Thread.Sleep(5 * 1000);
+                    Thread.Sleep(30 * 1000);
                     pollDiscordFeed(discordWebReader.stream);
                 }
                 catch (WebException e)
