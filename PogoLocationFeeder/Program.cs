@@ -182,59 +182,71 @@ namespace PogoLocationFeeder
             Console.ReadKey(true);
         }
 
+        private static IEnumerable<string> ReadLines(StreamReader stream)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int symbol = stream.Peek();
+            while (symbol != -1)
+            {
+                symbol = stream.Read();
+                sb.Append((char)symbol);
+                if (stream.Peek() == 10)
+                {
+                    stream.Read();
+                    string line = sb.ToString();
+                    sb.Clear();
+
+                    yield return line;
+                }
+            }
+
+            yield return sb.ToString();
+        }
+
         private void pollDiscordFeed(Stream stream)
         {
             int delay = 30 * 1000;
             var cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () =>
+            Task.Factory.StartNew(async () =>
             {
             Thread.Sleep(5 * 1000);
             while (true)
             {
-                var encoder = new UTF8Encoding();
-                var buffer = new byte[2048];
-
                 for (int retrys = 0; retrys <= 3; retrys++)
                 {
-                        if (stream.CanRead)
+                    foreach (string line in ReadLines(new StreamReader(stream)))
+                    {
+                        try
                         {
-                            try
+                            string[] splitted = line.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                            if (splitted.Length == 2 && splitted[0] == "data")
                             {
-                                int len = stream.Read(buffer, 0, 2048);
-                                if (len > 0)
+                                var jsonPayload = splitted[1];
+                                //Log.Debug($"JSON: {jsonPayload}");
+
+                                var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
+                                if (result != null)
                                 {
-                                    var serverPayload = encoder.GetString(buffer, 0, len);
-                                    if (serverPayload == null) continue;
-                                    //Console.WriteLine("text={0}", serverPayload);
-
-                                    var split = serverPayload.Split(new[] { '\r', '\n' });
-                                    if (split.Length < 3) continue;
-
-                                    var message = split[2];
-                                    if (message.Length == 0) continue;
-
-                                    var jsonPayload = message.Substring(5);
-                                    //Console.WriteLine($"JSON: {jsonPayload}");
-
-                                    var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
-                                    if (result != null)
-                                    {
-                                        Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
-                                        await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
-                                    }
+                                    //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                                    Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
+                                    await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                 }
                             }
-                            catch (Exception e)
-                            {
-                                Log.Warn($"Exception:", e);
-                            }
                         }
-                        if (token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(delay);
+                        catch (Exception e)
+                        {
+                            Log.Warn($"Exception:", e);
+                        }
+
                     }
+                    if (token.IsCancellationRequested)
+                        break;
+                    Thread.Sleep(delay);
                 }
+            }
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
