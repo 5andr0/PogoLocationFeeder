@@ -150,15 +150,20 @@ namespace PogoLocationFeeder
             {
                 try
                 {
+<<<<<<< HEAD
                     discordWebReader.InitializeWebClient();
                     Thread.Sleep(10 * 1000);
                     Log.Info($"Connection established. Waiting for data...");
+=======
+                    Thread.Sleep(5 * 1000);
+>>>>>>> refs/remotes/5andr0/master
                     pollDiscordFeed(discordWebReader.stream);
                 }
                 catch (WebException e)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
                     Thread.Sleep(30 * 1000);
+                    discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
                 {
@@ -208,7 +213,11 @@ namespace PogoLocationFeeder
                                     var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
                                     if (result != null)
                                     {
+<<<<<<< HEAD
                                         Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
+=======
+                                        //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+>>>>>>> refs/remotes/5andr0/master
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
                                 }

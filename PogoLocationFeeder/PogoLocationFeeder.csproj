@@ -139,6 +139,7 @@
     <Compile Include="SniperInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
@@ -159,6 +160,14 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+=======
+    <None Include="App.config" />
+    <None Include="Config\discord_channels.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+>>>>>>> refs/remotes/5andr0/master
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
