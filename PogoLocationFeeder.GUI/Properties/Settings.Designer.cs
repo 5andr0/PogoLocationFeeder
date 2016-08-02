@@ -22,5 +22,17 @@ namespace PogoLocationFeeder.GUI.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Debug stuff in here!")]
+        public string DebugOutput {
+            get {
+                return ((string)(this["DebugOutput"]));
+            }
+            set {
+                this["DebugOutput"] = value;
+            }
+        }
     }
 }
