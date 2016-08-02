@@ -166,7 +166,9 @@
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\icons\0.png" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PogoLocationFeeder\PogoLocationFeeder.csproj">
       <Project>{76f6eeef-e89f-4e43-aa9d-1567cbc1420b}</Project>
