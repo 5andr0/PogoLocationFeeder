@@ -22,7 +22,7 @@ namespace PoGo.LocationFeeder.Settings
         public static GlobalSettings Load()
         {
             GlobalSettings settings;
-            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "config.json");
+            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
 
             if (File.Exists(configFile))
             {

@@ -163,21 +163,19 @@ namespace PogoLocationFeeder
             {
                 try
                 {
+                    Thread.Sleep(30 * 1000);
                     pollDiscordFeed(discordWebReader.stream);
                 }
                 catch (WebException e)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
+                    Thread.Sleep(30 * 1000);
                     discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
                 {
                     Log.Warn($"Unknown exception", e);
                     break;
-                }
-                finally
-                {
-                    Thread.Sleep(20 * 1000);
                 }
             }
 
@@ -208,11 +206,12 @@ namespace PogoLocationFeeder
 
         private void pollDiscordFeed(Stream stream)
         {
-            int delay = 10 * 1000;
+            int delay = 30 * 1000;
             var cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
             Task.Factory.StartNew(async () =>
             {
+            Thread.Sleep(5 * 1000);
             while (true)
             {
                 for (int retrys = 0; retrys <= 3; retrys++)
