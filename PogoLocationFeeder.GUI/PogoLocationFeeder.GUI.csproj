@@ -101,6 +101,9 @@
     <Compile Include="Models\SniperInfoModel.cs" />
     <Compile Include="ViewModels\ActionCommand.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Views\DebugOutputView.xaml.cs">
+      <DependentUpon>DebugOutputView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -119,6 +122,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\DebugOutputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

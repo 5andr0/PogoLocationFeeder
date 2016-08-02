@@ -35,6 +35,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(StartStop);
+            DebugComand = new ActionCommand(ShowDebug);
 
             var x = Directory.GetCurrentDirectory();
             var poke = new SniperInfo {
@@ -53,9 +54,17 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             a.Start();
         }
 
+        private void writeDebug(string text) {
+            Settings.Default.DebugOutput += $"\n{text}";
+        }
+
+        public void setStatus(string status) {
+            Status = status;
+        }
         public ReadOnlyObservableCollection<SniperInfoModel> Pokemons { get; }
 
         public ICommand SettingsComand { get; }
+        public ICommand DebugComand { get; }
         public ICommand StartStopCommand { get; }
 
         public string CustomIp {
@@ -76,6 +85,14 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 return;
             }
             TransitionerIndex = 1;
+        }
+
+        public void ShowDebug() {
+            if (TransitionerIndex != 0) {
+                TransitionerIndex = 0;
+                return;
+            }
+            TransitionerIndex = 2;
         }
 
         private void StartStop() {
@@ -111,20 +128,20 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public void StartNet(int port) {
 
-            Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
-            Log.Plain("This software is 100% free and open-source.\n");
+            writeDebug("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            writeDebug("This software is 100% free and open-source.\n");
 
-            Log.Info("Application starting...");
+            setStatus("Application starting...");
             try {
                 listener = new TcpListener(IPAddress.Any, port);
                 listener.Start();
             } catch(Exception e) {
-                Log.Fatal($"Could open port {port}", e);
+                writeDebug($"Could open port {port} {e}");
                 throw e;
             }
 
 
-            Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
+            setStatus("Connecting to feeder service pogo-feed.mmoex.com");
 
             StartAccept();
         }
@@ -137,7 +154,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             TcpClient client = listener.EndAcceptTcpClient(res);
             if(client != null && IsConnected(client.Client)) {
                 arrSocket.Add(client);
-                Log.Info($"New connection from {getIp(client.Client)}");
+                setStatus($"New connection from {getIp(client.Client)}");
             }
         }
 
@@ -160,7 +177,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                         s.WriteLine(JsonConvert.SerializeObject(target));
                         s.Flush();
                     } catch(Exception e) {
-                        Log.Error($"Caught exception: {e.ToString()}");
+                        writeDebug($"Caught exception: {e}");
                     }
                 }
                 // debug output
@@ -173,7 +190,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                     GlobalVariables.PokemonsInternal.Insert(0, info);
                 });
                 String timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                writeDebug($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
                     + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
                     + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
             }
@@ -202,11 +219,11 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 try {
                     pollDiscordFeed(discordWebReader.stream);
                 } catch(WebException e) {
-                    Log.Warn($"Experiencing connection issues. Throttling...");
+                    setStatus($"Experiencing connection issues. Throttling...");
                     Thread.Sleep(30 * 1000);
                     discordWebReader.InitializeWebClient();
                 } catch(Exception e) {
-                    Log.Warn($"Unknown exception", e);
+                    writeDebug($"Unknown exception {e}");
                     break;
                 } finally {
                     Thread.Sleep(20 * 1000);
@@ -253,12 +270,12 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                                     var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
                                     if(result != null) {
                                         //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                        Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
+                                        writeDebug($"Discord message received: {result.channel_id}: {result.content}");
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
                                 }
                             } catch(Exception e) {
-                                Log.Warn($"Exception:", e);
+                                writeDebug($"Exception: {e}");
                             }
 
                         }
@@ -287,7 +304,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                                 if(pokeSniperList.Any()) {
                                     await feedToClients(pokeSniperList, rarePokemonRepository.GetChannel());
                                 } else {
-                                    Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                                    setStatus($"No new pokemon on {rarePokemonRepository.GetChannel()}");
                                 }
                                 break;
                             }

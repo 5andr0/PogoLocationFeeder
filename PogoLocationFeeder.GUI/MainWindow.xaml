@@ -21,6 +21,7 @@
                 <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
             </Button>
             <Button Command="{Binding SettingsComand}" Content="Settings" />
+            <Button Command="{Binding DebugComand}" Content="Debug" />
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
@@ -31,6 +32,7 @@
         <materialDesign:Transitioner SelectedIndex="{Binding TransitionerIndex}">
             <views:MainView />
             <views:SettingsView/>
+            <views:DebugOutputView/>
         </materialDesign:Transitioner>
         <TextBlock Grid.Row="1" Margin="16,0,0,0" VerticalAlignment="Center">
             <Run Text="Status: "></Run>
