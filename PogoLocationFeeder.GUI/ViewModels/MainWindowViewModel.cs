@@ -79,7 +79,10 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public string ThreadStatus { get; set; } = "[Running]";
 
         public int ShowLimit {
-            get { return Settings.Default.ShowLimit; }
+            get {
+                if (Settings.Default.ShowLimit.Equals(0)) return 1;
+                return Settings.Default.ShowLimit;
+            }
             set {
                 if (value <= 0) value = 1;
                 Settings.Default.ShowLimit = value;
