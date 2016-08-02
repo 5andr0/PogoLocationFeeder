@@ -32,6 +32,15 @@ namespace PogoLocationFeederTests
             testCoordinates("-33.8304880738,151.087396206",-33.8304880738, 151.087396206);
         }
 
+        [TestMethod]
+        public void TestInvalidCoordinates()
+        {
+            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("181.6969696969696,-1"));
+            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("-181.6969696969696,-1"));
+            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("69.6969696969696,-420"));
+            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("69.6969696969696,420"));
+        }
+
         private void testCoordinates(String text, Double expectedLatitude, Double expectedLongitude)
         {
             GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(text);
