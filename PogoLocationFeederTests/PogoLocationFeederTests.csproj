@@ -17,6 +17,8 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,19 +57,23 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="GeoCoordinatesParserTest.cs" />
-    <Compile Include="Helper\IVParserTests.cs" />
-    <Compile Include="Helper\MessageCacheTests.cs" />
-    <Compile Include="Helper\MessageParserTests.cs" />
-    <Compile Include="Helper\PokemonParserTests.cs" />
-    <Compile Include="PokeSniperReaderTests.cs" />
+    <Compile Include="Tests\GeoCoordinatesParserTest.cs" />
+    <Compile Include="Tests\IVParserTests.cs" />
+    <Compile Include="Tests\MessageCacheTests.cs" />
+    <Compile Include="Tests\MessageParserTests.cs" />
+    <Compile Include="Tests\PokemonParserTests.cs" />
+    <Compile Include="Tests\PokeSniperRarePokemonRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\TrackemonRarePokemonRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PogoLocationFeeder\PogoLocationFeeder.csproj">
       <Project>{76F6EEEF-E89F-4E43-AA9D-1567CBC1420B}</Project>
       <Name>PogoLocationFeeder</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PogoLocationFeeder;
+using PogoLocationFeeder.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace PogoLocationFeeder.Tests
         //This still can be used to test if the pokesnipers api works
         public void readAllTest()
         {
-            PokeSniperReader pokeSniperReader = new PokeSniperReader();
-            List<SniperInfo> sniperInfos = pokeSniperReader.readAll();
+            PokeSniperRarePokemonRepository rarePokemonRepository = new PokeSniperRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+            List<SniperInfo> sniperInfos = rarePokemonRepository.FindAll();
             Assert.IsNotNull(sniperInfos);
             Assert.IsTrue(sniperInfos.Any());
             sniperInfos.ForEach(SniperInfo => Console.WriteLine(SniperInfo));

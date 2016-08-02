@@ -10,43 +10,52 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace PogoLocationFeeder
+namespace PogoLocationFeeder.Repository
 {
 
-    public class PokeSniperReader
+    public class PokeSniperRarePokemonRepository : RarePokemonRepository
     {
-        private const string URL = "http://pokesnipers.com/api/v1/pokemon.json";
+        const int timeout = 20000;
 
-        public PokeSniperReader()
+        private const string URL = "http://pokesnipers.com/api/v1/pokemon.json";
+        const String channel = "Pokesnipers";
+        List<PokemonId> pokemonIdsToFind;
+
+        public PokeSniperRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
         {
+            this.pokemonIdsToFind = pokemonIdsToFind;
         }
 
-        public List<SniperInfo> readAll()
+        public List<SniperInfo> FindAll()
         {
             try
             {
                 var request = WebRequest.CreateHttp(URL);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = 10000;
+                request.Timeout = 20000;
 
-                var response = request.GetResponse();
-                var reader = new StreamReader(response.GetResponseStream());
-                Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
-                List<SniperInfo> list = new List<SniperInfo>();
-                foreach (Result result in wrapper.results)
+                using (var response = request.GetResponse())
                 {
-                    SniperInfo sniperInfo = map(result);
-                    if (sniperInfo != null)
+                    using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        list.Add(sniperInfo);
+                        Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
+                        List<SniperInfo> list = new List<SniperInfo>();
+                        foreach (Result result in wrapper.results)
+                        {
+                            SniperInfo sniperInfo = map(result);
+                            if (sniperInfo != null)
+                            {
+                                list.Add(sniperInfo);
+                            }
+                        }
+                        return list;
                     }
                 }
-                return list;
             }
             catch (Exception e)
             {
-                System.Console.WriteLine("Pokesnipers API down: {0}", e.Message);
+                Log.Debug("Pokesnipers API error: {0}", e.Message);
                 return null;
             }
         }
@@ -55,7 +64,11 @@ namespace PogoLocationFeeder
         {
             SniperInfo sniperInfo = new SniperInfo();
             PokemonId pokemonId = PokemonParser.parsePokemon(result.name);
-            sniperInfo.id = pokemonId;
+            if (!pokemonIdsToFind.Contains(pokemonId))
+            {
+                return null;
+            }
+            sniperInfo.Id = pokemonId;
             GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(result.coords);
             if (geoCoordinates == null)
             {
@@ -63,17 +76,22 @@ namespace PogoLocationFeeder
             }
             else
             {
-                sniperInfo.latitude = geoCoordinates.latitude;
-                sniperInfo.longitude = geoCoordinates.longitude;
+                sniperInfo.Latitude = geoCoordinates.latitude;
+                sniperInfo.Longitude = geoCoordinates.longitude;
             }
 
-            sniperInfo.timeStamp = Convert.ToDateTime(result.until);
+            sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
             return sniperInfo;
         }
 
         private PokemonId mapPokemon(String pokemonName)
         {
             return (PokemonId)Enum.Parse(typeof(PokemonId), pokemonName);
+        }
+
+        public string GetChannel()
+        {
+            return channel;
         }
     }
 

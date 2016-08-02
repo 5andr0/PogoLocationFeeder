@@ -30,11 +30,11 @@ namespace PogoLocationFeeder.Helper.Tests
         {
             List<SniperInfo> sniperInfo = messageParser.parseMessage(text);
             Assert.IsNotNull(sniperInfo);
-            Assert.AreEqual(pokemonId, sniperInfo[0].id);
-            Assert.AreEqual(latitude, sniperInfo[0].latitude);
-            Assert.AreEqual(longitude, sniperInfo[0].longitude);
-            Assert.AreEqual(iv, sniperInfo[0].iv);
-            Assert.AreEqual(Truncate(expiration, TimeSpan.FromSeconds(1)), Truncate(sniperInfo[0].timeStamp, TimeSpan.FromSeconds(1)));
+            Assert.AreEqual(pokemonId, sniperInfo[0].Id);
+            Assert.AreEqual(latitude, sniperInfo[0].Latitude);
+            Assert.AreEqual(longitude, sniperInfo[0].Longitude);
+            Assert.AreEqual(iv, sniperInfo[0].IV);
+            Assert.AreEqual(Truncate(expiration, TimeSpan.FromSeconds(1)), Truncate(sniperInfo[0].ExpirationTimestamp, TimeSpan.FromSeconds(1)));
 
         }
 

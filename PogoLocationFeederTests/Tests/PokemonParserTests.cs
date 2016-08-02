@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using POGOProtos.Enums;
+using PogoLocationFeeder.Helper;
+using System.Globalization;
 
 namespace PogoLocationFeeder.Tests
 {
@@ -23,6 +25,7 @@ namespace PogoLocationFeeder.Tests
             testPokemonParsing("MrMime", PokemonId.MrMime);
             testPokemonParsing("farfetchd", PokemonId.Farfetchd);
             testPokemonParsing("farfetch'd", PokemonId.Farfetchd);
+            testPokemonParsing("Farfetch'd", PokemonId.Farfetchd);
             testPokemonParsing("farfetched", PokemonId.Farfetchd);
             testPokemonParsing("Blastoise", PokemonId.Blastoise);
             testPokemonParsing("qsddqfsfqds", PokemonId.Missingno);

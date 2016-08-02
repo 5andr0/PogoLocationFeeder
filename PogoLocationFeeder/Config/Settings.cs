@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using PogoLocationFeeder.Helper;
 
 #endregion
 
@@ -12,21 +13,16 @@ namespace PoGo.LocationFeeder.Settings
 {
     public class GlobalSettings
     {
-        //public ulong ServerId = 206065054846681088;
-        public List<string> ServerChannels = new List<string> { "coord-bot", "coords_bot", "coordsbots", "90_plus_iv", "90plus_ivonly", "rare_spottings", "high_iv_pokemon", "rare_pokemon" };
-        public string DiscordToken = "";
         public int Port = 16969;
-        public bool useToken = false;
-        public string DiscordUser = "";
-        public string DiscordPassword = "";
         public bool usePokeSnipers = false;
+        public bool useTrackemon = false;
 
         public static GlobalSettings Default => new GlobalSettings();
 
         public static GlobalSettings Load()
         {
             GlobalSettings settings;
-            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "config.json");
 
             if (File.Exists(configFile))
             {
@@ -46,17 +42,13 @@ namespace PoGo.LocationFeeder.Settings
             }
 
             var firstRun = !File.Exists(configFile);
-
             settings.Save(configFile);
 
-            if (firstRun 
-                || settings.Port == 0 
-                || settings.ServerChannels == null
-                || (settings.useToken && string.IsNullOrEmpty(settings.DiscordToken))
-                || (!settings.useToken && string.IsNullOrEmpty(settings.DiscordUser))
+            if (firstRun
+                || settings.Port == 0
                 )
             {
-                Console.WriteLine($"Invalid configuration detected. \nPlease edit {configFile} and try again");
+                Log.Error($"Invalid configuration detected. \nPlease edit {configFile} and try again");
                 return null;
             }
 
