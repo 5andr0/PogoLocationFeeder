@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,15 +12,15 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MangaChecker.ViewModels;
 using Newtonsoft.Json;
-using PogoLocationFeeder.GUI.Models;
-using PogoLocationFeeder.GUI.Properties;
-using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
+using PogoLocationFeeder.GUI.Models;
+using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using PropertyChanged;
 //using POGOProtos.Enums;
 
-namespace PogoLocationFeeder.GUI.ViewModels {
+namespace PogoLocationFeeder.GUI.ViewModels
+{
     [ImplementPropertyChanged]
     public class MainWindowViewModel {
         public int TransitionerIndex { get; set; } = 0;
@@ -84,7 +83,9 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
         private DiscordChannelParser channel_parser = new DiscordChannelParser();
-        private PokeSniperReader pokeSniperReader = new PokeSniperReader();
+
+        //TODO: Add missing File
+        //private PokeSniperReader pokeSniperReader = new PokeSniperReader();
         private MessageCache messageCache = new MessageCache();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
@@ -243,7 +244,9 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                                     var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
                                     if(result != null) {
                                         //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                        var pokeSniperList = pokeSniperReader.readAll();
+
+                                        //TODO: Add missing File
+                                        //var pokeSniperList = pokeSniperReader.readAll();
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
                                 } catch(Exception e) {
@@ -259,7 +262,11 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        private void pollPokesniperFeed() {
+        //TODO: Add missing File
+        private void pollPokesniperFeed()
+        {
+            return;
+            /*
             int delay = 30 * 1000;
             var cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
@@ -284,6 +291,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 }
 
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            */
         }
     }
 }

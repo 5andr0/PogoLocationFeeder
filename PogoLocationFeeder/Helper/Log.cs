@@ -12,7 +12,6 @@ using log4net.Appender;
 
 namespace PogoLocationFeeder.Helper
 {
-
     public static class Log
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(Log));
