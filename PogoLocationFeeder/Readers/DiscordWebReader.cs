@@ -24,6 +24,7 @@ namespace PogoLocationFeeder
             try
             {
                 var response = request.GetResponse();
+                Console.WriteLine($"Connection established. Waiting for data...");
                 stream = response.GetResponseStream();
             }
             catch (WebException e)
