@@ -18,18 +18,18 @@ namespace PogoLocationFeeder.Helper.Tests
         {
             MessageCache messageCache = new MessageCache();
             SniperInfo sniperInfo =  new SniperInfo();
-            sniperInfo.latitude = 1;
-            sniperInfo.longitude = 2;
-            sniperInfo.timeStamp = DateTime.Now.AddMilliseconds(100);
+            sniperInfo.Latitude = 1;
+            sniperInfo.Longitude = 2;
+            sniperInfo.ExpirationTimestamp = DateTime.Now.AddMilliseconds(100);
 
             SniperInfo sniperInfo2= new SniperInfo();
-            sniperInfo2.latitude = 1;
-            sniperInfo2.longitude = 2;
+            sniperInfo2.Latitude = 1;
+            sniperInfo2.Longitude = 2;
 
             SniperInfo differntSniperInfo = new SniperInfo();
-            differntSniperInfo.latitude = 4;
-            differntSniperInfo.longitude = 5;
-            differntSniperInfo.timeStamp = DateTime.Now.AddMilliseconds(100);
+            differntSniperInfo.Latitude = 4;
+            differntSniperInfo.Longitude = 5;
+            differntSniperInfo.ExpirationTimestamp = DateTime.Now.AddMilliseconds(100);
 
             List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(new List<SniperInfo>() { sniperInfo });
             Assert.IsNotNull(unsentMessages);
