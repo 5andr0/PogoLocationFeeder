@@ -196,7 +196,6 @@ namespace PogoLocationFeeder
                                     if (result != null)
                                     {
                                         //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                        var pokeSniperList = pokeSniperReader.readAll();
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
                                 }
