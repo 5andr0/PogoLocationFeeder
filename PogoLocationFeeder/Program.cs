@@ -83,7 +83,7 @@ namespace PogoLocationFeeder
             return remoteIpEndPoint.ToString();
         }
 
-        private async Task feedToClients(List<SniperInfo> snipeList, string channel)
+        private async Task feedToClients(List<SniperInfo> snipeList, string source)
         {
             // Remove any clients that have disconnected
             arrSocket.RemoveAll(x => !IsConnected(x.Client));
@@ -106,7 +106,7 @@ namespace PogoLocationFeeder
                     }
                 }
                 // debug output
-                Console.WriteLine($"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
+                Console.WriteLine($"{source} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
                 if (target.timeStamp != default(DateTime))
                     Console.WriteLine($"Expires: {target.timeStamp}");
             }
@@ -140,7 +140,7 @@ namespace PogoLocationFeeder
                     Console.WriteLine($"Connection issues. Retrying...");
                     discordWebReader.InitializeWebClient();
                     Thread.Sleep(10 * 1000);
-
+                    Console.WriteLine($"Connection established. Waiting for data...");
                     pollDiscordFeed(discordWebReader.stream);
                 }
                 catch (WebException e)
@@ -197,7 +197,7 @@ namespace PogoLocationFeeder
                                     var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
                                     if (result != null)
                                     {
-                                        Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                                        //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
                                         var pokeSniperList = pokeSniperReader.readAll();
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
