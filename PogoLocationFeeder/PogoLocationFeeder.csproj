@@ -13,6 +13,21 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -40,6 +55,10 @@
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.0.0-beta4\lib\net45\Google.Protobuf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -105,16 +124,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\IVParser.cs" />
+    <Compile Include="Helper\Log.cs" />
     <Compile Include="Helper\MessageCache.cs" />
     <Compile Include="Helper\GeoCoordinatesParser.cs" />
-    <Compile Include="Helper\ChannelParser.cs" />
+    <Compile Include="Helper\Partitioner.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
+    <Compile Include="Helper\ChannelParser.cs" />
+    <Compile Include="Repository\RarePokemonsFactory.cs" />
+    <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
+    <Compile Include="Repository\TrackermonRarePokemonRepository.cs" />
+    <Compile Include="Repository\PokeSniperRarePokemonRepository.cs" />
     <Compile Include="Readers\DiscordWebReader.cs" />
-    <Compile Include="Readers\PokeSniperReader.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\RarePokemonRepository.cs" />
     <Compile Include="SniperInfo.cs" />
   </ItemGroup>
   <ItemGroup>

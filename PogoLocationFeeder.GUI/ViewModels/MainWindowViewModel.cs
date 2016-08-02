@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,6 +17,7 @@ using Newtonsoft.Json;
 using PogoLocationFeeder.GUI.Models;
 using PogoLocationFeeder.GUI.Properties;
 using PogoLocationFeeder.Helper;
+using PogoLocationFeeder.Repository;
 using PoGo.LocationFeeder.Settings;
 using POGOProtos.Enums;
 using PropertyChanged;
@@ -79,12 +81,17 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         private void StartStop() {
             //todo
         }
+        
+
+       
+        public void setStatus(string status) {
+            Status = status;
+        }
 
         private TcpListener listener;
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
         private DiscordChannelParser channel_parser = new DiscordChannelParser();
-        private PokeSniperReader pokeSniperReader = new PokeSniperReader();
         private MessageCache messageCache = new MessageCache();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
@@ -109,26 +116,34 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         }
 
         public void StartNet(int port) {
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
-            //Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder/wiki");
-            //Console.WriteLine("This software is 100% free and open-source.\n");
-            //Console.WriteLine("Connecting to feeder service pogo-feed.mmoex.com");
+
+            Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            Log.Plain("This software is 100% free and open-source.\n");
+
+            Log.Info("Application starting...");
+            try {
+                listener = new TcpListener(IPAddress.Any, port);
+                listener.Start();
+            } catch(Exception e) {
+                Log.Fatal($"Could open port {port}", e);
+                throw e;
+            }
+
+
+            Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
+
             StartAccept();
         }
+
         private void StartAccept() {
             listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
-        }
-
-        public void setStatus(string status) {
-            Status = status;
         }
         private void HandleAsyncConnection(IAsyncResult res) {
             StartAccept();
             TcpClient client = listener.EndAcceptTcpClient(res);
             if(client != null && IsConnected(client.Client)) {
                 arrSocket.Add(client);
-                setStatus($"New connection from {getIp(client.Client)}");
+                Log.Info($"New connection from {getIp(client.Client)}");
             }
         }
 
@@ -136,7 +151,6 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             IPEndPoint remoteIpEndPoint = s.RemoteEndPoint as IPEndPoint;
             return remoteIpEndPoint.ToString();
         }
-        
 
         private async Task feedToClients(List<SniperInfo> snipeList, string source) {
             // Remove any clients that have disconnected
@@ -152,10 +166,11 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                         s.WriteLine(JsonConvert.SerializeObject(target));
                         s.Flush();
                     } catch(Exception e) {
-                        setStatus($"Caught exception: {e.ToString()}");
+                        Log.Error($"Caught exception: {e.ToString()}");
                     }
                 }
                 // debug output
+                String timeFormat = "HH:mm:ss";
                 await Application.Current.Dispatcher.BeginInvoke((Action)delegate () {
                     var info = new SniperInfoModel {
                         Info = target,
@@ -164,9 +179,9 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                     };
                     GlobalVariables.PokemonsInternal.Insert(0, info);
                 });
-                Console.WriteLine($"{source} ID: {target.Id}, Lat:{target.Latitude}, Lng:{target.Longitude}, IV:{target.IV}");
-                if(target.ExpirationTimestamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.ExpirationTimestamp}");
+                Log.Pokemon($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                    + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
+                    + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
             }
         }
 
@@ -174,6 +189,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             var snipeList = parser.parseMessage(message);
             await feedToClients(snipeList, channel);
         }
+
 
         public async void Start() {
             var settings = GlobalSettings.Load();
@@ -183,73 +199,74 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 return;
 
             StartNet(settings.Port);
-            if(settings.usePokeSnipers) {
-                pollPokesniperFeed();
-            }
+
+            PollRarePokemonRepositories(settings);
 
             var discordWebReader = new DiscordWebReader();
 
             while(true) {
                 try {
-                    setStatus($"Connection issues. Retrying...");
-                    discordWebReader.InitializeWebClient();
-                    Thread.Sleep(10 * 1000);
-                    setStatus($"Connection established. Waiting for data...");
+                    Thread.Sleep(30 * 1000);
                     pollDiscordFeed(discordWebReader.stream);
                 } catch(WebException e) {
-                    setStatus($"Experiencing connection issues. Throttling...");
+                    Log.Warn($"Experiencing connection issues. Throttling...");
                     Thread.Sleep(30 * 1000);
+                    discordWebReader.InitializeWebClient();
                 } catch(Exception e) {
-                    setStatus($"Unknown exception: {e}\n\n\n");
+                    Log.Warn($"Unknown exception", e);
                     break;
                 }
             }
 
             Console.ReadKey(true);
+        }
 
+        private static IEnumerable<string> ReadLines(StreamReader stream) {
+            StringBuilder sb = new StringBuilder();
+
+            int symbol = stream.Peek();
+            while(symbol != -1) {
+                symbol = stream.Read();
+                sb.Append((char)symbol);
+                if(stream.Peek() == 10) {
+                    stream.Read();
+                    string line = sb.ToString();
+                    sb.Clear();
+
+                    yield return line;
+                }
+            }
+
+            yield return sb.ToString();
         }
 
         private void pollDiscordFeed(Stream stream) {
             int delay = 30 * 1000;
             var cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () => {
+            Task.Factory.StartNew(async () => {
                 Thread.Sleep(5 * 1000);
                 while(true) {
-                    var encoder = new UTF8Encoding();
-                    var buffer = new byte[2048];
-
                     for(int retrys = 0; retrys <= 3; retrys++) {
-                        if(stream.CanRead) {
-                            int len = stream.Read(buffer, 0, 2048);
-                            if(len > 0) {
-                                var serverPayload = encoder.GetString(buffer, 0, len);
-                                if(serverPayload == null)
-                                    continue;
-                                //Console.WriteLine("text={0}", serverPayload);
+                        foreach(string line in ReadLines(new StreamReader(stream))) {
+                            try {
+                                string[] splitted = line.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                                try {
-                                    var split = serverPayload.Split(new[] { '\r', '\n' });
-                                    if(split.Length < 3)
-                                        continue;
-
-                                    var message = split[2];
-                                    if(message.Length == 0)
-                                        continue;
-
-                                    var jsonPayload = message.Substring(5);
-                                    //Console.WriteLine($"JSON: {jsonPayload}");
+                                if(splitted.Length == 2 && splitted[0] == "data") {
+                                    var jsonPayload = splitted[1];
+                                    //Log.Debug($"JSON: {jsonPayload}");
 
                                     var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
                                     if(result != null) {
                                         //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                        var pokeSniperList = pokeSniperReader.readAll();
+                                        Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
-                                } catch(Exception e) {
-                                    setStatus($"Exception: {e.ToString()}\n\n\n");
                                 }
+                            } catch(Exception e) {
+                                Log.Warn($"Exception:", e);
                             }
+
                         }
                         if(token.IsCancellationRequested)
                             break;
@@ -259,31 +276,36 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        private void pollPokesniperFeed() {
-            int delay = 30 * 1000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () => {
-                Thread.Sleep(5 * 1000);
-                while(true) {
-                    Thread.Sleep(delay);
-                    for(int retrys = 0; retrys <= 3; retrys++) {
-                        var pokeSniperList = pokeSniperReader.readAll();
-                        if(pokeSniperList != null) {
-                            if(pokeSniperList.Any()) {
-                                await feedToClients(pokeSniperList, "PokeSnipers");
-                            } else {
-                                setStatus("No new pokemon on PokeSnipers");
-                            }
-                            break;
-                        }
-                        if(token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(1000);
-                    }
-                }
+        private void PollRarePokemonRepositories(GlobalSettings globalSettings) {
+            List<RarePokemonRepository> rarePokemonRepositories = RarePokemonRepositoryFactory.createRepositories(globalSettings);
 
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            int delay = 30 * 1000;
+            foreach(RarePokemonRepository rarePokemonRepository in rarePokemonRepositories) {
+                var cancellationTokenSource = new CancellationTokenSource();
+                var token = cancellationTokenSource.Token;
+                var listener = Task.Factory.StartNew(async () => {
+                    Thread.Sleep(5 * 1000);
+                    while(true) {
+                        Thread.Sleep(delay);
+                        for(int retrys = 0; retrys <= 3; retrys++) {
+                            var pokeSniperList = rarePokemonRepository.FindAll();
+                            if(pokeSniperList != null) {
+                                if(pokeSniperList.Any()) {
+                                    await feedToClients(pokeSniperList, rarePokemonRepository.GetChannel());
+                                } else {
+                                    Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                                }
+                                break;
+                            }
+                            if(token.IsCancellationRequested)
+                                break;
+                            Thread.Sleep(1000);
+                        }
+                    }
+
+                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+
         }
     }
 }
