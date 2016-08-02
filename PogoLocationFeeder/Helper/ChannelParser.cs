@@ -16,11 +16,13 @@ namespace PogoLocationFeeder.Helper
 
         public static DiscordChannelParser Default => new DiscordChannelParser();
         public List<DiscordChannels> settings = null;
+        private Dictionary<string, DiscordChannels> idToChannels = null;
 
         public List<DiscordChannels> Init()
         {
-            
+
             var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "discord_channels.json");
+            idToChannels = new Dictionary<string, DiscordChannels>();
 
             if (File.Exists(configFile))
             {
@@ -33,6 +35,10 @@ namespace PogoLocationFeeder.Helper
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
                 settings = JsonConvert.DeserializeObject<List<DiscordChannels>>(input, jsonSettings);
+                foreach (var setting in settings)
+                {
+                    idToChannels[setting.id] = setting;
+                }
             }
             else
             {
@@ -45,12 +51,18 @@ namespace PogoLocationFeeder.Helper
 
         public string ToName(string id)
         {
-            foreach (var e in settings)
+            DiscordChannels channel;
+            idToChannels.TryGetValue(id, out channel);
+            if (channel != null)
             {
-                if (String.Compare(id, e.id) == 0)
-                    return ($"Server: {e.Server}, Channel: {e.Name}");
+                return $"Server: {channel.Server}, Channel: {channel.Name}";
             }
             return "UNKNOWN_SOURCE: ";
+        }
+
+        public bool IsKnownChannel(string id)
+        {
+            return idToChannels.ContainsKey(id);
         }
 
         public class DiscordChannels

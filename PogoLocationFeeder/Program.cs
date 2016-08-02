@@ -26,11 +26,12 @@ namespace PogoLocationFeeder
             try
             {
                 new Program().Start();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Fatal("Error during startup", e);
             }
-            
+
         }
         private TcpListener listener;
         private List<TcpClient> arrSocket = new List<TcpClient>();
@@ -76,7 +77,8 @@ namespace PogoLocationFeeder
             {
                 listener = new TcpListener(IPAddress.Any, port);
                 listener.Start();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Fatal($"Could open port {port}", e);
                 throw e;
@@ -85,7 +87,7 @@ namespace PogoLocationFeeder
 
             Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
 
-            StartAccept(); 
+            StartAccept();
         }
 
         private void StartAccept()
@@ -168,7 +170,7 @@ namespace PogoLocationFeeder
                 catch (WebException e)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
-                    Thread.Sleep(30*1000);
+                    Thread.Sleep(30 * 1000);
                     discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
@@ -214,41 +216,53 @@ namespace PogoLocationFeeder
             var token = cancellationTokenSource.Token;
             Task.Factory.StartNew(async () =>
             {
-            while (true)
-            {
-                for (int retrys = 0; retrys <= 3; retrys++)
+                while (true)
                 {
-                    foreach (string line in ReadLines(new StreamReader(stream)))
+                    for (int retrys = 0; retrys <= 3; retrys++)
                     {
-                        try
+                        foreach (string line in ReadLines(new StreamReader(stream)))
                         {
-                            string[] splitted = line.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (splitted.Length == 2 && splitted[0] == "data")
+                            try
                             {
-                                var jsonPayload = splitted[1];
-                                //Log.Debug($"JSON: {jsonPayload}");
+                                string[] splitted = line.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                                var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
-                                if (result != null)
+                                if (splitted.Length == 2 && splitted[0] == "data")
                                 {
-                                    //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                    Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
-                                    await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
+                                    var jsonPayload = splitted[1];
+                                    //Log.Debug($"JSON: {jsonPayload}");
+
+                                    var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
+                                    if (result != null)
+                                    {
+                                        var isKnown = channel_parser.IsKnownChannel(result.channel_id);
+                                        if (!isKnown)
+                                        {
+                                            Log.Debug(
+                                                $"Discord message FILTERED (not in config) received: {result.channel_id}: {result.content}");
+                                        }
+                                        else
+                                        {
+                                            //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                                            Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
+                                            await
+                                                relayMessageToClients(result.content,
+                                                    channel_parser.ToName(result.channel_id));
+
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Warn($"Exception:", e);
-                        }
+                            catch (Exception e)
+                            {
+                                Log.Warn($"Exception:", e);
+                            }
 
+                        }
+                        if (token.IsCancellationRequested)
+                            break;
+                        Thread.Sleep(delay);
                     }
-                    if (token.IsCancellationRequested)
-                        break;
-                    Thread.Sleep(delay);
                 }
-            }
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
@@ -257,7 +271,8 @@ namespace PogoLocationFeeder
             List<RarePokemonRepository> rarePokemonRepositories = RarePokemonRepositoryFactory.createRepositories(globalSettings);
 
             int delay = 30 * 1000;
-            foreach(RarePokemonRepository rarePokemonRepository in rarePokemonRepositories) {
+            foreach (RarePokemonRepository rarePokemonRepository in rarePokemonRepositories)
+            {
                 var cancellationTokenSource = new CancellationTokenSource();
                 var token = cancellationTokenSource.Token;
                 var listener = Task.Factory.StartNew(async () =>
@@ -289,7 +304,7 @@ namespace PogoLocationFeeder
 
                 }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
-            
+
         }
     }
 }
