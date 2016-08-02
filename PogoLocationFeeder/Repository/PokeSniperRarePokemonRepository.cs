@@ -55,7 +55,7 @@ namespace PogoLocationFeeder.Repository
             }
             catch (Exception e)
             {
-                Log.Warn("Pokesnipers API error: {0}", e.Message);
+                Log.Debug("Pokesnipers API error: {0}", e.Message);
                 return null;
             }
         }

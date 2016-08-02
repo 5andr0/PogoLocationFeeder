@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
                 session = FindSessionId();
                 if (session == null)
                 {
-                    Log.Warn("Trackemon: No valid session found!");
+                    Log.Debug("Trackemon: No valid session found!");
                     return null;
                 }
             }
@@ -86,7 +86,7 @@ namespace PogoLocationFeeder.Repository
             }
             catch (Exception e)
             {
-                Log.Warn("Trackemon API error: {0}", e.Message);
+                Log.Debug("Trackemon API error: {0}", e.Message);
                 return null;
             }
         }
@@ -142,7 +142,7 @@ namespace PogoLocationFeeder.Repository
                 }
             } catch(Exception e)
             {
-                Log.Warn("Error trying to get a sessionId for Trackemon: {0}", e.Message);
+                Log.Debug("Error trying to get a sessionId for Trackemon: {0}", e.Message);
             }
             return null;
         }
