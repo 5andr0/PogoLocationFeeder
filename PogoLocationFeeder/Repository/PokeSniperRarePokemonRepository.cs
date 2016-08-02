@@ -84,11 +84,6 @@ namespace PogoLocationFeeder.Repository
             return sniperInfo;
         }
 
-        private PokemonId mapPokemon(String pokemonName)
-        {
-            return (PokemonId)Enum.Parse(typeof(PokemonId), pokemonName);
-        }
-
         public string GetChannel()
         {
             return channel;

@@ -231,7 +231,7 @@ namespace PogoLocationFeeder
                                 if (result != null)
                                 {
                                     //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                    Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
+                                    Log.Debug("Discord message received: {0}: {1}", result.channel_id, result.content);
                                     await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                 }
                             }
