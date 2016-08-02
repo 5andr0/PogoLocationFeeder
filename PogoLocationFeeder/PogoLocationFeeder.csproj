@@ -42,6 +42,10 @@
       <HintPath>..\packages\Google.Protobuf.3.0.0-beta4\lib\net45\Google.Protobuf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -105,16 +109,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\IVParser.cs" />
+    <Compile Include="Helper\Log.cs" />
     <Compile Include="Helper\MessageCache.cs" />
     <Compile Include="Helper\GeoCoordinatesParser.cs" />
     <Compile Include="Helper\ChannelParser.cs" />
+    <Compile Include="Helper\Partitioner.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
     <Compile Include="Readers\DiscordWebReader.cs" />
-    <Compile Include="Readers\PokeSniperReader.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\PokeSniperRarePokemonRepository.cs" />
+    <Compile Include="Repository\RarePokemonRepository.cs" />
+    <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
+    <Compile Include="Repository\RarePokemonsFactory.cs" />
+    <Compile Include="Repository\TrackermonRarePokemonRepository.cs" />
     <Compile Include="SniperInfo.cs" />
   </ItemGroup>
   <ItemGroup>
