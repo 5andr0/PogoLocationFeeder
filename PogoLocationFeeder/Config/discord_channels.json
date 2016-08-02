@@ -1,12 +1,68 @@
 [
   {
-    "id": "208936978186502145",
+    "id": "209314780870213633",
     "Server": "Necrobot.io",
-    "Name": "90_plus_iv"
+    "Name": "plus_90_iv"
   },
+  {
+    "id": "209314800935763977",
+    "Server": "Necrobot.io",
+    "Name": "100_iv"
+  },
+  {
+    "id": "209283402245865472",
+    "Server": "Necrobot.io",
+    "Name": "sniping"
+  },
+
   {
     "id": "207998375251935232",
     "Server": "PokeMobBot - a Pokémon Go Bot",
     "Name": "coordsbots"
-  }
+  },
+  {
+    "id": "208936978186502145",
+    "Server": "PokeMobBot - a Pokémon Go Bot",
+    "Name": "90_plus_iv"
+  },
+
+
+  {
+    "id": "209260366784495616",
+    "Server": "PokéGO- Chat, rare spots!",
+    "Name": "rare_spotting"
+  },
+  {
+    "id": "209680517740756994",
+    "Server": "PokéGO- Chat, rare spots!",
+    "Name": "snipebot_coords"
+  },
+  {
+    "id": "209171120702619648",
+    "Server": "PokéGO- Chat, rare spots!",
+    "Name": "90plus_ivonly"
+  },
+
+
+  {
+    "id": "208856384744194048",
+    "Server": "PokemonGo Rare Hunting",
+    "Name": "coord-bot"
+  },
+  {
+    "id": "207092045683097600",
+    "Server": "PokemonGo Rare Hunting",
+    "Name": "high_iv"
+  },
+  {
+    "id": "207247439004958720",
+    "Server": "PokemonGo Rare Hunting",
+    "Name": "rare_pokemon"
+  },
+  {
+    "id": "206238613040660490",
+    "Server": "PokemonGo Rare Hunting",
+    "Name": "other_pokemon"
+  },
+    
 ]
