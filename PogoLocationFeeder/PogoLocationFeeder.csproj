@@ -107,8 +107,10 @@
     <Compile Include="Helper\IVParser.cs" />
     <Compile Include="Helper\MessageCache.cs" />
     <Compile Include="Helper\GeoCoordinatesParser.cs" />
+    <Compile Include="Helper\ChannelParser.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
-    <Compile Include="PokeSniperReader.cs" />
+    <Compile Include="Readers\DiscordWebReader.cs" />
+    <Compile Include="Readers\PokeSniperReader.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />
     <Compile Include="Program.cs" />

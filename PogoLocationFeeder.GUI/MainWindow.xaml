@@ -12,7 +12,7 @@
         BorderThickness="1"
         WindowStartupLocation="CenterScreen"
         Title="Location Feeder" MinHeight="450" MinWidth="700" Height="450" Width="700"
-        xmlns:views="clr-namespace:PogoLocationFeeder.GUI.Views"
+        xmlns:views="clr-namespace:PogoLocationFeeder.GUI.Views" TitleCaps="False"
         d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
