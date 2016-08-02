@@ -49,7 +49,7 @@
             <SolidColorBrush x:Key="RightArrowFill" Color="{DynamicResource Primary500}" />
             <SolidColorBrush x:Key="IdealForegroundColorBrush" Color="{DynamicResource Primary500Foreground}" />
             <SolidColorBrush x:Key="IdealForegroundDisabledBrush" Color="{DynamicResource Primary500}" Opacity="0.4" />
-
+            <SolidColorBrush x:Key="MaterialDesignPaper" Color="#FF141414" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
