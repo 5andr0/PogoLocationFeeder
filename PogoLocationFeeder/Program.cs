@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Discord;
-using POGOProtos.Enums;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
-using System.Collections;
 using System.IO;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
-using System.Globalization;
+using static PogoLocationFeeder.DiscordWebReader;
 
 namespace PogoLocationFeeder
 {
@@ -25,6 +22,7 @@ namespace PogoLocationFeeder
         private TcpListener listener;
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
+        private DiscordChannelParser channel_parser = new DiscordChannelParser();
         private PokeSniperReader pokeSniperReader = new PokeSniperReader();
         private MessageCache messageCache = new MessageCache();
 
@@ -59,10 +57,10 @@ namespace PogoLocationFeeder
         {
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
-            Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder/wiki");
             Console.WriteLine("This software is 100% free and open-source.\n");
-            Console.WriteLine("Listening...");
-            StartAccept(); 
+            Console.WriteLine("Connecting to feeder service pogo-feed.mmoex.com");
+            StartAccept();
         }
         private void StartAccept()
         {
@@ -85,9 +83,7 @@ namespace PogoLocationFeeder
             return remoteIpEndPoint.ToString();
         }
 
-        private DiscordClient _client;
-
-        private async Task feedToClients(List<SniperInfo> snipeList, string channel)
+        private async Task feedToClients(List<SniperInfo> snipeList, string source)
         {
             List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
             foreach (var target in unsentMessages)
@@ -115,13 +111,13 @@ namespace PogoLocationFeeder
                     }
                 }
                 // debug output
-                Console.WriteLine($"Channel: {channel} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
-                if (target.timeStamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.timeStamp}");
+                Console.WriteLine($"{source} ID: {target.Id}, Lat:{target.Latitude}, Lng:{target.Longitude}, IV:{target.IV}");
+                if (target.ExpirationTimestamp != default(DateTime))
+                    Console.WriteLine($"Expires: {target.ExpirationTimestamp}");
             }
         }
 
-        private async Task relayMessageToClients(string message, string channel)
+        public async Task relayMessageToClients(string message, string channel)
         {
             var snipeList = parser.parseMessage(message);
             await feedToClients(snipeList, channel);
@@ -130,47 +126,99 @@ namespace PogoLocationFeeder
         public async void Start()
         {
             var settings = GlobalSettings.Load();
+            channel_parser.Init();
 
             if (settings == null) return;
-
-
-            _client = new DiscordClient();
 
             StartNet(settings.Port);
             if (settings.usePokeSnipers)
             {
                 pollPokesniperFeed();
             }
-            _client.MessageReceived += async (s, e) =>
-            {
-                if (settings.ServerChannels.Any(x => x.Equals(e.Channel.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
-                {
-                    await relayMessageToClients(e.Message.Text, e.Channel.Name.ToString());
-                }
-            };
 
-            _client.ExecuteAndWait(async () =>
+            var discordWebReader = new DiscordWebReader();
+
+            while(true)
             {
-                if (settings.useToken && settings.DiscordToken != null)
-                    await _client.Connect(settings.DiscordToken);
-                else if (settings.DiscordUser != null && settings.DiscordPassword != null)
+                try
                 {
-                    try
+                    Console.WriteLine($"Connection issues. Retrying...");
+                    discordWebReader.InitializeWebClient();
+                    Thread.Sleep(10 * 1000);
+                    Console.WriteLine($"Connection established. Waiting for data...");
+                    pollDiscordFeed(discordWebReader.stream);
+                }
+                catch (WebException e)
+                {
+                    Console.WriteLine($"Experiencing connection issues. Throttling...");
+                    Thread.Sleep(30 * 1000);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Unknown exception: {e.ToString()}\n\n\n");
+                    break;
+                }
+            }
+            
+            Console.ReadKey(true);
+
+        }
+
+        private void pollDiscordFeed(Stream stream)
+        {
+            int delay = 30 * 1000;
+            var cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+            var listener = Task.Factory.StartNew(async () =>
+            {
+                Thread.Sleep(5 * 1000);
+                while (true)
+                {
+                    var encoder = new UTF8Encoding();
+                    var buffer = new byte[2048];
+
+                    for (int retrys = 0; retrys <= 3; retrys++)
                     {
-                        await _client.Connect(settings.DiscordUser, settings.DiscordPassword);
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Failed to authroize Discord user! Check your config.json and try again.");
-                        Console.ReadKey();
-                        return;
+                        if (stream.CanRead)
+                        {
+                            int len = stream.Read(buffer, 0, 2048);
+                            if (len > 0)
+                            {
+                                var serverPayload = encoder.GetString(buffer, 0, len);
+                                if (serverPayload == null) continue;
+                                //Console.WriteLine("text={0}", serverPayload);
+
+                                try
+                                {   
+                                    var split = serverPayload.Split(new[] { '\r', '\n' });
+                                    if (split.Length < 3) continue;
+
+                                    var message = split[2];
+                                    if (message.Length == 0) continue;
+
+                                    var jsonPayload = message.Substring(5);
+                                    //Console.WriteLine($"JSON: {jsonPayload}");
+
+                                    var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
+                                    if (result != null)
+                                    {
+                                        //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                                        var pokeSniperList = pokeSniperReader.readAll();
+                                        await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine($"Exception: {e.ToString()}\n\n\n");
+                                }
+                            }
+                        }
+                        if (token.IsCancellationRequested)
+                            break;
+                        Thread.Sleep(delay);
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Please set your logins in the config.json first");
-                }
-            });
+            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);   
         }
 
         private void pollPokesniperFeed()
@@ -189,9 +237,11 @@ namespace PogoLocationFeeder
                         var pokeSniperList = pokeSniperReader.readAll();
                         if (pokeSniperList != null)
                         {
-                            if(pokeSniperList.Any()) {
+                            if (pokeSniperList.Any())
+                            {
                                 await feedToClients(pokeSniperList, "PokeSnipers");
-                            } else
+                            }
+                            else
                             {
                                 Console.WriteLine("No new pokemon on PokeSnipers");
                             }
@@ -206,5 +256,4 @@ namespace PogoLocationFeeder
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
-
 }

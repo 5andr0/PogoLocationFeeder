@@ -55,7 +55,7 @@ namespace PogoLocationFeeder
         {
             SniperInfo sniperInfo = new SniperInfo();
             PokemonId pokemonId = PokemonParser.parsePokemon(result.name);
-            sniperInfo.id = pokemonId;
+            sniperInfo.Id = pokemonId;
             GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(result.coords);
             if (geoCoordinates == null)
             {
@@ -63,11 +63,11 @@ namespace PogoLocationFeeder
             }
             else
             {
-                sniperInfo.latitude = geoCoordinates.latitude;
-                sniperInfo.longitude = geoCoordinates.longitude;
+                sniperInfo.Latitude = geoCoordinates.latitude;
+                sniperInfo.Longitude = geoCoordinates.longitude;
             }
 
-            sniperInfo.timeStamp = Convert.ToDateTime(result.until);
+            sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
             return sniperInfo;
         }
 
