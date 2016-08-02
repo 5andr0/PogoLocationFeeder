@@ -106,9 +106,9 @@ namespace PogoLocationFeeder
                     }
                 }
                 // debug output
-                Console.WriteLine($"{source} ID: {target.id}, Lat:{target.latitude}, Lng:{target.longitude}, IV:{target.iv}");
-                if (target.timeStamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.timeStamp}");
+                Console.WriteLine($"{source} ID: {target.Id}, Lat:{target.Latitude}, Lng:{target.Longitude}, IV:{target.IV}");
+                if (target.ExpirationTimestamp != default(DateTime))
+                    Console.WriteLine($"Expires: {target.ExpirationTimestamp}");
             }
         }
 

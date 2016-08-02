@@ -32,14 +32,14 @@ namespace PogoLocationFeeder.Helper
             {
                 return true;
             }
-            DateTime expirationDate = sniperInfo.timeStamp != default(DateTime) ? sniperInfo.timeStamp : DateTime.Now.AddMinutes(15);
+            DateTime expirationDate = sniperInfo.ExpirationTimestamp != default(DateTime) ? sniperInfo.ExpirationTimestamp : DateTime.Now.AddMinutes(15);
             MemoryCache.Default.Add(coordinates, sniperInfo, new DateTimeOffset(expirationDate));
             return false;
         }
 
         private static String getCoordinatesString(SniperInfo sniperInfo)
         {
-            return messagePrefix + sniperInfo.latitude + ", " + sniperInfo.longitude;
+            return messagePrefix + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
         }
     }
 }
