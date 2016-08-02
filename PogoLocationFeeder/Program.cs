@@ -11,19 +11,31 @@ using System.IO;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
+using System.Globalization;
+using PogoLocationFeeder.Repository;
 using static PogoLocationFeeder.DiscordWebReader;
 
 namespace PogoLocationFeeder
 {
     class Program
     {
-        static void Main(string[] args) => new Program().Start();
 
+        static void Main(string[] args)
+        {
+            Console.Title = "PogoLocationFeeder";
+            try
+            {
+                new Program().Start();
+            } catch(Exception e)
+            {
+                Log.Fatal("Error during startup", e);
+            }
+            
+        }
         private TcpListener listener;
         private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
         private DiscordChannelParser channel_parser = new DiscordChannelParser();
-        private PokeSniperReader pokeSniperReader = new PokeSniperReader();
         private MessageCache messageCache = new MessageCache();
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
@@ -55,13 +67,27 @@ namespace PogoLocationFeeder
 
         public void StartNet(int port)
         {
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
-            Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder/wiki");
-            Console.WriteLine("This software is 100% free and open-source.\n");
-            Console.WriteLine("Connecting to feeder service pogo-feed.mmoex.com");
-            StartAccept();
+
+            Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
+            Log.Plain("This software is 100% free and open-source.\n");
+
+            Log.Info("Application starting...");
+            try
+            {
+                listener = new TcpListener(IPAddress.Any, port);
+                listener.Start();
+            } catch(Exception e)
+            {
+                Log.Fatal($"Could open port {port}", e);
+                throw e;
+            }
+
+
+            Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
+
+            StartAccept(); 
         }
+
         private void StartAccept()
         {
             listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
@@ -73,7 +99,7 @@ namespace PogoLocationFeeder
             if (client != null && IsConnected(client.Client))
             {
                 arrSocket.Add(client);
-                Console.WriteLine($"New connection from {getIp(client.Client)}");
+                Log.Info($"New connection from {getIp(client.Client)}");
             }
         }
 
@@ -102,13 +128,14 @@ namespace PogoLocationFeeder
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Caught exception: {e.ToString()}");
+                        Log.Error($"Caught exception: {e.ToString()}");
                     }
                 }
                 // debug output
-                Console.WriteLine($"{source} ID: {target.Id}, Lat:{target.Latitude}, Lng:{target.Longitude}, IV:{target.IV}");
-                if (target.ExpirationTimestamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.ExpirationTimestamp}");
+                String timeFormat = "HH:mm:ss";
+                Log.Pokemon($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                    + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
+                    + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
             }
         }
 
@@ -118,6 +145,7 @@ namespace PogoLocationFeeder
             await feedToClients(snipeList, channel);
         }
 
+
         public async void Start()
         {
             var settings = GlobalSettings.Load();
@@ -126,10 +154,8 @@ namespace PogoLocationFeeder
             if (settings == null) return;
 
             StartNet(settings.Port);
-            if (settings.usePokeSnipers)
-            {
-                pollPokesniperFeed();
-            }
+
+            PollRarePokemonRepositories(settings);
 
             var discordWebReader = new DiscordWebReader();
 
@@ -142,19 +168,18 @@ namespace PogoLocationFeeder
                 }
                 catch (WebException e)
                 {
-                    Console.WriteLine($"Experiencing connection issues. Throttling...");
+                    Log.Warn($"Experiencing connection issues. Throttling...");
                     Thread.Sleep(30 * 1000);
                     discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Unknown exception: {e.ToString()}\n\n\n");
+                    Log.Warn($"Unknown exception", e);
                     break;
                 }
             }
-            
-            Console.ReadKey(true);
 
+            Console.ReadKey(true);
         }
 
         private void pollDiscordFeed(Stream stream)
@@ -164,25 +189,25 @@ namespace PogoLocationFeeder
             var token = cancellationTokenSource.Token;
             var listener = Task.Factory.StartNew(async () =>
             {
-                Thread.Sleep(5 * 1000);
-                while (true)
-                {
-                    var encoder = new UTF8Encoding();
-                    var buffer = new byte[2048];
+            Thread.Sleep(5 * 1000);
+            while (true)
+            {
+                var encoder = new UTF8Encoding();
+                var buffer = new byte[2048];
 
-                    for (int retrys = 0; retrys <= 3; retrys++)
-                    {
+                for (int retrys = 0; retrys <= 3; retrys++)
+                {
                         if (stream.CanRead)
                         {
-                            int len = stream.Read(buffer, 0, 2048);
-                            if (len > 0)
+                            try
                             {
-                                var serverPayload = encoder.GetString(buffer, 0, len);
-                                if (serverPayload == null) continue;
-                                //Console.WriteLine("text={0}", serverPayload);
+                                int len = stream.Read(buffer, 0, 2048);
+                                if (len > 0)
+                                {
+                                    var serverPayload = encoder.GetString(buffer, 0, len);
+                                    if (serverPayload == null) continue;
+                                    //Console.WriteLine("text={0}", serverPayload);
 
-                                try
-                                {   
                                     var split = serverPayload.Split(new[] { '\r', '\n' });
                                     if (split.Length < 3) continue;
 
@@ -195,14 +220,14 @@ namespace PogoLocationFeeder
                                     var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
                                     if (result != null)
                                     {
-                                        //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                                        Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
                                 }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine($"Exception: {e.ToString()}\n\n\n");
-                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Warn($"Exception:", e);
                             }
                         }
                         if (token.IsCancellationRequested)
@@ -210,42 +235,47 @@ namespace PogoLocationFeeder
                         Thread.Sleep(delay);
                     }
                 }
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);   
+            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        private void pollPokesniperFeed()
+        private void PollRarePokemonRepositories(GlobalSettings globalSettings)
         {
-            int delay = 30 * 1000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () =>
-            {
-                Thread.Sleep(5 * 1000);
-                while (true)
-                {
-                    Thread.Sleep(delay);
-                    for (int retrys = 0; retrys <= 3; retrys++)
-                    {
-                        var pokeSniperList = pokeSniperReader.readAll();
-                        if (pokeSniperList != null)
-                        {
-                            if (pokeSniperList.Any())
-                            {
-                                await feedToClients(pokeSniperList, "PokeSnipers");
-                            }
-                            else
-                            {
-                                Console.WriteLine("No new pokemon on PokeSnipers");
-                            }
-                            break;
-                        }
-                        if (token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(1000);
-                    }
-                }
+            List<RarePokemonRepository> rarePokemonRepositories = RarePokemonRepositoryFactory.createRepositories(globalSettings);
 
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            int delay = 30 * 1000;
+            foreach(RarePokemonRepository rarePokemonRepository in rarePokemonRepositories) {
+                var cancellationTokenSource = new CancellationTokenSource();
+                var token = cancellationTokenSource.Token;
+                var listener = Task.Factory.StartNew(async () =>
+                {
+                    Thread.Sleep(5 * 1000);
+                    while (true)
+                    {
+                        Thread.Sleep(delay);
+                        for (int retrys = 0; retrys <= 3; retrys++)
+                        {
+                            var pokeSniperList = rarePokemonRepository.FindAll();
+                            if (pokeSniperList != null)
+                            {
+                                if (pokeSniperList.Any())
+                                {
+                                    await feedToClients(pokeSniperList, rarePokemonRepository.GetChannel());
+                                }
+                                else
+                                {
+                                    Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                                }
+                                break;
+                            }
+                            if (token.IsCancellationRequested)
+                                break;
+                            Thread.Sleep(1000);
+                        }
+                    }
+
+                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+            
         }
     }
 }

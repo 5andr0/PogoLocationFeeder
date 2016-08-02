@@ -8,6 +8,7 @@ namespace PogoLocationFeeder.Helper
     public class MessageParser
     {
         private SniperInfo sniperInfo = null;
+
         public List<SniperInfo> parseMessage(string message)
         {
             var snipeList = new List<SniperInfo>();
@@ -19,7 +20,7 @@ namespace PogoLocationFeeder.Helper
                 GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(input);
                 if (geoCoordinates == null)
                 {
-                    //Console.WriteLine($"Can't get coords from line: {input}"); // debug output, too much spam
+                    Log.Debug($"Can't get coords from line: {input}");
                     continue;
                 }
                 else

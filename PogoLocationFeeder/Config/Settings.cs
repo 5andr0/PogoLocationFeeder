@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using PogoLocationFeeder.Helper;
 
 #endregion
 
@@ -14,6 +15,7 @@ namespace PoGo.LocationFeeder.Settings
     {
         public int Port = 16969;
         public bool usePokeSnipers = false;
+        public bool useTrackemon = false;
 
         public static GlobalSettings Default => new GlobalSettings();
 
@@ -46,7 +48,7 @@ namespace PoGo.LocationFeeder.Settings
                 || settings.Port == 0
                 )
             {
-                Console.WriteLine($"Invalid configuration detected. \nPlease edit {configFile} and try again");
+                Log.Error($"Invalid configuration detected. \nPlease edit {configFile} and try again");
                 return null;
             }
 
