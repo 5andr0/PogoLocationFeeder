@@ -18,10 +18,11 @@ namespace PoGo.LocationFeeder.Settings
         public bool useTrackemon = false;
 
         public static GlobalSettings Default => new GlobalSettings();
+        public static GlobalSettings Settings;
+        public static PogoLocationFeeder.Common.IOutput Output;
 
         public static GlobalSettings Load()
         {
-            GlobalSettings settings;
             var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "config.json");
 
             if (File.Exists(configFile))
@@ -34,25 +35,25 @@ namespace PoGo.LocationFeeder.Settings
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
-                settings = JsonConvert.DeserializeObject<GlobalSettings>(input, jsonSettings);
+                Settings = JsonConvert.DeserializeObject<GlobalSettings>(input, jsonSettings);
             }
             else
             {
-                settings = new GlobalSettings();
+                Settings = new GlobalSettings();
             }
 
             var firstRun = !File.Exists(configFile);
-            settings.Save(configFile);
+            Settings.Save(configFile);
 
             if (firstRun
-                || settings.Port == 0
+                || Settings.Port == 0
                 )
             {
                 Log.Error($"Invalid configuration detected. \nPlease edit {configFile} and try again");
                 return null;
             }
 
-            return settings;
+            return Settings;
         }
 
         public void Save(string fullPath)

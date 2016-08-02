@@ -101,14 +101,14 @@ namespace PogoLocationFeeder.Helper
 
     }
 
-    public class CustomColoredConsoleAppender : ColoredConsoleAppender
+    public class CustomColoredConsoleAppender : ManagedColoredConsoleAppender
     {
         public CustomColoredConsoleAppender()
         {
-            AddMapping(new ColoredConsoleAppender.LevelColors
+            AddMapping(new ManagedColoredConsoleAppender.LevelColors
             {
                 Level = Log.pokemonLevel,
-                ForeColor = ColoredConsoleAppender.Colors.Green
+                ForeColor = ConsoleColor.Green
             });
         }
     }

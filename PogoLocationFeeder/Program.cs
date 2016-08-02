@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Discord;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
@@ -17,7 +16,7 @@ using static PogoLocationFeeder.DiscordWebReader;
 
 namespace PogoLocationFeeder
 {
-    class Program
+    public class Program
     {
 
         static void Main(string[] args)
