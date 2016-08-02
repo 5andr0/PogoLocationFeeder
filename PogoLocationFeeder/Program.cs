@@ -27,6 +27,7 @@ namespace PogoLocationFeeder
         private MessageParser parser = new MessageParser();
         private PokeSniperReader pokeSniperReader = new PokeSniperReader();
         private MessageCache messageCache = new MessageCache();
+        private GlobalSettings settings;
 
         // A socket is still connected if a nonblocking, zero-byte Send call either:
         // 1) returns successfully or 
@@ -74,8 +75,65 @@ namespace PogoLocationFeeder
             TcpClient client = listener.EndAcceptTcpClient(res);
             if (client != null && IsConnected(client.Client))
             {
-                arrSocket.Add(client);
                 Console.WriteLine($"New connection from {getIp(client.Client)}");
+                arrSocket.Add(client);
+                WaitForData(client);
+            }
+        }
+
+        private async void WaitForData(TcpClient client)
+        {
+            Console.WriteLine("Initializing bot receiving stream...");
+            try
+            {
+                var ns = client.GetStream();
+                var sr = new StreamReader(ns);
+                while (true)
+                {
+                    var line = await sr.ReadLineAsync();
+                    if (line == null)
+                        break;
+
+                    var info = JsonConvert.DeserializeObject<SniperInfo>(line);
+
+                    Console.WriteLine($"Encounter: ID: {info.id}, Lat:{info.latitude}, Lng:{info.longitude}, IV:{info.iv}, Move1:{info.move1}, Move2:{info.move2}");
+
+                    // Make sure EchoSettings exists in the Settings
+                    if (settings.EchoEncounters != null)
+                    {
+                        // Find which entries match this Pokemon
+                        foreach (var entry in settings.EchoEncounters.Where(e =>
+                            e.Always ||
+                            ((e.MinimumIv < 0.1 || e.MinimumIv <= info.iv) &&
+                            (e.Ids == null || e.Ids.Contains(info.id)) &&
+                            (e.MovesToMatch < 1 || e.Moves == null || (e.MovesToMatch <= (e.Moves.Contains(info.move1) ? 1 : 0) + (e.Moves.Contains(info.move2) ? 1 : 0))))))
+                        {
+                            // Format the message
+                            string msg = string.Format(entry.Format, info.latitude, info.longitude, info.iv, info.timeStamp, info.id);
+                            // Each server (string key) can contain multiple channels (HashSet string value)
+                            foreach (var serverchannels in entry.Channels)
+                            {
+                                // Figure out what server we're looking for (case-insensitive substring match)
+                                Server server = _client.Servers.FirstOrDefault(s => s.Name.IndexOf(serverchannels.Key, StringComparison.OrdinalIgnoreCase) != -1);
+                                if (server == null)
+                                    continue;
+
+                                // Iterate the channels in that room and perform exact match
+                                foreach (Channel c in server.TextChannels.Where(c => serverchannels.Value.Contains(c.Name)))
+                                {
+                                    // Send the message!
+                                    await c.SendMessage(msg);
+                                }
+                            }
+                        }
+                    }
+                }
+                sr.Close();
+                ns.Close();
+            }
+            catch
+            {
+                // ignored
             }
         }
 
@@ -124,7 +182,7 @@ namespace PogoLocationFeeder
 
         public async void Start()
         {
-            var settings = GlobalSettings.Load();
+            settings = GlobalSettings.Load();
 
             if (settings == null) return;
 

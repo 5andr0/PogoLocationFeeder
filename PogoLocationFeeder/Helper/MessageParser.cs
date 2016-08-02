@@ -31,6 +31,11 @@ namespace PogoLocationFeeder.Helper
                 sniperInfo.iv = iv;
                 parseTimestamp(input);
                 PokemonId pokemon = PokemonParser.parsePokemon(input);
+                PokemonMove[] moves = PokemonParser.parsePokemonMoves(input);
+                if (moves.Length > 0)
+                    sniperInfo.move1 = moves[0];
+                if (moves.Length > 1)
+                    sniperInfo.move2 = moves[1];
                 sniperInfo.id = pokemon;
                 snipeList.Add(sniperInfo);
             }

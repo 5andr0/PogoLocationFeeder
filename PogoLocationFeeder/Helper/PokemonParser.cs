@@ -1,6 +1,7 @@
 ﻿using POGOProtos.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PogoLocationFeeder
@@ -49,6 +50,11 @@ namespace PogoLocationFeeder
 
 
             return PokemonId.Missingno;
+        }
+
+        public static PokemonMove[] parsePokemonMoves(string input)
+        {
+            return Enum.GetValues(typeof (PokemonMove)).Cast<PokemonMove>().Where(move => Regex.IsMatch(input, "(?i)\b{move}\b")).ToArray();
         }
 
         private static bool matchesPokemonNameExactly(String input, String name)

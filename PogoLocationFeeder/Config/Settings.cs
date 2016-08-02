@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using POGOProtos.Enums;
 
 #endregion
 
@@ -14,6 +15,7 @@ namespace PoGo.LocationFeeder.Settings
     {
         //public ulong ServerId = 206065054846681088;
         public List<string> ServerChannels = new List<string> { "coord-bot", "coords_bot", "coordsbots", "90_plus_iv", "90plus_ivonly", "rare_spottings", "high_iv_pokemon", "rare_pokemon" };
+        public List<EchoEncounter> EchoEncounters = new List<EchoEncounter>();
         public string DiscordToken = "";
         public int Port = 16969;
         public bool useToken = false;
@@ -78,4 +80,14 @@ namespace PoGo.LocationFeeder.Settings
         }
     }
 
+    public class EchoEncounter
+    {
+        public string Format = "{0:0.00000000},{1:0.00000000} {2:0.00}% IV {4} {5} {6}";
+        public bool Always = false;
+        public double MinimumIv = 0.0;
+        public HashSet<PokemonId> Ids;
+        public HashSet<PokemonMove> Moves;
+        public int MovesToMatch = 0;
+        public Dictionary<string, HashSet<string>> Channels;
+    }
 }
