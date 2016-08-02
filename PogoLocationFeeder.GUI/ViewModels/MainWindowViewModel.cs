@@ -162,7 +162,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                         Icon = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + $"\\icons\\{(int)target.Id}.png")),
                         Source = source
                     };
-                    GlobalVariables.PokemonsInternal.Add(info);
+                    GlobalVariables.PokemonsInternal.Insert(0, info);
                 });
                 Console.WriteLine($"{source} ID: {target.Id}, Lat:{target.Latitude}, Lng:{target.Longitude}, IV:{target.IV}");
                 if(target.ExpirationTimestamp != default(DateTime))

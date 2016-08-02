@@ -9,7 +9,7 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <Grid>
-        <DataGrid ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False" Background="Transparent" SelectionMode="Single" IsReadOnly="True" VerticalContentAlignment="Center">
+        <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False" Background="Transparent" SelectionMode="Single" IsReadOnly="True" VerticalContentAlignment="Center">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
