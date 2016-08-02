@@ -67,14 +67,27 @@ namespace PogoLocationFeeder
 
         public void StartNet(int port)
         {
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
+
             Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
             Log.Plain("This software is 100% free and open-source.\n");
+
+            Log.Info("Application starting...");
+            try
+            {
+                listener = new TcpListener(IPAddress.Any, port);
+                listener.Start();
+            } catch(Exception e)
+            {
+                Log.Fatal($"Could open port {port}", e);
+                throw e;
+            }
+
+
             Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
 
             StartAccept(); 
         }
+
         private void StartAccept()
         {
             listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
@@ -186,15 +199,15 @@ namespace PogoLocationFeeder
                 {
                         if (stream.CanRead)
                         {
-                            int len = stream.Read(buffer, 0, 2048);
-                            if (len > 0)
+                            try
                             {
-                                var serverPayload = encoder.GetString(buffer, 0, len);
-                                if (serverPayload == null) continue;
-                                //Console.WriteLine("text={0}", serverPayload);
-
-                                try
+                                int len = stream.Read(buffer, 0, 2048);
+                                if (len > 0)
                                 {
+                                    var serverPayload = encoder.GetString(buffer, 0, len);
+                                    if (serverPayload == null) continue;
+                                    //Console.WriteLine("text={0}", serverPayload);
+
                                     var split = serverPayload.Split(new[] { '\r', '\n' });
                                     if (split.Length < 3) continue;
 
@@ -211,10 +224,10 @@ namespace PogoLocationFeeder
                                         await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
                                     }
                                 }
-                                catch (Exception e)
-                                {
-                                    Log.Warn($"Exception:", e);
-                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Warn($"Exception:", e);
                             }
                         }
                         if (token.IsCancellationRequested)
