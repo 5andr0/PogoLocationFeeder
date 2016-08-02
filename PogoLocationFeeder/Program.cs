@@ -121,7 +121,7 @@ namespace PogoLocationFeeder
                 // debug output
                 String timeFormat = "HH:mm:ss";
                 Log.Pokemon($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
-                    + " with " + (target.IV != default(double) ? "{target.IV}% IV" : "unknown IV")
+                    + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
                     + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
             }
         }
