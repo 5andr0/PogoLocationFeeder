@@ -34,5 +34,17 @@ namespace PogoLocationFeeder.GUI.Properties {
                 this["DebugOutput"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int ShowLimit {
+            get {
+                return ((int)(this["ShowLimit"]));
+            }
+            set {
+                this["ShowLimit"] = value;
+            }
+        }
     }
 }
