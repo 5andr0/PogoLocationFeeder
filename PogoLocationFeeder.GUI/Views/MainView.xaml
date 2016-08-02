@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="PogoLocationFeeder.GUI.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PogoLocationFeeder.GUI.Views"
+             xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    <Grid>
+        <ListBox HorizontalContentAlignment="Stretch" ItemsSource="{Binding Pokemons}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                        <Image Source="{Binding image}" Grid.Column="0"/>
+                        <TextBlock Text="{Binding id}" Grid.Column="1" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" VerticalAlignment="Center">
+                             <Run Text="IV: "></Run>
+                             <Run Text="{Binding iv}"></Run>
+                             <Run Text="%"></Run>
+                         </TextBlock>
+                        <TextBlock Grid.Column="3" VerticalAlignment="Center">
+                             <Run Text="lat: "></Run>
+                             <Run Text="{Binding latitude}"></Run>
+                             <Run Text=" "></Run>
+                             <Run Text="lng: "></Run>
+                             <Run Text="{Binding longitude}"></Run>
+                        </TextBlock>
+                        <TextBlock Text="{Binding timeStamp}" Grid.Column="5" VerticalAlignment="Center"/>
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

@@ -1,6 +1,6 @@
 ﻿using System;
 using POGOProtos.Enums;
-
+using System.Windows.Media.Imaging;
 
 namespace PogoLocationFeeder
 {
@@ -10,7 +10,10 @@ namespace PogoLocationFeeder
         public double longitude { get; set; }
         public double iv { get; set; }
         public DateTime timeStamp { get; set; }
-        public PokemonId id { get; set; }
+        public PokemonId id { get; set; } = PokemonId.Abra;
+
+        public BitmapImage image { get; set; }
+
 
         public override string ToString()
         {

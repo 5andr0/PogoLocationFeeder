@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="PogoLocationFeeder.GUI.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PogoLocationFeeder.GUI.Views"
+             xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Listen ip</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomIp, Mode=TwoWay}"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Server port</TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomPort, Mode=TwoWay}"/>
+       
+    </Grid>
+</UserControl>
