@@ -122,6 +122,7 @@ namespace PogoLocationFeeder
                                 foreach (Channel c in server.TextChannels.Where(c => serverchannels.Value.Contains(c.Name)))
                                 {
                                     // Send the message!
+                                    Console.WriteLine($"Sending to #{c.Name} on {server.Name}");
                                     await c.SendMessage(msg);
                                 }
                             }
