@@ -37,7 +37,7 @@ namespace PogoLocationFeeder.Helper
             else
             {
                 settings = new List<DiscordChannels>();
-                Console.WriteLine($"Channel file \"{configFile}\" not found!");
+                Log.Error($"Channel file \"{configFile}\" not found!");
             }
 
             return settings;

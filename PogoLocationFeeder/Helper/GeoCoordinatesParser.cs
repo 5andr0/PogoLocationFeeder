@@ -8,12 +8,26 @@ namespace PogoLocationFeeder.Helper
     {
         public static GeoCoordinates parseGeoCoordinates(string input)
         {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+[\,|\.]\d+)[,|\s]*(?<long>\-?\d+[\,|\.]\d+)");
+            Match match = Regex.Match(input, @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)");
             if (match.Success)
             {
                 GeoCoordinates geoCoordinates = new GeoCoordinates();
-                geoCoordinates.latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-                geoCoordinates.longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
+                var latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
+                var longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
+                if (Math.Abs(latitude) > 180)
+                {
+                    Log.Debug("latitude is lower than -180 or higher than 180 for input {0}", input);
+                    return null;
+                }
+                if (Math.Abs(longitude) > 180)
+                {
+                    Log.Debug("longitude is lower than -180 or higher than 180 for input {0}", input);
+                    return null;
+                }
+
+                geoCoordinates.latitude = latitude;
+                geoCoordinates.longitude = longitude;
+
                 return geoCoordinates;
             }
             return null;
@@ -24,5 +38,11 @@ namespace PogoLocationFeeder.Helper
     {
         public double latitude { get; set; }
         public double longitude { get; set; }
-     }
+        public GeoCoordinates() { }
+        public GeoCoordinates(double latitude, double longitude)
+        {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+    }
 }

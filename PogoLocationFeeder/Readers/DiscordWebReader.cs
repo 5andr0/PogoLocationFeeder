@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PogoLocationFeeder.Helper;
+using System;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -24,17 +25,17 @@ namespace PogoLocationFeeder
             try
             {
                 var response = request.GetResponse();
-                Console.WriteLine($"Connection established. Waiting for data...");
+                Log.Info($"Connection established. Waiting for data...");
                 stream = response.GetResponseStream();
             }
             catch (WebException e)
             {
-                Console.WriteLine($"Experiencing connection issues. Throttling...");
+                Log.Warn($"Experiencing connection issues. Throttling...");
                 Thread.Sleep(30 * 1000);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Exception: {e.ToString()}\n\n\n");
+                Log.Warn($"Exception: {e.ToString()}\n\n\n");
             }
         }
 

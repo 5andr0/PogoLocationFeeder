@@ -61,6 +61,11 @@ namespace PogoLocationFeeder
             return Regex.IsMatch(input, @"(?i)" + name);
         }
 
+        public static PokemonId parseById(long pokemonId)
+        {
+            return (PokemonId)pokemonId;
+        }
+
         internal class PokemonAlternativeNames
         {
             internal PokemonId pokemonId { get; }
