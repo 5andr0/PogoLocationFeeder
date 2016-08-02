@@ -30,6 +30,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         
         private string _customIp = "localhost";
         private int _customPort = 16969;
+        private static string assetPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
+        private static string iconPath = Path.Combine(assetPath, "icons");
 
         public MainWindowViewModel() {
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
@@ -37,7 +39,6 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             StartStopCommand = new ActionCommand(StartStop);
             DebugComand = new ActionCommand(ShowDebug);
 
-            var x = Directory.GetCurrentDirectory();
             var poke = new SniperInfo {
                 Id = PokemonId.Missingno,
                 Latitude = 45.99999,
@@ -46,7 +47,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             };
             var y = new SniperInfoModel() {
                 Info = poke,
-                Icon = new BitmapImage(new Uri(x + $"\\icons\\{(int)poke.Id}.png"))
+                Icon = new BitmapImage(new Uri(Path.Combine(iconPath, $"{(int)poke.Id}.png")))
             };
             GlobalVariables.PokemonsInternal.Add(y);
             Thread a = new Thread(new ThreadStart(Start)) {IsBackground = true, ApartmentState = ApartmentState.STA};
@@ -184,7 +185,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 await Application.Current.Dispatcher.BeginInvoke((Action)delegate () {
                     var info = new SniperInfoModel {
                         Info = target,
-                        Icon = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + $"\\icons\\{(int)target.Id}.png")),
+                        Icon = new BitmapImage(new Uri(Path.Combine(iconPath, $"{(int)target.Id}.png"))),
                         Source = source
                     };
                     GlobalVariables.PokemonsInternal.Insert(0, info);
