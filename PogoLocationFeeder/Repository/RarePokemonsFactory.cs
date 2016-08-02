@@ -52,6 +52,7 @@ namespace PogoLocationFeeder.Repository
                 PokemonId.Articuno,
                 PokemonId.Zapdos,
                 PokemonId.Moltres,
+                PokemonId.Dratini,
                 PokemonId.Dragonair,
                 PokemonId.Dragonite,
                 PokemonId.Mewtwo,
