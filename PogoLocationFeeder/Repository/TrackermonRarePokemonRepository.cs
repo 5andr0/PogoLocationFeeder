@@ -95,13 +95,13 @@ namespace PogoLocationFeeder.Repository
         {
             SniperInfo sniperInfo = new SniperInfo();
             PokemonId pokemonId = PokemonParser.parseById(result.id);
-            sniperInfo.id = pokemonId;
+            sniperInfo.Id = pokemonId;
 
-            sniperInfo.latitude = result.latitude;
-            sniperInfo.longitude = result.longitude;
+            sniperInfo.Latitude = result.latitude;
+            sniperInfo.Longitude = result.longitude;
 
 
-            sniperInfo.timeStamp = DateTime.Now.AddTicks(result.expiration);
+            sniperInfo.ExpirationTimestamp = DateTime.Now.AddTicks(result.expiration);
             return sniperInfo;
         }
 

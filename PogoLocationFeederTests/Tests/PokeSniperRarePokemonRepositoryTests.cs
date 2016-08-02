@@ -10,26 +10,20 @@ using System.Threading.Tasks;
 namespace PogoLocationFeeder.Tests
 {
     [TestClass()]
-    public class PokeSniperRarePokemonRepositoryTests
+    public class PokeSniperReaderTests
     {
-        PokeSniperRarePokemonRepository pokeSniperRarePokemonRepository = new PokeSniperRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
 
         [TestMethod()]
         [Ignore]
         //Test is on ignore because it can fail random
         //This still can be used to test if the pokesnipers api works
-        public void FindAllTest()
+        public void readAllTest()
         {
-            List<SniperInfo> sniperInfos = pokeSniperRarePokemonRepository.FindAll();
+            PokeSniperRarePokemonRepository rarePokemonRepository = new PokeSniperRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+            List<SniperInfo> sniperInfos = rarePokemonRepository.FindAll();
             Assert.IsNotNull(sniperInfos);
             Assert.IsTrue(sniperInfos.Any());
             sniperInfos.ForEach(SniperInfo => Console.WriteLine(SniperInfo));
-        }
-
-        [TestMethod()]
-        public void GetChannel()
-        {
-            Assert.AreEqual("Pokesnipers", pokeSniperRarePokemonRepository.GetChannel());
         }
 
     }

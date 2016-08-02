@@ -55,14 +55,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="GeoCoordinatesParserTest.cs" />
-    <Compile Include="Helper\IVParserTests.cs" />
-    <Compile Include="Helper\MessageCacheTests.cs" />
-    <Compile Include="Helper\MessageParserTests.cs" />
-    <Compile Include="Helper\PokemonParserTests.cs" />
-    <Compile Include="Repository\PokeSniperRarePokemonRepositoryTests.cs" />
+    <Compile Include="Tests\GeoCoordinatesParserTest.cs" />
+    <Compile Include="Tests\IVParserTests.cs" />
+    <Compile Include="Tests\MessageCacheTests.cs" />
+    <Compile Include="Tests\MessageParserTests.cs" />
+    <Compile Include="Tests\PokemonParserTests.cs" />
+    <Compile Include="Tests\PokeSniperRarePokemonRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\TrackemonRarePokemonRepositoryTests.cs" />
+    <Compile Include="Tests\TrackemonRarePokemonRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PogoLocationFeeder\PogoLocationFeeder.csproj">

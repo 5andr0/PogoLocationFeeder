@@ -60,6 +60,12 @@ namespace PogoLocationFeeder.Helper
             logger.WarnFormat(message, args);
         }
 
+
+        public static void Warn(String message, Exception e)
+        {
+            logger.Warn(message, e);
+        }
+
         public static void Error(String message, params string[] args)
         {
             logger.ErrorFormat(message, args);

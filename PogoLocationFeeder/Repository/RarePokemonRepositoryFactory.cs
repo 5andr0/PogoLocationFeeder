@@ -27,8 +27,5 @@ namespace PogoLocationFeeder.Repository
             return rarePokemonRepositories;
         }
 
-       
-
-
     }
 }
