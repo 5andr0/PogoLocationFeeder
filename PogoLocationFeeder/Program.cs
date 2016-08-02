@@ -85,13 +85,18 @@ namespace PogoLocationFeeder
 
         private async Task feedToClients(List<SniperInfo> snipeList, string source)
         {
-            // Remove any clients that have disconnected
-            arrSocket.RemoveAll(x => !IsConnected(x.Client));
             List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
             foreach (var target in unsentMessages)
             {
                 foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
                 {
+                    // Ignore and remove any clients that have disconnected
+                    if (!IsConnected(socket.Client))
+                    {
+                        arrSocket.Remove(socket);
+                        return;
+                    }
+
                     try
                     {
                         NetworkStream networkStream = socket.GetStream();
