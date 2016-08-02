@@ -81,6 +81,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public int ShowLimit {
             get { return Settings.Default.ShowLimit; }
             set {
+                if (value <= 0) value = 1;
                 Settings.Default.ShowLimit = value;
                 Settings.Default.Save();
             }
