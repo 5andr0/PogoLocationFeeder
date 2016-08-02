@@ -20,7 +20,7 @@ namespace PogoLocationFeeder.Helper
         public List<DiscordChannels> Init()
         {
             
-            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "discord_channels.json");
+            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "discord_channels.json");
 
             if (File.Exists(configFile))
             {
