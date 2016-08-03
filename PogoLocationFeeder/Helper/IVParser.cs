@@ -9,16 +9,14 @@ namespace PogoLocationFeeder.Helper
         public static double ParseIV(string input)
         {
             var iv = ParseRegexDouble(input,
-                GeoCoordinatesParser.GeoCoordinatesRegex + @"\W+(?i)IV\W+(1?\d{1,3}[,.]?\d{0,3})\b");
+                GeoCoordinatesParser.GeoCoordinatesRegex + @"\W+(?i)IV\W+(1?\d{1,3}(?:[,.]\d{1,3})?)\b");
                 // 97,8.200341 IV 98
-            //if (iv == default(double))
-            //    iv = ParseRegexDouble(input, @"(?i)IV\b(1?\d{1,3}[,.]?\d{0,3})\W*" + GeoCoordinatesParser.GeoCoordinatesRegex); // 
             if (iv == default(double))
-                iv = ParseRegexDouble(input, @"(?i)\b(1?\d{1,3}[,.]?\d{0,3})\W*\%?\W*IV"); // 52 IV 52% IV 52IV 52.5 IV
+                iv = ParseRegexDouble(input, @"(?i)\b(1?\d{1,3}(?:[,.]\d{1,3})?)\W*\%?\W*IV"); // 52 IV 52% IV 52IV 52.5 IV
             if (iv == default(double))
-                iv = ParseRegexDouble(input, @"(?i)\bIV\W?(1?\d{1,2}[,.]?\d{0,3})");
+                iv = ParseRegexDouble(input, @"(?i)\bIV\W?(1?\d{1,2}(?:[,.]\d{1,3})?)");
             if (iv == default(double))
-                iv = ParseRegexDouble(input, @"\b(1?\d{1,3}[,.]?\d{0,3})\W*\%"); // 52% 52 %
+                iv = ParseRegexDouble(input, @"\b(1?\d{1,3}(?:[,.]\d{1,3})?)\W*\%"); // 52% 52 %
 
             return iv;
         }
