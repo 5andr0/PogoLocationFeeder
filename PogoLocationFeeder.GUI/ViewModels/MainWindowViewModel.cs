@@ -85,10 +85,6 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             }
         }
 
-        public void writeDebug(string text) {
-            Settings.Default.DebugOutput += $"\n{text}";
-        }
-
         public void setStatus(string status) {
             Status = status;
         }
