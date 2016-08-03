@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <Grid>
         <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
-                  Background="Transparent" SelectionMode="Single" VerticalContentAlignment="Center">
+                  Background="Transparent" SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
