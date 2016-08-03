@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CloudFlareUtilities, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CloudFlareUtilities.0.2.1-alpha\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\CloudFlareUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Discord.Net, Version=0.9.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Discord.Net.0.9.4\lib\net45\Discord.Net.dll</HintPath>
       <Private>True</Private>
