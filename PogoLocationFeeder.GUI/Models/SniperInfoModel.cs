@@ -53,14 +53,24 @@ namespace PogoLocationFeeder.Common.Models
                 $"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
         }
 
+        private void StartProcessWithPath() {
+            var sta = new Process();
+            var SniperFilePath = Settings.Default.Sniper2Path;
+            sta.StartInfo.FileName = SniperFilePath;
+            sta.StartInfo.Arguments = $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}";
+            sta.Start();
+            sta.Dispose();
+        }
+
         public void PokeSnipers()
         {
             try
             {
-                Process.Start(
-                    Settings.Default.Sniper2Path.Contains(".exe")
-                        ? $"{Settings.Default.Sniper2Path} pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}"
-                        : $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                if (Settings.Default.Sniper2Path.Contains(".exe")) {
+                    StartProcessWithPath();
+                } else {
+                    Process.Start( $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                }
             }
             catch (Exception e)
             {
