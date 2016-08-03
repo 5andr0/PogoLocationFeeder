@@ -38,7 +38,7 @@ namespace PoGoLocationFeeder.Helper
 
             if (!needupdate)
             {
-                Log.Info("Great! You already have the newest version ({0})", RemoteVersion.ToString());
+                Log.Info("Great! You already have the newest version (v{0}, or later master)", RemoteVersion.ToString().Remove(RemoteVersion.ToString().Length-2));
             }
             else
             {
@@ -51,7 +51,7 @@ namespace PoGoLocationFeeder.Helper
         {
             using (var wC = new WebClient())
             {
-                wC.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+                wC.Headers.Add("User-Agent", "PogoLocationFeeder");
                 return wC.DownloadString(LatestReleaseApi);
             }
         }
