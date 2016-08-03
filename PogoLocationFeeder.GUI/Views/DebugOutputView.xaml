@@ -4,11 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:p="clr-namespace:PogoLocationFeeder.GUI.Properties"
-             xmlns:properties="clr-namespace:PogoLocationFeeder.Common.Properties"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBox x:Name="Debug" IsReadOnly="True" Text="{Binding DebugOutput, Source={x:Static properties:Settings.Default}}"
+        <TextBox x:Name="Debug" IsReadOnly="True" Text="{Binding DebugOutput, Source={x:Static p:Settings.Default}}"
                  Padding="5" TextChanged="TextBoxBase_OnTextChanged" TextWrapping="Wrap" />
     </Grid>
 </UserControl>

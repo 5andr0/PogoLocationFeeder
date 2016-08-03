@@ -20,6 +20,7 @@ namespace PogoLocationFeeder.Config
         public int Port = 16969;
         public bool UsePokeSnipers = false;
         public bool UseTrackemon = false;
+        public static string PokeSnipers2exe = @"C:\";
 
         public static bool SniperVisibility => isOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();

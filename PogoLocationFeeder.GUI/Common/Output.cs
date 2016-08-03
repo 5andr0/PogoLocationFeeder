@@ -10,7 +10,7 @@ using PogoLocationFeeder.Common.Models;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.ViewModels;
 using PogoLocationFeeder.Helper;
-using PogoLocationFeeder.Common.Properties;
+using PogoLocationFeeder.GUI.Properties;
 
 namespace PogoLocationFeeder.GUI.Common
 {
