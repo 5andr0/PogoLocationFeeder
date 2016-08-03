@@ -6,9 +6,10 @@ namespace PogoLocationFeeder.Helper
 {
     public class GeoCoordinatesParser
     {
+        public const string geoCoordinatesRegex = @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)";
         public static GeoCoordinates parseGeoCoordinates(string input)
         {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)");
+            Match match = Regex.Match(input, geoCoordinatesRegex);
             if (match.Success)
             {
                 GeoCoordinates geoCoordinates = new GeoCoordinates();

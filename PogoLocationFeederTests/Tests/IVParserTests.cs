@@ -23,9 +23,12 @@ namespace PogoLocationFeeder.Helper.Tests
             Assert.AreEqual(85.11, IVParser.parseIV("IV 85,11"));
 
             Assert.AreEqual(100, IVParser.parseIV("100.00 %"));
+            Assert.AreEqual(98, IVParser.parseIV("Dratini 97,8.200341 IV 98"));
+            Assert.AreEqual(98, IVParser.parseIV("Dratini IV 98 97,8.200341 "));
+            Assert.AreEqual(98, IVParser.parseIV("Dratini 98 IV 97,8.200341 "));
         }
 
-        
+
         [TestMethod()]
         public void parseNoIV()
         {

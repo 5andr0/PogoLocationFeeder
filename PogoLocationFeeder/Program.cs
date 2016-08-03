@@ -14,10 +14,11 @@ using PoGo.LocationFeeder.Settings;
 using System.Globalization;
 using PogoLocationFeeder.Repository;
 using static PogoLocationFeeder.DiscordWebReader;
+using PoGoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder
 {
-    class Program
+    public class Program
     {
 
         static void Main(string[] args)
@@ -76,12 +77,11 @@ namespace PogoLocationFeeder
             {
                 listener = new TcpListener(IPAddress.Any, port);
                 listener.Start();
-            } catch(Exception e)
+            } catch(System.Net.Sockets.SocketException e)
             {
-                Log.Fatal($"Could open port {port}", e);
+                Log.Fatal($"Port {port} is already in use!", e);
                 throw e;
             }
-
 
             Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
 
@@ -112,6 +112,7 @@ namespace PogoLocationFeeder
         private async Task feedToClients(List<SniperInfo> snipeList, string source)
         {
             // Remove any clients that have disconnected
+            if(GlobalSettings.ThreadPause) return;
             arrSocket.RemoveAll(x => !IsConnected(x.Client));
             List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
             foreach (var target in unsentMessages)
@@ -132,8 +133,11 @@ namespace PogoLocationFeeder
                     }
                 }
                 // debug output
+                if (GlobalSettings.Output != null)
+                    GlobalSettings.Output.PrintPokemon(target, channel_parser.ToArray(source)[0], channel_parser.ToArray(source)[1]);
+
                 String timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                Log.Pokemon($"{channel_parser.ToName(source)}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
                     + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
                     + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
             }
@@ -146,12 +150,14 @@ namespace PogoLocationFeeder
         }
 
 
-        public async void Start()
+        public void Start()
         {
             var settings = GlobalSettings.Load();
             channel_parser.Init();
 
             if (settings == null) return;
+
+            VersionCheckState.Execute(new CancellationToken());
 
             StartNet(settings.Port);
 
@@ -165,9 +171,10 @@ namespace PogoLocationFeeder
                 {
                     pollDiscordFeed(discordWebReader.stream);
                 }
-                catch (WebException e)
+                catch (WebException)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
+                    Thread.Sleep(30*1000);
                     discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
@@ -232,8 +239,8 @@ namespace PogoLocationFeeder
                                 if (result != null)
                                 {
                                     //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                    Log.Debug($"Discord message received: {result.channel_id}: {result.content}");
-                                    await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
+                                    Log.Debug("Discord message received: {0}: {1}", result.channel_id, result.content);
+                                    await relayMessageToClients(result.content, result.channel_id);
                                 }
                             }
                         }

@@ -1,14 +1,10 @@
 ﻿using log4net;
 using log4net.Config;
-using log4net.Layout.Pattern;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using log4net.Core;
 using System.IO;
 using log4net.Appender;
+using PoGo.LocationFeeder.Settings;
 
 namespace PogoLocationFeeder.Helper
 {
@@ -22,25 +18,34 @@ namespace PogoLocationFeeder.Helper
         {
             XmlConfigurator.Configure();
         }
-        const String timeFormat = "HH:mm:ss";
+        const string timeFormat = "HH:mm:ss";
         private static object _MessageLock = new object();
 
-        public static void Trace(String message, params string[] args)
+        public static void Debug(string message, params string[] args)
         {
-            logger.DebugFormat(message, args);
+            if (args == null)
+            {
+                logger.Debug(message);
+            }
+            else
+            {
+                logger.DebugFormat(message, args);
+            }
         }
 
-        public static void Debug(String message, params string[] args)
+        public static void Info(string message, params string[] args)
         {
-            logger.DebugFormat(message, args);
+            if (args == null)
+            {
+                logger.Info(message);
+            }
+            else
+            {
+                logger.InfoFormat(message, args);
+            }
         }
 
-        public static void Info(String message, params string[] args)
-        {
-            logger.InfoFormat( message, args);
-        }
-
-        public static void Plain(String message, params  string[] args)
+        public static void Plain(string message, params  string[] args)
         {
             lock (_MessageLock)
             {
@@ -50,40 +55,67 @@ namespace PogoLocationFeeder.Helper
             }
         }
 
-        public static void Pokemon(String message, params string[] args)
+        public static void Pokemon(string message, params string[] args)
         {
-
-            LogPokemonFormat(logger, message, args);
+            if (args == null)
+            {
+                logger.LogPokemon(message);
+            }
+            else
+            {
+                logger.LogPokemonFormat(message, args);
+            }
         }
-        public static void Warn(String message, params string[] args)
+        public static void Warn(string message, params string[] args)
         {
-            logger.WarnFormat(message, args);
-        }
-
-
-        public static void Warn(String message, Exception e)
-        {
-            logger.Warn(message, e);
-        }
-
-        public static void Error(String message, params string[] args)
-        {
-            logger.ErrorFormat(message, args);
-        }
-
-        public static void Error(String message, Exception e)
-        {
-            logger.Error(message, e);
+            if (args == null)
+            {
+                logger.Warn(message);
+            }
+            else
+            {
+                logger.WarnFormat(message, args);
+            }
         }
 
-        public static void Fatal(String message, params string[] args)
+
+        public static void Warn(string message, Exception e)
         {
-            logger.FatalFormat(message, args);
+            logger.Warn(message + '\n', e);
         }
 
-        public static void Fatal(String message, Exception e)
+        public static void Error(string message, params string[] args)
         {
-            logger.Fatal(message, e);
+            if (args == null)
+            {
+                logger.Error(message);
+            }
+            else
+            {
+                logger.ErrorFormat(message, args);
+            }
+        }
+
+        public static void Error(string message, Exception e)
+        {
+            logger.Error(message + '\n', e);
+        }
+
+        public static void Fatal(string message, params string[] args)
+        {
+            if (args == null)
+            {
+                logger.Fatal(message);
+            }
+            else
+            {
+                logger.FatalFormat(message + '\n', args);
+            }
+        }
+
+        public static void Fatal(string message, Exception e)
+        {
+            logger.Fatal(message + '\n', e);
         }
         private static void LogPokemon(this ILog log, string message)
         {
@@ -97,19 +129,18 @@ namespace PogoLocationFeeder.Helper
             log.Logger.Log(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
                 pokemonLevel, formattedMessage, null);
         }
-
-
     }
 
-    public class CustomColoredConsoleAppender : ColoredConsoleAppender
+    public class CustomColoredConsoleAppender : ManagedColoredConsoleAppender
     {
         public CustomColoredConsoleAppender()
         {
-            AddMapping(new ColoredConsoleAppender.LevelColors
+            AddMapping(new ManagedColoredConsoleAppender.LevelColors
             {
                 Level = Log.pokemonLevel,
-                ForeColor = ColoredConsoleAppender.Colors.Green
+                ForeColor = ConsoleColor.Green
             });
         }
     }
+
 }

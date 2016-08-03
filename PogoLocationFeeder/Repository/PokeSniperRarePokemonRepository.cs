@@ -9,6 +9,7 @@ using System.Runtime.Caching;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using CloudFlareUtilities;
 
 namespace PogoLocationFeeder.Repository
 {
@@ -30,6 +31,7 @@ namespace PogoLocationFeeder.Repository
         {
             try
             {
+                
                 var request = WebRequest.CreateHttp(URL);
                 request.Accept = "application/json";
                 request.Method = "GET";
@@ -39,25 +41,38 @@ namespace PogoLocationFeeder.Repository
                 {
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader.ReadToEnd());
-                        List<SniperInfo> list = new List<SniperInfo>();
-                        foreach (Result result in wrapper.results)
-                        {
-                            SniperInfo sniperInfo = map(result);
-                            if (sniperInfo != null)
-                            {
-                                list.Add(sniperInfo);
-                            }
-                        }
-                        return list;
+                        
+                        return getJsonList(reader.ReadToEnd());
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Debug("Pokesnipers API error: {0}", e.Message);
-                return null;
+                try {
+                    var handler = new ClearanceHandler();
+
+                    // Create a HttpClient that uses the handler.
+                    var client = new HttpClient(handler);
+
+                    // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
+                    var content = client.GetStringAsync(URL).Result;
+                    return getJsonList(content);
+                } catch (Exception) {
+                    Log.Debug("Pokesnipers API error: {0}", e.Message);
+                    return null;
+                }
             }
+        }
+        private List<SniperInfo> getJsonList(string reader) {
+            Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader);
+            List<SniperInfo> list = new List<SniperInfo>();
+            foreach(Result result in wrapper.results) {
+                SniperInfo sniperInfo = map(result);
+                if(sniperInfo != null) {
+                    list.Add(sniperInfo);
+                }
+            }
+            return list;
         }
 
         private SniperInfo map(Result result)
@@ -82,11 +97,6 @@ namespace PogoLocationFeeder.Repository
 
             sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
             return sniperInfo;
-        }
-
-        private PokemonId mapPokemon(String pokemonName)
-        {
-            return (PokemonId)Enum.Parse(typeof(PokemonId), pokemonName);
         }
 
         public string GetChannel()

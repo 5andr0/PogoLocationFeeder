@@ -28,7 +28,7 @@ namespace PogoLocationFeeder
                 Log.Info($"Connection established. Waiting for data...");
                 stream = response.GetResponseStream();
             }
-            catch (WebException e)
+            catch (WebException)
             {
                 Log.Warn($"Experiencing connection issues. Throttling...");
                 Thread.Sleep(30 * 1000);
