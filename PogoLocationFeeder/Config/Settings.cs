@@ -53,9 +53,11 @@ namespace PoGo.LocationFeeder.Settings {
             return settings;
         }
         public static bool isOneClickSnipeSupported() {
-            string keyName = @"HKEY_CLASSES_ROOT\pokesniper2\Shell\Open\Command";
-            string valueName = "(Default)";
-            return Registry.GetValue(keyName, valueName, null) == null;
+            const string keyName = @"pokesniper2\Shell\Open\Command";
+            //return Registry.GetValue(keyName, valueName, null) == null;
+            using(RegistryKey Key = Registry.ClassesRoot.OpenSubKey(keyName)) {
+                return Key != null;
+            }
         }
 
         public void Save(string fullPath) {
