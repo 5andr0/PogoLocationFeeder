@@ -23,4 +23,4 @@ Bitcoin Donations: <b>1FeederpUZXQN6F45M5cpYuYP6MzE2huPp</b>
 - skiplagged checks
 
 ## Tutorial
-Please use our wiki page for more info
+Please use our [wiki](https://github.com/5andr0/PogoLocationFeeder/wiki) page for more info
