@@ -116,6 +116,7 @@
     <Compile Include="Helper\ChannelParser.cs" />
     <Compile Include="Helper\Partitioner.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
+    <Compile Include="Helper\VersionCheckState.cs" />
     <Compile Include="Readers\DiscordWebReader.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />

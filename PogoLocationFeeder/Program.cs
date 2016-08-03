@@ -14,6 +14,7 @@ using PoGo.LocationFeeder.Settings;
 using System.Globalization;
 using PogoLocationFeeder.Repository;
 using static PogoLocationFeeder.DiscordWebReader;
+using PoGoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder
 {
@@ -25,6 +26,7 @@ namespace PogoLocationFeeder
             Console.Title = "PogoLocationFeeder";
             try
             {
+                VersionCheckState.Execute(new CancellationToken());
                 new Program().Start();
             } catch(Exception e)
             {
