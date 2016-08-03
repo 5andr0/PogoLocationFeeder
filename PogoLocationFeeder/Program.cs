@@ -26,7 +26,6 @@ namespace PogoLocationFeeder
             Console.Title = "PogoLocationFeeder";
             try
             {
-                VersionCheckState.Execute(new CancellationToken());
                 new Program().Start();
             } catch(Exception e)
             {
@@ -78,10 +77,11 @@ namespace PogoLocationFeeder
             {
                 listener = new TcpListener(IPAddress.Any, port);
                 listener.Start();
-            } catch(Exception e)
+            } catch(System.Net.Sockets.SocketException e)
             {
-                Log.Fatal($"Could open port {port}", e);
-                throw e;
+                Log.Fatal($"Port {port} already in use", e);
+                Thread.Sleep(20000);
+                //throw e;
             }
 
 
@@ -158,6 +158,8 @@ namespace PogoLocationFeeder
             channel_parser.Init();
 
             if (settings == null) return;
+
+            VersionCheckState.Execute(new CancellationToken());
 
             StartNet(settings.Port);
 

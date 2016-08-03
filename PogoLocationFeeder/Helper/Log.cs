@@ -81,7 +81,7 @@ namespace PogoLocationFeeder.Helper
 
         public static void Warn(string message, Exception e)
         {
-            logger.Warn(message, e);
+            logger.Warn(message + '\n', e);
         }
 
         public static void Error(string message, params string[] args)
@@ -98,7 +98,7 @@ namespace PogoLocationFeeder.Helper
 
         public static void Error(string message, Exception e)
         {
-            logger.Error(message, e);
+            logger.Error(message + '\n', e);
         }
 
         public static void Fatal(string message, params string[] args)
@@ -109,13 +109,13 @@ namespace PogoLocationFeeder.Helper
             }
             else
             {
-                logger.FatalFormat(message, args);
+                logger.FatalFormat(message + '\n', args);
             }
         }
 
         public static void Fatal(string message, Exception e)
         {
-            logger.Fatal(message, e);
+            logger.Fatal(message + '\n', e);
         }
         private static void LogPokemon(this ILog log, string message)
         {
@@ -140,27 +140,6 @@ namespace PogoLocationFeeder.Helper
                 Level = Log.pokemonLevel,
                 ForeColor = ConsoleColor.Green
             });
-        }
-    }
-
-    public class DebugOutputViewAppender : AppenderSkeleton
-    {
-        override protected void Append(LoggingEvent loggingEvent)
-        {
-            if (GlobalSettings.Output != null)
-            {
-                using (StringWriter stringWriter = new StringWriter())
-                {
-                    RenderLoggingEvent(stringWriter, loggingEvent);
-                    GlobalSettings.Output.Write(stringWriter.ToString());
-                }
-            }
-        }
-   
-
-        override protected bool RequiresLayout
-        {
-            get { return true; }
         }
     }
 

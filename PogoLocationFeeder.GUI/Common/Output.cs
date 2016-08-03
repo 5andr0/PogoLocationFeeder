@@ -9,6 +9,9 @@ using PogoLocationFeeder.GUI.Models;
 using System.Windows.Media.Imaging;
 using System.IO;
 using PogoLocationFeeder.GUI.Properties;
+using log4net.Core;
+using log4net.Appender;
+using PoGo.LocationFeeder.Settings;
 
 namespace PogoLocationFeeder.GUI.Common
 {
@@ -59,6 +62,31 @@ namespace PogoLocationFeeder.GUI.Common
                 };
                 InsertToList(info);
             });
+        }
+    }
+
+    public class DebugOutputViewAppender : AppenderSkeleton
+    {
+        override protected void Append(LoggingEvent loggingEvent)
+        {
+            if (GlobalSettings.Output != null)
+            {
+                using (StringWriter stringWriter = new StringWriter())
+                {
+                    RenderLoggingEvent(stringWriter, loggingEvent);
+                    if (loggingEvent.Level == Level.Fatal)
+                    {
+                        System.Windows.MessageBox.Show(stringWriter.ToString(), "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    }
+                    GlobalSettings.Output.Write(stringWriter.ToString());
+                }
+            }
+        }
+
+
+        override protected bool RequiresLayout
+        {
+            get { return true; }
         }
     }
 }
