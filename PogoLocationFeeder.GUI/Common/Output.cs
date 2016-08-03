@@ -13,29 +13,13 @@ using log4net.Core;
 using log4net.Appender;
 using PoGo.LocationFeeder.Settings;
 using PogoLocationFeeder.GUI.ViewModels;
+using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.GUI.Common
 {
     public class Output : PogoLocationFeeder.Common.IOutput
     {
-        private static object _MessageLock = new object();
         private static int ShowLimit = Settings.Default.ShowLimit;
-
-        public void Write(string message)
-        {
-            lock (_MessageLock)
-            {
-                Settings.Default.DebugOutput += $"\n{message}";
-            }
-        }
-
-        public void WriteFormat(string message, params object[] args)
-        {
-            lock (_MessageLock)
-            {
-                Settings.Default.DebugOutput += $"\n{string.Format(message, args)}";
-            }
-        }
 
         public void SetStatus(string message)
         {
@@ -55,24 +39,30 @@ namespace PogoLocationFeeder.GUI.Common
                 pokes.Remove(pokes.Last());
             pokes.Insert(0, info);
         }
-        public void PrintPokemon(SniperInfo sniperInfo, string server, string channel)
+
+        public void PrintPokemon(SniperInfo sniperInfo, ChannelInfo channelInfo)
         {
             Application.Current.Dispatcher.BeginInvoke((Action)delegate () {
                 var info = new SniperInfoModel
                 {
                     Info = sniperInfo,
                     Icon = new BitmapImage(new Uri($"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int)sniperInfo.Id}.png", UriKind.Absolute)),
-                    Server = server,
-                    Channel = channel
+                    Server = channelInfo.server,
+                    Channel = channelInfo.channel
                 };
                 InsertToList(info);
             });
+        }
+
+        public static void Write(string message)
+        {
+            Settings.Default.DebugOutput += $"\n{message}";
         }
     }
 
     public class DebugOutputViewAppender : AppenderSkeleton
     {
-        override protected void Append(LoggingEvent loggingEvent)
+        protected override void Append(LoggingEvent loggingEvent)
         {
             if (GlobalSettings.Output != null)
             {
@@ -83,7 +73,7 @@ namespace PogoLocationFeeder.GUI.Common
                     {
                         System.Windows.MessageBox.Show(stringWriter.ToString(), "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
-                    GlobalSettings.Output.Write(stringWriter.ToString());
+                    Output.Write(stringWriter.ToString());
                 }
             }
         }

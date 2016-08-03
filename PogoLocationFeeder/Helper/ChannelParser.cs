@@ -9,17 +9,16 @@ using Newtonsoft.Json.Converters;
 
 namespace PogoLocationFeeder.Helper
 {
-    public class DiscordChannelParser
+    public class ChannelParser
     {
         public int Port = 16969;
         public bool usePokeSnipers = false;
 
-        public static DiscordChannelParser Default => new DiscordChannelParser();
+        public static ChannelParser Default => new ChannelParser();
         public List<DiscordChannels> settings = null;
 
         public List<DiscordChannels> Init()
         {
-            
             var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "discord_channels.json");
 
             if (File.Exists(configFile))
@@ -43,24 +42,27 @@ namespace PogoLocationFeeder.Helper
             return settings;
         }
 
-        public string ToName(string id)
+        public ChannelInfo ToChannelInfo(string channelId)
         {
-            foreach (var e in settings)
+            ChannelInfo channelInfo = new ChannelInfo();
+            if (channelId != null)
             {
-                if (String.Compare(id, e.id) == 0)
-                    return ($"Server: {e.Server}, Channel: {e.Name}");
+                foreach (var channel in settings)
+                {
+                    if (String.Compare(channelId, channel.id) == 0)
+                    {
+                        channelInfo.server = channel.Server;
+                        channelInfo.channel = channel.Name;
+                        channelInfo.isValid = true;
+                        return channelInfo;
+                    }
+                }
             }
-            return "UNKNOWN_SOURCE ";
-        }
+            channelInfo.server = "Unknown";
+            channelInfo.channel = "Unknown";
 
-        public string[] ToArray(string id)
-        {
-            foreach (var e in settings)
-            {
-                if (String.Compare(id, e.id) == 0)
-                    return new string[] { e.Server, e.Name };
-            }
-            return new string[] { "Unknown", "Unknown"};
+            return channelInfo;
+
         }
 
         public class DiscordChannels
@@ -70,4 +72,11 @@ namespace PogoLocationFeeder.Helper
             public string Name;
         }
     }
+
+    public class SourceInfo
+    {
+        public string server { get; set; }
+        public string channelId { get; set; }
+    }
+
 }

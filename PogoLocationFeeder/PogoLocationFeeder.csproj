@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Output.cs" />
+    <Compile Include="Common\ChannelInfo.cs" />
     <Compile Include="Helper\IVParser.cs" />
     <Compile Include="Helper\Log.cs" />
     <Compile Include="Helper\MessageCache.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Repository\RarePokemonsFactory.cs" />
     <Compile Include="Repository\TrackermonRarePokemonRepository.cs" />
     <Compile Include="SniperInfo.cs" />
+    <Compile Include="Writers\ClientWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.config" />

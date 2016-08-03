@@ -12,6 +12,7 @@ using PogoLocationFeeder.Helper;
 using PoGo.LocationFeeder.Settings;
 using System.Globalization;
 using PogoLocationFeeder.Repository;
+using PogoLocationFeeder.Writers;
 using static PogoLocationFeeder.DiscordWebReader;
 using PoGoLocationFeeder.Helper;
 
@@ -33,120 +34,15 @@ namespace PogoLocationFeeder
             }
             
         }
-        private TcpListener listener;
-        private List<TcpClient> arrSocket = new List<TcpClient>();
         private MessageParser parser = new MessageParser();
-        private DiscordChannelParser channel_parser = new DiscordChannelParser();
-        private MessageCache messageCache = new MessageCache();
+        private ChannelParser channel_parser = new ChannelParser();
+        private ClientWriter clientWriter = new ClientWriter();
 
-        // A socket is still connected if a nonblocking, zero-byte Send call either:
-        // 1) returns successfully or 
-        // 2) throws a WAEWOULDBLOCK error code(10035)
-        public static bool IsConnected(Socket client)
-        {
-            // This is how you can determine whether a socket is still connected.
-            bool blockingState = client.Blocking;
 
-            try
-            {
-                byte[] tmp = new byte[1];
-
-                client.Blocking = false;
-                client.Send(tmp, 0, 0);
-                return true;
-            }
-            catch (SocketException e)
-            {
-                // 10035 == WSAEWOULDBLOCK
-                return (e.NativeErrorCode.Equals(10035));
-            }
-            finally
-            {
-                client.Blocking = blockingState;
-            }
-        }
-
-        public void StartNet(int port)
-        {
-
-            Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
-            Log.Plain("This software is 100% free and open-source.\n");
-
-            Log.Info("Application starting...");
-            try
-            {
-                listener = new TcpListener(IPAddress.Any, port);
-                listener.Start();
-            } catch(System.Net.Sockets.SocketException e)
-            {
-                Log.Fatal($"Port {port} is already in use!", e);
-                throw e;
-            }
-
-            Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
-
-            StartAccept(); 
-        }
-
-        private void StartAccept()
-        {
-            listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
-        }
-        private void HandleAsyncConnection(IAsyncResult res)
-        {
-            StartAccept();
-            TcpClient client = listener.EndAcceptTcpClient(res);
-            if (client != null && IsConnected(client.Client))
-            {
-                arrSocket.Add(client);
-                Log.Info($"New connection from {getIp(client.Client)}");
-            }
-        }
-
-        private string getIp(Socket s)
-        {
-            IPEndPoint remoteIpEndPoint = s.RemoteEndPoint as IPEndPoint;
-            return remoteIpEndPoint.ToString();
-        }
-
-        private async Task feedToClients(List<SniperInfo> snipeList, string source)
-        {
-            // Remove any clients that have disconnected
-            if(GlobalSettings.ThreadPause) return;
-            arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
-            foreach (var target in unsentMessages)
-            {
-                foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
-                {
-                    try
-                    {
-                        NetworkStream networkStream = socket.GetStream();
-                        StreamWriter s = new StreamWriter(networkStream);
-
-                        s.WriteLine(JsonConvert.SerializeObject(target));
-                        s.Flush();
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Caught exception: {e.ToString()}");
-                    }
-                }
-                // debug output
-                if (GlobalSettings.Output != null)
-                    GlobalSettings.Output.PrintPokemon(target, channel_parser.ToArray(source)[0], channel_parser.ToArray(source)[1]);
-
-                String timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{channel_parser.ToName(source)}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
-                    + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
-                    + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
-            }
-        }
-
-        public async Task relayMessageToClients(string message, string channel)
+        public async Task relayMessageToClients(string message, ChannelInfo channelInfo)
         {
             var snipeList = parser.parseMessage(message);
-            await feedToClients(snipeList, channel);
+            await clientWriter.FeedToClients(snipeList, channelInfo);
         }
 
 
@@ -159,7 +55,7 @@ namespace PogoLocationFeeder
 
             VersionCheckState.Execute(new CancellationToken());
 
-            StartNet(settings.Port);
+            clientWriter.StartNet(settings.Port);
 
             PollRarePokemonRepositories(settings);
 
@@ -169,7 +65,7 @@ namespace PogoLocationFeeder
             {
                 try
                 {
-                    pollDiscordFeed(discordWebReader.stream);
+                    PollDiscordFeed(discordWebReader.stream);
                 }
                 catch (WebException)
                 {
@@ -213,7 +109,7 @@ namespace PogoLocationFeeder
             yield return sb.ToString();
         }
 
-        private void pollDiscordFeed(Stream stream)
+        private void PollDiscordFeed(Stream stream)
         {
             int delay = 10 * 1000;
             var cancellationTokenSource = new CancellationTokenSource();
@@ -240,7 +136,15 @@ namespace PogoLocationFeeder
                                 {
                                     //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
                                     Log.Debug("Discord message received: {0}: {1}", result.channel_id, result.content);
-                                    await relayMessageToClients(result.content, result.channel_id);
+                                    var channelInfo = channel_parser.ToChannelInfo(result.channel_id);
+                                    if (channelInfo.isValid)
+                                    {
+                                        await relayMessageToClients(result.content, channelInfo);
+                                    }
+                                    else
+                                    {
+                                        Log.Debug("Channelid {0} was not found the discord_channels.json", result.channel_id);
+                                    }
                                 }
                             }
                         }
@@ -275,11 +179,13 @@ namespace PogoLocationFeeder
                         for (int retrys = 0; retrys <= 3; retrys++)
                         {
                             var pokeSniperList = rarePokemonRepository.FindAll();
+                            var channelInfo = new ChannelInfo();
+                            channelInfo.server = rarePokemonRepository.GetChannel();
                             if (pokeSniperList != null)
                             {
                                 if (pokeSniperList.Any())
                                 {
-                                    await feedToClients(pokeSniperList, rarePokemonRepository.GetChannel());
+                                    await clientWriter.FeedToClients(pokeSniperList, channelInfo);
                                 }
                                 else
                                 {

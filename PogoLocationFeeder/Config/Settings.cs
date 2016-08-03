@@ -16,7 +16,6 @@ namespace PoGo.LocationFeeder.Settings {
         public bool UsePokeSnipers = false;
         public bool UseTrackemon = false;
 
-
         public static bool SniperVisibility => isOneClickSnipeSupported();
         public static bool ThreadPause = false;
         public static GlobalSettings Default => new GlobalSettings();
@@ -53,6 +52,7 @@ namespace PoGo.LocationFeeder.Settings {
             }
             return settings;
         }
+
         public static bool isOneClickSnipeSupported() {
             const string keyName = @"pokesniper2\Shell\Open\Command";
             //return Registry.GetValue(keyName, valueName, null) == null;
