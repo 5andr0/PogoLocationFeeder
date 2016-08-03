@@ -15,6 +15,7 @@
     "Name": "sniping"
   },
 
+
   {
     "id": "207998375251935232",
     "Server": "PokeMobBot - a Pokémon Go Bot",
@@ -85,5 +86,46 @@
     "id": "208836707057926144",
     "Server": "100IV CLUB",
     "Name": "rare-pokemon "
+  },
+
+
+  {
+    "id": "209577054839111682",
+    "Server": "PoGoHax",
+    "Name": "coord-bot"
+  },
+  {
+    "id": "207953160302624769",
+    "Server": "PoGoHax",
+    "Name": "rare_pokemon"
+  },
+  {
+    "id": "208281728119209984",
+    "Server": "PoGoHax",
+    "Name": "high_iv_pokemon_90plus"
+  },
+
+
+  {
+    "id": "205797255301693440",
+    "Server": "Pokémon Go Sniping/Botting",
+    "Name": "pokemon-coords"
+  },
+  {
+    "id": "208660441289719818",
+    "Server": "Pokémon Go Sniping/Botting",
+    "Name": "high-iv-coords"
+  },
+
+
+  {
+    "id": "209002390257532938",
+    "Server": "Pokemon Go",
+    "Name": "90plus_iv"
+  },
+  {
+    "id": "208946520874156033",
+    "Server": "Pokemon Go",
+    "Name": "rares_gps_cordinates"
   }
 ]
