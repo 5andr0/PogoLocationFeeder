@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MangaChecker.ViewModels;
 using PoGo.LocationFeeder.Settings;
+using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.GUI.Models {
     public class SniperInfoModel {
@@ -34,10 +35,18 @@ namespace PogoLocationFeeder.GUI.Models {
         }
 
         public void CopyCoords() {
-            Clipboard.SetText($"{Info.Latitude}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+            Clipboard.SetText($"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
         }
         public void PokeSnipers() {
-            Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+            try
+            {
+                Process.Start(
+                    $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error while launching pokesniper2", e);
+            }
         }
 
         public ICommand copyCoordsCommand { get; }
