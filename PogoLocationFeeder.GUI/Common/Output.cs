@@ -17,6 +17,7 @@ namespace PogoLocationFeeder.GUI.Common
         private static readonly string assetPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
         private static readonly string iconPath = Path.Combine(assetPath, "icons");
         private static object _MessageLock = new object();
+        private static int ShowLimit = Settings.Default.ShowLimit;
 
         public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black)
         {
@@ -33,7 +34,19 @@ namespace PogoLocationFeeder.GUI.Common
                 Settings.Default.DebugOutput += $"\n{string.Format(message, args)}";
             }
         }
-
+        public void InsertToList(SniperInfoModel info) {
+            var pokes = GlobalVariables.PokemonsInternal;
+            ShowLimit = Settings.Default.ShowLimit;
+            if(pokes.Count > ShowLimit) {
+                var diff = pokes.Count - ShowLimit;
+                for(int i = 0; i < diff; i++) {
+                    pokes.Remove(pokes.Last());
+                }
+            }
+            if(pokes.Count >= ShowLimit)
+                pokes.Remove(pokes.Last());
+            pokes.Insert(0, info);
+        }
         public void PrintPokemon(SniperInfo sniperInfo, string server, string channel)
         {
             Application.Current.Dispatcher.BeginInvoke((Action)delegate () {
@@ -44,7 +57,7 @@ namespace PogoLocationFeeder.GUI.Common
                     Server = server,
                     Channel = channel
                 };
-                GlobalVariables.PokemonsInternal.Insert(0, info);
+                InsertToList(info);
             });
         }
     }
