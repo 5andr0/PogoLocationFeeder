@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using PoGo.LocationFeeder.Settings;
 
 namespace PogoLocationFeeder.GUI.Views {
     /// <summary>

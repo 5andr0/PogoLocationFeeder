@@ -34,6 +34,15 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn x:Name="col">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Height="30" Command="{Binding PokeSnipersCommand}" Background="Black" BorderThickness="0" Margin="-5">
+                                <Image Source="PogoLocationFeeder.GUI;component/Assets/snipers.png"></Image>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -41,7 +50,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Binding="{Binding Server}" Header="Server" />
+                <DataGridTextColumn Binding="{Binding Server}" Header="Server"  />
                 <DataGridTextColumn Binding="{Binding Channel}" Header="Channel" />
                 <DataGridTextColumn Binding="{Binding Info.Id}" Header="Name" />
                 <DataGridTextColumn Binding="{Binding IV}" Header="IV" />
