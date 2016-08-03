@@ -18,6 +18,8 @@ namespace PoGo.LocationFeeder.Settings
         public bool useTrackemon = false;
 
         public static GlobalSettings Default => new GlobalSettings();
+        public static GlobalSettings Settings;
+        public static PogoLocationFeeder.Common.IOutput Output;
 
         public static GlobalSettings Load()
         {

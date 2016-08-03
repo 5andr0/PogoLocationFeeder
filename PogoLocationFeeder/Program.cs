@@ -17,7 +17,7 @@ using static PogoLocationFeeder.DiscordWebReader;
 
 namespace PogoLocationFeeder
 {
-    class Program
+    public class Program
     {
 
         static void Main(string[] args)
@@ -132,8 +132,11 @@ namespace PogoLocationFeeder
                     }
                 }
                 // debug output
+                if (GlobalSettings.Output != null)
+                    GlobalSettings.Output.PrintPokemon(target, channel_parser.ToArray(source)[0], channel_parser.ToArray(source)[1]);
+
                 String timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{source}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                Log.Pokemon($"{channel_parser.ToName(source)}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
                     + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
                     + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
             }
@@ -146,7 +149,7 @@ namespace PogoLocationFeeder
         }
 
 
-        public async void Start()
+        public void Start()
         {
             var settings = GlobalSettings.Load();
             channel_parser.Init();
@@ -165,7 +168,7 @@ namespace PogoLocationFeeder
                 {
                     pollDiscordFeed(discordWebReader.stream);
                 }
-                catch (WebException e)
+                catch (WebException)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
                     Thread.Sleep(30*1000);
@@ -234,7 +237,7 @@ namespace PogoLocationFeeder
                                 {
                                     //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
                                     Log.Debug("Discord message received: {0}: {1}", result.channel_id, result.content);
-                                    await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
+                                    await relayMessageToClients(result.content, result.channel_id);
                                 }
                             }
                         }
