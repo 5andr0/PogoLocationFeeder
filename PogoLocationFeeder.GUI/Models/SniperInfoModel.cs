@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MangaChecker.ViewModels;
+using PoGo.LocationFeeder.Settings;
 
 namespace PogoLocationFeeder.GUI.Models {
     public class SniperInfoModel {
@@ -11,7 +12,7 @@ namespace PogoLocationFeeder.GUI.Models {
         public BitmapImage Icon { get; set; }
         public string Server { get; set; }
         public string Channel { get; set; }
-
+        public bool SniperVisibility { get; set; }
         public SniperInfo Info {
             get { return _info; }
             set {
@@ -28,6 +29,7 @@ namespace PogoLocationFeeder.GUI.Models {
         public SniperInfoModel() {
             copyCoordsCommand = new ActionCommand(CopyCoords);
             PokeSnipersCommand = new ActionCommand(PokeSnipers);
+            SniperVisibility = GlobalSettings.SniperVisibility;
         }
 
         public void CopyCoords() {

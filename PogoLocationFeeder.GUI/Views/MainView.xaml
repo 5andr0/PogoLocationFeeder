@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PogoLocationFeeder.GUI.Views.MainView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,9 +6,13 @@
              xmlns:local="clr-namespace:PogoLocationFeeder.GUI.Views"
              xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf" x:Class="PogoLocationFeeder.GUI.Views.MainView"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <Converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
                   Background="Transparent" SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True">
@@ -21,14 +25,10 @@
                                 <StackPanel>
                                     <Button Height="30"
                                             Command="{Binding copyCoordsCommand}"
-                                            Style="{DynamicResource MaterialDesignFlatButton}">
-                                        Copy Coords
-                                    </Button>
+                                            Style="{DynamicResource MaterialDesignFlatButton}" Content="Copy Coords"/>
                                     <Button Height="30"
                                             Command="{Binding PokeSnipersCommand}"
-                                            Style="{DynamicResource MaterialDesignFlatButton}">
-                                        PokeSnipers2
-                                    </Button>
+                                            Style="{DynamicResource MaterialDesignFlatButton}" Visibility="{Binding SniperVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" Content="PokeSnipers2"/>
                                 </StackPanel>
                             </materialDesign:PopupBox>
                         </DataTemplate>
