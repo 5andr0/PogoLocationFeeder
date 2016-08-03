@@ -36,7 +36,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             StartStopCommand = new ActionCommand(Startstop);
             DebugComand = new ActionCommand(ShowDebug);
 
-            Settings.Default.DebugOutput = "Debug stuff in here!";
+            Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
             //    Latitude = 45.99999,
