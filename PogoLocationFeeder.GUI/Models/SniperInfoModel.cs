@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -33,7 +34,7 @@ namespace PogoLocationFeeder.GUI.Models {
             Clipboard.SetText($"{Info.Latitude}, {Info.Longitude}");
         }
         public void PokeSnipers() {
-            Clipboard.SetText($"pokesniper2://{Info.Id}/{Info.Latitude.ToString().Replace(",", ".")},{Info.Longitude.ToString().Replace(",", ".")}");
+            Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString().Replace(",", ".")},{Info.Longitude.ToString().Replace(",", ".")}");
         }
 
         public ICommand copyCoordsCommand { get; }

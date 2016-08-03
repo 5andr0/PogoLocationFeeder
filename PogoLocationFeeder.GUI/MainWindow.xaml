@@ -17,9 +17,9 @@
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
 
-            <!--<Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}" >
+            <Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}" >
                 <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
-            </Button>-->
+            </Button>
             <Button Command="{Binding SettingsComand}" Content="Settings" />
             <Button Command="{Binding DebugComand}" Content="Debug" />
         </Controls:WindowCommands>

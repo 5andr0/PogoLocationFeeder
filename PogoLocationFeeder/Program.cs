@@ -114,6 +114,7 @@ namespace PogoLocationFeeder
         private async Task feedToClients(List<SniperInfo> snipeList, string source)
         {
             // Remove any clients that have disconnected
+            if(GlobalSettings.ThreadPause) return;
             arrSocket.RemoveAll(x => !IsConnected(x.Client));
             List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
             foreach (var target in unsentMessages)

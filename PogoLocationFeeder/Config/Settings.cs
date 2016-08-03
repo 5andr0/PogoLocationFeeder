@@ -14,9 +14,10 @@ namespace PoGo.LocationFeeder.Settings
     public class GlobalSettings
     {
         public int Port = 16969;
-        public bool usePokeSnipers = false;
-        public bool useTrackemon = false;
+        public bool UsePokeSnipers = false;
+        public bool UseTrackemon = false;
 
+        public static bool ThreadPause = false;
         public static GlobalSettings Default => new GlobalSettings();
         public static GlobalSettings Settings;
         public static PogoLocationFeeder.Common.IOutput Output;

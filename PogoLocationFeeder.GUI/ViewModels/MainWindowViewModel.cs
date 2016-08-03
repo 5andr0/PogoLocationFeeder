@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -85,6 +86,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             }
         }
 
+        public PackIconKind PausePlayButtonIcon { get;set;} = PackIconKind.Pause;
+
         public void setStatus(string status) {
             Status = status;
         }
@@ -111,7 +114,16 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         }
 
         private void Startstop() {
-            //todo
+            var status = GlobalSettings.ThreadPause;
+            if (status) {
+                GlobalSettings.ThreadPause = false;
+                ThreadStatus = "[Running]";
+                PausePlayButtonIcon = PackIconKind.Pause;
+                return;
+            }
+            GlobalSettings.ThreadPause = true;
+            ThreadStatus = "[Paused]";
+            PausePlayButtonIcon= PackIconKind.Play;
         }
         
     }
