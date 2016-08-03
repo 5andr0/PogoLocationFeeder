@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using PogoLocationFeeder.GUI.ViewModels;
 using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Config;
+using PogoLocationFeeder.GUI.Properties;
 
 namespace PogoLocationFeeder.Common.Models
 {
@@ -57,7 +58,9 @@ namespace PogoLocationFeeder.Common.Models
             try
             {
                 Process.Start(
-                    $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                    Settings.Default.Sniper2Path.Contains(".exe")
+                        ? $"{Settings.Default.Sniper2Path} pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                        : $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
             }
             catch (Exception e)
             {
