@@ -69,7 +69,7 @@ namespace PogoLocationFeeder.Common.Models
                 if (Settings.Default.Sniper2Path.Contains(".exe")) {
                     StartProcessWithPath();
                 } else {
-                    Process.Start( $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                    Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
                 }
             }
             catch (Exception e)

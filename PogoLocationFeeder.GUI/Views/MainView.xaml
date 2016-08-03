@@ -26,11 +26,6 @@
                                     <Button Height="30"
                                             Command="{Binding copyCoordsCommand}"
                                             Style="{DynamicResource MaterialDesignFlatButton}" Content="Copy Coords" />
-                                    <Button Height="30"
-                                            Command="{Binding PokeSnipersCommand}"
-                                            Style="{DynamicResource MaterialDesignFlatButton}"
-                                            Visibility="{Binding SniperVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                            Content="PokeSnipers2" />
                                 </StackPanel>
                             </materialDesign:PopupBox>
                         </DataTemplate>
