@@ -1,12 +1,10 @@
 ﻿#region using directives
 
 using System;
-using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Newtonsoft.Json.Linq;
 using PogoLocationFeeder.Helper;
 
 #endregion
@@ -78,7 +76,7 @@ namespace PoGoLocationFeeder.Helper
                 var gitVersion = new Version($"{match.Groups[1]}.0");
                 RemoteVersion = gitVersion;
 
-                Log.Debug($"My version: {Assembly.GetExecutingAssembly().GetName().Version}. Remote version: {RemoteVersion}.");
+                Log.Debug($"My version: {Assembly.GetExecutingAssembly().GetName().Version} (or a later master). Remote version: {RemoteVersion}.");
 
                 if (gitVersion > Assembly.GetExecutingAssembly().GetName().Version)
                     return new Tuple<bool, bool>(true, true);
