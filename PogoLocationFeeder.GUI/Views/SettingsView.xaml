@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="850"
              d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
@@ -32,6 +34,12 @@
         <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Max Pokemon to display</TextBlock>
         <TextBox Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" Text="{Binding ShowLimit, Mode=TwoWay}"
                  PreviewTextInput="NumberValidationTextBox" />
+        <TextBlock Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">PokeSniper2 Folderpath</TextBlock>
+        <StackPanel Grid.Row="7" Grid.Column="3" Orientation="Horizontal">
+            <TextBox x:Name="path" VerticalAlignment="Center" Text="{Binding Sniper2exe, Mode=TwoWay}" IsReadOnly="True" MouseDoubleClick="TextBox_MouseDoubleClick" MinWidth="500"/>
+            <Button Style="{DynamicResource MaterialDesignFlatButton}" Margin="10,0,0,0" Command="{Binding RemovePathCommand}">Remove</Button>
+            
+        </StackPanel>
 
     </Grid>
 </UserControl>

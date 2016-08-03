@@ -12,6 +12,7 @@ namespace PogoLocationFeeder.GUI.Views
     {
         public MainView() {
             InitializeComponent();
+            if (Settings.Default.Sniper2Path.Contains(".exe")) {
                 col.Visibility = Visibility.Visible;
             } else {
                 col.Visibility = GlobalSettings.isOneClickSnipeSupported() ? Visibility.Visible : Visibility.Collapsed;

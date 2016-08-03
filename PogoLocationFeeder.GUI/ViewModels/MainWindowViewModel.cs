@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Input;
@@ -6,9 +7,9 @@ using log4net.Config;
 using MaterialDesignThemes.Wpf;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Common.Models;
-using PogoLocationFeeder.Common.Properties;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
+using PogoLocationFeeder.GUI.Properties;
 using PropertyChanged;
 
 //using POGOProtos.Enums;
@@ -25,7 +26,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(Startstop);
             DebugComand = new ActionCommand(ShowDebug);
-
+            RemovePathCommand = new ActionCommand(RemovePath);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -42,10 +43,9 @@ namespace PogoLocationFeeder.GUI.ViewModels
             XmlConfigurator.Configure(
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.GUI.App.config"));
             GlobalSettings.Output = new Output();
-
+            GlobalSettings.PokeSnipers2exe = Settings.Default.Sniper2Path;
             var p = new Program();
             var a = new Thread(p.Start) {IsBackground = true};
-            //Start(); p
             a.Start();
         }
 
@@ -53,12 +53,13 @@ namespace PogoLocationFeeder.GUI.ViewModels
 
         public int TransitionerIndex { get; set; }
 
-        //public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
+        public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
         public ReadOnlyObservableCollection<SniperInfoModel> Pokemons { get; }
 
         public ICommand SettingsComand { get; }
         public ICommand DebugComand { get; }
         public ICommand StartStopCommand { get; }
+        public ICommand RemovePathCommand { get; }
 
         public string CustomIp { get; set; } = "localhost";
 
@@ -83,7 +84,19 @@ namespace PogoLocationFeeder.GUI.ViewModels
             }
         }
 
-        public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
+        public string Sniper2exe {
+            get {
+                return Settings.Default.Sniper2Path;
+            }
+            set {
+                Settings.Default.Sniper2Path = value;
+                Settings.Default.Save();
+            }
+        }
+
+        public void RemovePath() {
+            Sniper2exe = string.Empty;
+        }
 
         public void SetStatus(string status)
         {
