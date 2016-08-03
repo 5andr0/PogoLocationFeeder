@@ -15,11 +15,8 @@ namespace PoGoLocationFeeder.Helper
 {
     public class VersionCheckState
     {
-        public const string VersionUri =
-            "https://cdn.rawgit.com/5andr0/PogoLocationFeeder/master/PogoLocationFeeder/Properties/AssemblyInfo.cs";
-
         public const string LatestReleaseApi =
-            "https://api.github.com/repos/5andr0/PogoLocationFeeder/releases/latest";
+            "https://api.github.com/repos/5andr0/pogolocationfeeder/releases/latest";
 
         private const string LatestRelease =
             "https://github.com/5andr0/PogoLocationFeeder/releases";
@@ -30,12 +27,14 @@ namespace PoGoLocationFeeder.Helper
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var updateCheckSucceeded = IsLatest().Item1;
-            var needupdate = IsLatest().Item2;
+            var result = IsLatest();
+
+            var updateCheckSucceeded = result.Item1;
+            var needupdate = result.Item2;
 
             if (!updateCheckSucceeded)
             {
-                Log.Info("Unable to check for updates!");
+                Log.Info("Unable to check for updates! Likely hitting github rate limit (60 checks per hour)");
                 return;
             }
 
@@ -54,7 +53,8 @@ namespace PoGoLocationFeeder.Helper
         {
             using (var wC = new WebClient())
             {
-                return wC.DownloadString(VersionUri);
+                wC.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+                return wC.DownloadString(LatestReleaseApi);
             }
         }
 
@@ -62,27 +62,34 @@ namespace PoGoLocationFeeder.Helper
         {
             try
             {
-                var regex = new Regex(@"\[assembly\: AssemblyVersion\(""(\d{1,})\.(\d{1,})\.(\d{1,})""\)\]");
-                var match = regex.Match(DownloadServerVersion());
-
+                var regex = new Regex("\"tag_name\":\\Sv(.*?)\",");
+                Match match = null;
+                try
+                {
+                    match = regex.Match(DownloadServerVersion());
+                }
+                catch (Exception)
+                {
+                    return new Tuple<bool, bool>(false, false);
+                }
+ 
                 if (!match.Success)
                     return new Tuple<bool, bool>(false, false);
-
-                var gitVersion = new Version($"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}.{match.Groups[4]}");
+                var gitVersion = new Version($"{match.Groups[1]}.0");
                 RemoteVersion = gitVersion;
 
-                Log.Debug($"Remote version: {RemoteVersion}. My version: {Assembly.GetExecutingAssembly().GetName().Version}");
+                Log.Debug($"My version: {Assembly.GetExecutingAssembly().GetName().Version}. Remote version: {RemoteVersion}.");
 
-                if (gitVersion >= Assembly.GetExecutingAssembly().GetName().Version)
-                    return new Tuple<bool, bool>(true, false);
+                if (gitVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                    return new Tuple<bool, bool>(true, true);
             }
             catch (Exception e)
             {
                 Log.Fatal($"Version exception: {e.ToString()}");
-                return new Tuple<bool, bool>(false, false); // Indicate that update check failed
+                return new Tuple<bool, bool>(false, false);
             }
 
-            return new Tuple<bool, bool>(true, true);
+            return new Tuple<bool, bool>(true, false);
         }
     }
 }
