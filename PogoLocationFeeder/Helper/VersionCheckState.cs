@@ -22,7 +22,7 @@ namespace PoGoLocationFeeder.Helper
 
         public static Version RemoteVersion;
 
-        public static async void Execute(CancellationToken cancellationToken)
+        public static void Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

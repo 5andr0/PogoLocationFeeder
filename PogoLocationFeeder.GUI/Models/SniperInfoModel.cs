@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -33,10 +34,10 @@ namespace PogoLocationFeeder.GUI.Models {
         }
 
         public void CopyCoords() {
-            Clipboard.SetText($"{Info.Latitude}, {Info.Longitude}");
+            Clipboard.SetText($"{Info.Latitude}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
         }
         public void PokeSnipers() {
-            Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString().Replace(",", ".")},{Info.Longitude.ToString().Replace(",", ".")}");
+            Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
         }
 
         public ICommand copyCoordsCommand { get; }

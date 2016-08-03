@@ -16,7 +16,7 @@ namespace PogoLocationFeeder.Helper
 
         static Log()
         {
-            XmlConfigurator.Configure();
+            //XmlConfigurator.Configure(); // we are loading from the embedded resource file App.config so we don't have to deliver the config file
         }
         const string timeFormat = "HH:mm:ss";
         private static object _MessageLock = new object();

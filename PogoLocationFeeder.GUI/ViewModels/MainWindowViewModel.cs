@@ -55,8 +55,10 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             //    Icon = new BitmapImage(new Uri(Path.Combine(iconPath, $"{(int) poke.Id}.png")))
             //};
             //GlobalVariables.PokemonsInternal.Add(y);
-
+            GlobalSettings.Gui = true;
+            log4net.Config.XmlConfigurator.Configure(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.GUI.App.config"));
             GlobalSettings.Output = new Output();
+
             Program p = new Program();
             Thread a = new Thread(p.Start) { IsBackground = true};
             //Start(); p

@@ -21,6 +21,7 @@ namespace PoGo.LocationFeeder.Settings {
         public static bool ThreadPause = false;
         public static GlobalSettings Default => new GlobalSettings();
         public static GlobalSettings Settings;
+        public static bool Gui = false;
         public static PogoLocationFeeder.Common.IOutput Output;
 
         public static GlobalSettings Load() {
