@@ -26,12 +26,17 @@ namespace PogoLocationFeeder.GUI.Models {
 
         public SniperInfoModel() {
             copyCoordsCommand = new ActionCommand(CopyCoords);
+            PokeSnipersCommand = new ActionCommand(PokeSnipers);
         }
 
         public void CopyCoords() {
             Clipboard.SetText($"{Info.Latitude}, {Info.Longitude}");
         }
+        public void PokeSnipers() {
+            Clipboard.SetText($"pokesniper2://{Info.Id}/{Info.Latitude.ToString().Replace(",", ".")},{Info.Longitude.ToString().Replace(",", ".")}");
+        }
 
         public ICommand copyCoordsCommand { get; }
+        public ICommand PokeSnipersCommand { get; }
     }
 }

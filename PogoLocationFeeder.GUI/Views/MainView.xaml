@@ -24,6 +24,11 @@
                                             Style="{DynamicResource MaterialDesignFlatButton}">
                                         Copy Coords
                                     </Button>
+                                    <Button Height="30"
+                                            Command="{Binding PokeSnipersCommand}"
+                                            Style="{DynamicResource MaterialDesignFlatButton}">
+                                        PokeSnipers2
+                                    </Button>
                                 </StackPanel>
                             </materialDesign:PopupBox>
                         </DataTemplate>
