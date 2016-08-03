@@ -50,7 +50,17 @@ namespace PogoLocationFeeder.Helper
                 if (String.Compare(id, e.id) == 0)
                     return ($"Server: {e.Server}, Channel: {e.Name}");
             }
-            return "UNKNOWN_SOURCE: ";
+            return "UNKNOWN_SOURCE ";
+        }
+
+        public string[] ToArray(string id)
+        {
+            foreach (var e in settings)
+            {
+                if (String.Compare(id, e.id) == 0)
+                    return new string[] { e.Server, e.Name };
+            }
+            return new string[] { "Unknown", "Unknown"};
         }
 
         public class DiscordChannels

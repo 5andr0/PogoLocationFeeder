@@ -36,7 +36,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Binding="{Binding Source}" Header="Source" />
+                <DataGridTextColumn Binding="{Binding Server}" Header="Server" />
+                <DataGridTextColumn Binding="{Binding Channel}" Header="Channel" />
                 <DataGridTextColumn Binding="{Binding Info.Id}" Header="Name" />
                 <DataGridTextColumn Binding="{Binding IV}" Header="IV" />
                 <DataGridTextColumn Binding="{Binding Info.Latitude}" Header="Latitude" />

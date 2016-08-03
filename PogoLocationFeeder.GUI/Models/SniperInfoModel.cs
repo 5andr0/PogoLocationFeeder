@@ -8,7 +8,8 @@ namespace PogoLocationFeeder.GUI.Models {
     public class SniperInfoModel {
         private SniperInfo _info;
         public BitmapImage Icon { get; set; }
-        public string Source { get; set; }
+        public string Server { get; set; }
+        public string Channel { get; set; }
 
         public SniperInfo Info {
             get { return _info; }
