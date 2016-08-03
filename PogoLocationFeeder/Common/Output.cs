@@ -6,18 +6,11 @@ using System.Threading.Tasks;
 
 namespace PogoLocationFeeder.Common
 {
-    public enum LogLevel
-    {
-        None = 0,
-        Error = 1,
-        Warning = 2,
-        Info = 3,
-        Debug = 4
-    }
     public interface IOutput
     {
-        void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black);
+        void Write(string message);
         void PrintPokemon(SniperInfo info, string server, string channel);
         void WriteFormat(string message, params object[] args);
+        void SetStatus(string message);
     }
 }

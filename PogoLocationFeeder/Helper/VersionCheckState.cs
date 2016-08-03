@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using PogoLocationFeeder.Helper;
+using PoGo.LocationFeeder.Settings;
 
 #endregion
 
@@ -43,6 +44,8 @@ namespace PoGoLocationFeeder.Helper
             else
             {
                 Log.Info("An update is available! Get the latest release at {0}", LatestRelease);
+                if (GlobalSettings.Output != null)
+                    GlobalSettings.Output.SetStatus($"Version outdated! {RemoteVersion} is available");
             }
             return;
         }

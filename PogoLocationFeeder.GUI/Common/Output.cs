@@ -12,6 +12,7 @@ using PogoLocationFeeder.GUI.Properties;
 using log4net.Core;
 using log4net.Appender;
 using PoGo.LocationFeeder.Settings;
+using PogoLocationFeeder.GUI.ViewModels;
 
 namespace PogoLocationFeeder.GUI.Common
 {
@@ -22,7 +23,7 @@ namespace PogoLocationFeeder.GUI.Common
         private static object _MessageLock = new object();
         private static int ShowLimit = Settings.Default.ShowLimit;
 
-        public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black)
+        public void Write(string message)
         {
             lock (_MessageLock)
             {
@@ -37,6 +38,12 @@ namespace PogoLocationFeeder.GUI.Common
                 Settings.Default.DebugOutput += $"\n{string.Format(message, args)}";
             }
         }
+
+        public void SetStatus(string message)
+        {
+            MainWindowViewModel.Instance.SetStatus(message);
+        }
+
         public void InsertToList(SniperInfoModel info) {
             var pokes = GlobalVariables.PokemonsInternal;
             ShowLimit = Settings.Default.ShowLimit;

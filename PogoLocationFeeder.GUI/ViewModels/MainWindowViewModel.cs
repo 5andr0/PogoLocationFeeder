@@ -29,9 +29,15 @@ using PogoLocationFeeder.GUI.Common;
 
 namespace PogoLocationFeeder.GUI.ViewModels {
     [ImplementPropertyChanged]
-    public class MainWindowViewModel {
+    public class MainWindowViewModel
+    {
 
-        public MainWindowViewModel() {
+        private static MainWindowViewModel _instance;
+        public static MainWindowViewModel Instance => _instance;
+
+        public MainWindowViewModel()
+        {
+            _instance = this;
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(Startstop);
@@ -88,7 +94,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public PackIconKind PausePlayButtonIcon { get;set;} = PackIconKind.Pause;
 
-        public void setStatus(string status) {
+        public void SetStatus(string status) {
             Status = status;
         }
 

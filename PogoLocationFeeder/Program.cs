@@ -79,11 +79,9 @@ namespace PogoLocationFeeder
                 listener.Start();
             } catch(System.Net.Sockets.SocketException e)
             {
-                Log.Fatal($"Port {port} already in use", e);
-                Thread.Sleep(20000);
-                //throw e;
+                Log.Fatal($"Port {port} is already in use!", e);
+                throw e;
             }
-
 
             Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
 
