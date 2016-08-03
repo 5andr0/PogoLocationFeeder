@@ -8,7 +8,7 @@ namespace PogoLocationFeeder.Helper
     {
         public static GeoCoordinates parseGeoCoordinates(string input)
         {
-            Match match = Regex.Match(input, @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)");
+            Match match = Regex.Match(input, geoCoordinatesRegex);
             if (match.Success)
             {
                 GeoCoordinates geoCoordinates = new GeoCoordinates();
