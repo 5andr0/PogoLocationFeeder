@@ -1,10 +1,9 @@
-﻿<Controls:MetroWindow x:Class="PogoLocationFeeder.GUI.MainWindow"
+﻿<controls:MetroWindow x:Class="PogoLocationFeeder.GUI.MainWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:local="clr-namespace:PogoLocationFeeder.GUI"
-                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
                       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                       mc:Ignorable="d"
@@ -12,27 +11,28 @@
                       BorderThickness="1"
                       WindowStartupLocation="CenterScreen"
                       Title="Location Feeder" MinHeight="450" MinWidth="700" Height="450" Width="700"
-                      xmlns:views="clr-namespace:PogoLocationFeeder.GUI.Views" TitleCaps="False"
+                      xmlns:views1="clr-namespace:PogoLocationFeeder.GUI.Views"
+                      TitleCaps="False"
                       d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
-    <Controls:MetroWindow.RightWindowCommands>
-        <Controls:WindowCommands>
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
 
-            <Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}" >
+            <Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}">
                 <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
             </Button>
             <Button Command="{Binding SettingsComand}" Content="Settings" />
             <Button Command="{Binding DebugComand}" Content="Debug" />
-        </Controls:WindowCommands>
-    </Controls:MetroWindow.RightWindowCommands>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <materialDesign:Transitioner SelectedIndex="{Binding TransitionerIndex}">
-            <views:MainView />
-            <views:SettingsView />
-            <views:DebugOutputView />
+            <views1:MainView />
+            <views1:SettingsView />
+            <views1:DebugOutputView />
         </materialDesign:Transitioner>
         <TextBlock Grid.Row="1" Margin="16,0,0,0" VerticalAlignment="Center">
             <Run Text="{Binding ThreadStatus}" />
@@ -40,4 +40,4 @@
             <Run Text="{Binding Status}" />
         </TextBlock>
     </Grid>
-</Controls:MetroWindow>
+</controls:MetroWindow>

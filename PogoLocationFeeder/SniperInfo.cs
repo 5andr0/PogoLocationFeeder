@@ -1,8 +1,7 @@
 ﻿using System;
 using POGOProtos.Enums;
-using System.Windows.Media.Imaging;
 
-namespace PogoLocationFeeder
+namespace PogoLocationFeeder.Helper
 {
     public class SniperInfo
     {
@@ -19,11 +18,10 @@ namespace PogoLocationFeeder
         public override string ToString()
         {
             return "SniperInfo: id: " + Id
-                + ", latitude: " + Latitude 
-                + ", longitude: " + Longitude 
-                + (IV != default(double) ? ", IV: " + IV + "%" : "")
-                + (ExpirationTimestamp != default (DateTime) ? ", expiration: " + ExpirationTimestamp : "");
-
+                   + ", Latitude: " + Latitude
+                   + ", Longitude: " + Longitude
+                   + (IV != default(double) ? ", IV: " + IV + "%" : "")
+                   + (ExpirationTimestamp != default(DateTime) ? ", expiration: " + ExpirationTimestamp : "");
         }
     }
 }

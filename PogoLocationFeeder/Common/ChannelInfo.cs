@@ -1,9 +1,5 @@
-﻿using System;
-
-namespace PogoLocationFeeder.Helper
+﻿namespace PogoLocationFeeder.Helper
 {
-
-
     public class ChannelInfo
     {
         public string server { get; set; }
@@ -15,11 +11,12 @@ namespace PogoLocationFeeder.Helper
             if (channel != null && server != null)
             {
                 return $"{server}:{channel}";
-            } else if (server != null)
+            }
+            if (server != null)
             {
                 return server;
             }
-            else if (channel != null)
+            if (channel != null)
             {
                 return channel;
             }

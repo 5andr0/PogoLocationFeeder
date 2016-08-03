@@ -1,43 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using MangaChecker.ViewModels;
+using log4net.Config;
 using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json;
-using PogoLocationFeeder.GUI.Models;
-using PogoLocationFeeder.GUI.Properties;
-using PogoLocationFeeder.Helper;
-using PogoLocationFeeder.Repository;
-using PoGo.LocationFeeder.Settings;
-using POGOProtos.Enums;
-using PropertyChanged;
+using PogoLocationFeeder.Common;
+using PogoLocationFeeder.Common.Models;
+using PogoLocationFeeder.Common.Properties;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
+using PropertyChanged;
 
 //using POGOProtos.Enums;
 
-namespace PogoLocationFeeder.GUI.ViewModels {
+namespace PogoLocationFeeder.GUI.ViewModels
+{
     [ImplementPropertyChanged]
     public class MainWindowViewModel
     {
-
-        private static MainWindowViewModel _instance;
-        public static MainWindowViewModel Instance => _instance;
-
         public MainWindowViewModel()
         {
-            _instance = this;
+            Instance = this;
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(Startstop);
@@ -56,16 +39,19 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             //};
             //GlobalVariables.PokemonsInternal.Add(y);
             GlobalSettings.Gui = true;
-            log4net.Config.XmlConfigurator.Configure(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.GUI.App.config"));
+            XmlConfigurator.Configure(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.GUI.App.config"));
             GlobalSettings.Output = new Output();
 
-            Program p = new Program();
-            Thread a = new Thread(p.Start) { IsBackground = true};
+            var p = new Program();
+            var a = new Thread(p.Start) {IsBackground = true};
             //Start(); p
             a.Start();
         }
 
-        public int TransitionerIndex { get; set; } = 0;
+        public static MainWindowViewModel Instance { get; private set; }
+
+        public int TransitionerIndex { get; set; }
 
         //public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
         public ReadOnlyObservableCollection<SniperInfoModel> Pokemons { get; }
@@ -76,32 +62,38 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public string CustomIp { get; set; } = "localhost";
 
-        public int CustomPort { get; set; } = 0;
+        public int CustomPort { get; set; }
 
         public string Status { get; set; } = "Connected to pogo-feed.mmoex.com";
 
         public string ThreadStatus { get; set; } = "[Running]";
 
-        public int ShowLimit {
-            get {
+        public int ShowLimit
+        {
+            get
+            {
                 if (Settings.Default.ShowLimit.Equals(0)) return 1;
                 return Settings.Default.ShowLimit;
             }
-            set {
+            set
+            {
                 if (value <= 0) value = 1;
                 Settings.Default.ShowLimit = value;
                 Settings.Default.Save();
             }
         }
 
-        public PackIconKind PausePlayButtonIcon { get;set;} = PackIconKind.Pause;
+        public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
 
-        public void SetStatus(string status) {
+        public void SetStatus(string status)
+        {
             Status = status;
         }
 
-        public void ShowSettings() {
-            if (TransitionerIndex != 0) {
+        public void ShowSettings()
+        {
+            if (TransitionerIndex != 0)
+            {
                 TransitionerIndex = 0;
                 return;
             }
@@ -110,20 +102,23 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             {
                 CustomPort = GlobalSettings.Settings.Port;
             }
-            
         }
 
-        public void ShowDebug() {
-            if (TransitionerIndex != 0) {
+        public void ShowDebug()
+        {
+            if (TransitionerIndex != 0)
+            {
                 TransitionerIndex = 0;
                 return;
             }
             TransitionerIndex = 2;
         }
 
-        private void Startstop() {
+        private void Startstop()
+        {
             var status = GlobalSettings.ThreadPause;
-            if (status) {
+            if (status)
+            {
                 GlobalSettings.ThreadPause = false;
                 ThreadStatus = "[Running]";
                 PausePlayButtonIcon = PackIconKind.Pause;
@@ -131,8 +126,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             }
             GlobalSettings.ThreadPause = true;
             ThreadStatus = "[Paused]";
-            PausePlayButtonIcon= PackIconKind.Play;
+            PausePlayButtonIcon = PackIconKind.Play;
         }
-        
     }
 }

@@ -6,44 +6,50 @@ namespace PogoLocationFeeder.Helper
 {
     public class GeoCoordinatesParser
     {
-        public const string geoCoordinatesRegex = @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)";
-        public static GeoCoordinates parseGeoCoordinates(string input)
+        public const string GeoCoordinatesRegex = @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)";
+
+        public static GeoCoordinates ParseGeoCoordinates(string input)
         {
-            Match match = Regex.Match(input, geoCoordinatesRegex);
-            if (match.Success)
+            var match = Regex.Match(input, GeoCoordinatesRegex);
+
+            if (!match.Success) return null;
+
+            var geoCoordinates = new GeoCoordinates();
+            var latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'),
+                CultureInfo.InvariantCulture);
+            var longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'),
+                CultureInfo.InvariantCulture);
+            if (Math.Abs(latitude) > 180)
             {
-                GeoCoordinates geoCoordinates = new GeoCoordinates();
-                var latitude = Convert.ToDouble(match.Groups["lat"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-                var longitude = Convert.ToDouble(match.Groups["long"].Value.Replace(',', '.'), CultureInfo.InvariantCulture);
-                if (Math.Abs(latitude) > 180)
-                {
-                    Log.Debug("latitude is lower than -180 or higher than 180 for input {0}", input);
-                    return null;
-                }
-                if (Math.Abs(longitude) > 180)
-                {
-                    Log.Debug("longitude is lower than -180 or higher than 180 for input {0}", input);
-                    return null;
-                }
-
-                geoCoordinates.latitude = latitude;
-                geoCoordinates.longitude = longitude;
-
-                return geoCoordinates;
+                Log.Debug("Latitude is lower than -180 or higher than 180 for input {0}", input);
+                return null;
             }
-            return null;
+            if (Math.Abs(longitude) > 180)
+            {
+                Log.Debug("Longitude is lower than -180 or higher than 180 for input {0}", input);
+                return null;
+            }
+
+            geoCoordinates.Latitude = latitude;
+            geoCoordinates.Longitude = longitude;
+
+            return geoCoordinates;
         }
     }
 
-   public class GeoCoordinates
+    public class GeoCoordinates
     {
-        public double latitude { get; set; }
-        public double longitude { get; set; }
-        public GeoCoordinates() { }
+        public GeoCoordinates()
+        {
+        }
+
         public GeoCoordinates(double latitude, double longitude)
         {
-            this.latitude = latitude;
-            this.longitude = longitude;
+            Latitude = latitude;
+            Longitude = longitude;
         }
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

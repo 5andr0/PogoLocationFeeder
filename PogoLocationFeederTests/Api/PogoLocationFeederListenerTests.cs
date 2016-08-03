@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,15 +6,22 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using PogoLocationFeeder.API;
+using PogoLocationFeeder.Helper;
+using POGOProtos.Enums;
 
-namespace PogoLocationFeeder.Api.Tests
+namespace PogoLocationFeederTests.Api
 {
-    [TestClass()]
+    [TestClass]
     public class PogoLocationFeederListenerTests
     {
-        const int port = 16959;
-        TcpListener listener;
-        private List<TcpClient> arrSocket = new List<TcpClient>();
+        private const int port = 16959;
+        private readonly List<TcpClient> _arrSocket = new List<TcpClient>();
+        private TcpListener _listener;
+
+        private readonly List<SniperInfoModel> _receivedSniperInfos = new List<SniperInfoModel>();
 
         [TestInitialize]
         public void Setup()
@@ -25,45 +30,43 @@ namespace PogoLocationFeeder.Api.Tests
             {
                 try
                 {
-                    listener = new TcpListener(IPAddress.Any, port);
-                    listener.Start();
+                    _listener = new TcpListener(IPAddress.Any, port);
+                    _listener.Start();
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Could open port {port}", e);
                     throw e;
                 }
-                listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
+                _listener.BeginAcceptTcpClient(HandleAsyncConnection, _listener);
             });
         }
 
-        List<SniperInfoModel> receivedSniperInfos = new List<SniperInfoModel>();
-
-        [TestMethod()]
+        [TestMethod]
         public void AsyncStartTest()
         {
-            PogoLocationFeederListener pogoLocationFeederListener =  new PogoLocationFeederListener();
-            pogoLocationFeederListener.eventHandler += (sender, sniperInfo) =>
+            var pogoLocationFeederListener = new PogoLocationFeederListener();
+            pogoLocationFeederListener.EventHandler += (sender, sniperInfo) =>
             {
                 //Implement your code here
-                System.Console.WriteLine("SniperInfo received");
-                receivedSniperInfos.Add(sniperInfo);
+                Console.WriteLine("SniperInfo received");
+                _receivedSniperInfos.Add(sniperInfo);
             };
             pogoLocationFeederListener.AsyncStart("localhost", port);
             Thread.Sleep(500);
             SendToClients(createSniperInfo());
             Thread.Sleep(100);
-            Assert.IsTrue(receivedSniperInfos.Any());
-            Assert.AreEqual(POGOProtos.Enums.PokemonId.Abra, receivedSniperInfos[0].Id);
-            Assert.AreEqual(12.345, receivedSniperInfos[0].Latitude);
-            Assert.AreEqual(-98.765, receivedSniperInfos[0].Longitude);
-            Assert.AreEqual(95.6, receivedSniperInfos[0].IV);
+            Assert.IsTrue(_receivedSniperInfos.Any());
+            Assert.AreEqual(PokemonId.Abra, _receivedSniperInfos[0].Id);
+            Assert.AreEqual(12.345, _receivedSniperInfos[0].Latitude);
+            Assert.AreEqual(-98.765, _receivedSniperInfos[0].Longitude);
+            Assert.AreEqual(95.6, _receivedSniperInfos[0].IV);
         }
 
         private SniperInfo createSniperInfo()
         {
-            SniperInfo sniperInfo = new SniperInfo();
-            sniperInfo.Id = POGOProtos.Enums.PokemonId.Abra;
+            var sniperInfo = new SniperInfo();
+            sniperInfo.Id = PokemonId.Abra;
             sniperInfo.Latitude = 12.345;
             sniperInfo.Longitude = -98.765;
             sniperInfo.IV = 95.6;
@@ -72,16 +75,16 @@ namespace PogoLocationFeeder.Api.Tests
 
         private void StartAccept()
         {
-            listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
+            _listener.BeginAcceptTcpClient(HandleAsyncConnection, _listener);
         }
 
         private void HandleAsyncConnection(IAsyncResult res)
         {
             StartAccept();
-            TcpClient client = listener.EndAcceptTcpClient(res);
+            var client = _listener.EndAcceptTcpClient(res);
             if (client != null && IsConnected(client.Client))
             {
-                arrSocket.Add(client);
+                _arrSocket.Add(client);
                 Console.WriteLine($"New connection");
             }
         }
@@ -89,11 +92,11 @@ namespace PogoLocationFeeder.Api.Tests
         public static bool IsConnected(Socket client)
         {
             // This is how you can determine whether a socket is still connected.
-            bool blockingState = client.Blocking;
+            var blockingState = client.Blocking;
 
             try
             {
-                byte[] tmp = new byte[1];
+                var tmp = new byte[1];
 
                 client.Blocking = false;
                 client.Send(tmp, 0, 0);
@@ -102,7 +105,7 @@ namespace PogoLocationFeeder.Api.Tests
             catch (SocketException e)
             {
                 // 10035 == WSAEWOULDBLOCK
-                return (e.NativeErrorCode.Equals(10035));
+                return e.NativeErrorCode.Equals(10035);
             }
             finally
             {
@@ -112,19 +115,19 @@ namespace PogoLocationFeeder.Api.Tests
 
         private void SendToClients(SniperInfo sniperInfo)
         {
-            foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+            foreach (var socket in _arrSocket) // Repeat for each connected client (socket held in a dynamic array)
             {
                 try
                 {
-                    NetworkStream networkStream = socket.GetStream();
-                    StreamWriter s = new StreamWriter(networkStream);
+                    var networkStream = socket.GetStream();
+                    var s = new StreamWriter(networkStream);
 
                     s.WriteLine(JsonConvert.SerializeObject(sniperInfo));
                     s.Flush();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Caught exception: {e.ToString()}");
+                    Console.WriteLine($"Caught exception: {e}");
                 }
             }
         }

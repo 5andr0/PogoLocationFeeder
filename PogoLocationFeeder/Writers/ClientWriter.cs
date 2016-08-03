@@ -2,37 +2,34 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
-using PoGo.LocationFeeder.Settings;
 
 namespace PogoLocationFeeder.Writers
 {
     public class ClientWriter
     {
-        private TcpListener listener;
-        private List<TcpClient> arrSocket = new List<TcpClient>();
-        private MessageCache messageCache = new MessageCache();
+        private readonly List<TcpClient> _arrSocket = new List<TcpClient>();
+        private TcpListener _listener;
+        private readonly MessageCache _messageCache = new MessageCache();
 
 
         public void StartNet(int port)
         {
-
             Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
             Log.Plain("This software is 100% free and open-source.\n");
 
             Log.Info("Application starting...");
             try
             {
-                listener = new TcpListener(IPAddress.Any, port);
-                listener.Start();
+                _listener = new TcpListener(IPAddress.Any, port);
+                _listener.Start();
             }
-            catch (System.Net.Sockets.SocketException e)
+            catch (SocketException e)
             {
                 Log.Fatal($"Port {port} is already in use!", e);
                 throw e;
@@ -45,29 +42,31 @@ namespace PogoLocationFeeder.Writers
 
         private void StartAccept()
         {
-            listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
+            _listener.BeginAcceptTcpClient(HandleAsyncConnection, _listener);
         }
+
         private void HandleAsyncConnection(IAsyncResult res)
         {
             StartAccept();
-            TcpClient client = listener.EndAcceptTcpClient(res);
+            var client = _listener.EndAcceptTcpClient(res);
             if (client != null && IsConnected(client.Client))
             {
-                arrSocket.Add(client);
-                Log.Info($"New connection from {getIp(client.Client)}");
+                _arrSocket.Add(client);
+                Log.Info($"New connection from {GetIp(client.Client)}");
             }
         }
+
         // A socket is still connected if a nonblocking, zero-byte Send call either:
         // 1) returns successfully or 
         // 2) throws a WAEWOULDBLOCK error code(10035)
         public static bool IsConnected(Socket client)
         {
             // This is how you can determine whether a socket is still connected.
-            bool blockingState = client.Blocking;
+            var blockingState = client.Blocking;
 
             try
             {
-                byte[] tmp = new byte[1];
+                var tmp = new byte[1];
 
                 client.Blocking = false;
                 client.Send(tmp, 0, 0);
@@ -76,7 +75,7 @@ namespace PogoLocationFeeder.Writers
             catch (SocketException e)
             {
                 // 10035 == WSAEWOULDBLOCK
-                return (e.NativeErrorCode.Equals(10035));
+                return e.NativeErrorCode.Equals(10035);
             }
             finally
             {
@@ -84,26 +83,26 @@ namespace PogoLocationFeeder.Writers
             }
         }
 
-        private string getIp(Socket s)
+        private static string GetIp(Socket s)
         {
-            IPEndPoint remoteIpEndPoint = s.RemoteEndPoint as IPEndPoint;
-            return remoteIpEndPoint.ToString();
+            var remoteIpEndPoint = s.RemoteEndPoint as IPEndPoint;
+            return remoteIpEndPoint?.ToString();
         }
 
         public async Task FeedToClients(List<SniperInfo> snipeList, ChannelInfo channelInfo)
         {
             // Remove any clients that have disconnected
             if (GlobalSettings.ThreadPause) return;
-            arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
+            _arrSocket.RemoveAll(x => !IsConnected(x.Client));
+            var unsentMessages = _messageCache.FindUnSentMessages(snipeList);
             foreach (var target in unsentMessages)
             {
-                foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+                foreach (var socket in _arrSocket) // Repeat for each connected client (socket held in a dynamic array)
                 {
                     try
                     {
-                        NetworkStream networkStream = socket.GetStream();
-                        StreamWriter s = new StreamWriter(networkStream);
+                        var networkStream = socket.GetStream();
+                        var s = new StreamWriter(networkStream);
 
                         s.WriteLine(JsonConvert.SerializeObject(target));
                         s.Flush();
@@ -117,10 +116,13 @@ namespace PogoLocationFeeder.Writers
                 if (GlobalSettings.Output != null)
                     GlobalSettings.Output.PrintPokemon(target, channelInfo);
 
-                String timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{channelInfo.ToString()}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
-                    + " with " + (target.IV != default(double) ? $"{target.IV}% IV" : "unknown IV")
-                    + (target.ExpirationTimestamp != default(DateTime) ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}" : ""));
+                const string timeFormat = "HH:mm:ss";
+                Log.Pokemon($"{channelInfo}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                            + " with " + (!target.IV.Equals(default(double)) ? $"{target.IV}% IV" : "unknown IV")
+                            +
+                            (target.ExpirationTimestamp != default(DateTime)
+                                ? $" until {target.ExpirationTimestamp.ToString(timeFormat)}"
+                                : ""));
             }
         }
     }

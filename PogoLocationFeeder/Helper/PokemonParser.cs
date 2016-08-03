@@ -1,47 +1,49 @@
-﻿using POGOProtos.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using POGOProtos.Enums;
 
-namespace PogoLocationFeeder
+namespace PogoLocationFeeder.Helper
 {
-
     public class PokemonParser
     {
-        static List<PokemonAlternativeNames> pokemonAlternativeNamesList = new List<PokemonAlternativeNames>()
+        private static readonly List<PokemonAlternativeNames> PokemonAlternativeNamesList = new List
+            <PokemonAlternativeNames>
         {
-            { PokemonAlternativeNames.createAllMatches(PokemonId.Farfetchd, new HashSet<String> { "Farfetch'd" }, new HashSet<String> { "Farfetch" })},
-            { PokemonAlternativeNames.createAllMatches(PokemonId.MrMime,  new HashSet<String> { "mr.Mime", "mr mime" }, new HashSet<String> { "Mime" })},
+            PokemonAlternativeNames.CreateAllMatches(PokemonId.Farfetchd, new HashSet<string> {"Farfetch'd"},
+                new HashSet<string> {"Farfetch"}),
+            PokemonAlternativeNames.CreateAllMatches(PokemonId.MrMime, new HashSet<string> {"mr.Mime", "mr mime"},
+                new HashSet<string> {"Mime"})
         };
 
-        public static PokemonId parsePokemon(String input)
+        public static PokemonId ParsePokemon(string input)
         {
-            foreach (string name in Enum.GetNames(typeof(PokemonId)))
+            foreach (var name in Enum.GetNames(typeof(PokemonId)))
             {
-                if (matchesPokemonNameExactly(input, name))
+                if (MatchesPokemonNameExactly(input, name))
                 {
-                    return (PokemonId)Enum.Parse(typeof(PokemonId), name);
+                    return (PokemonId) Enum.Parse(typeof(PokemonId), name);
                 }
             }
-            foreach (PokemonAlternativeNames pokemonAlternativeNames in pokemonAlternativeNamesList)
+            foreach (var pokemonAlternativeNames in PokemonAlternativeNamesList)
             {
-                if(pokemonAlternativeNames.exactMatches != null)
+                if (pokemonAlternativeNames.ExactMatches != null)
                 {
-                    foreach(String exactMatch in pokemonAlternativeNames.exactMatches)
+                    foreach (var exactMatch in pokemonAlternativeNames.ExactMatches)
                     {
-                        if(matchesPokemonNameExactly(input, exactMatch))
+                        if (MatchesPokemonNameExactly(input, exactMatch))
                         {
-                            return pokemonAlternativeNames.pokemonId;
+                            return pokemonAlternativeNames.PokemonId;
                         }
                     }
                 }
-                if (pokemonAlternativeNames.partialMatches != null)
+                if (pokemonAlternativeNames.PartialMatches != null)
                 {
-                    foreach (String partialMatch in pokemonAlternativeNames.partialMatches)
+                    foreach (var partialMatch in pokemonAlternativeNames.PartialMatches)
                     {
-                        if (matchesPokemonNamePartially(input, partialMatch))
+                        if (MatchesPokemonNamePartially(input, partialMatch))
                         {
-                            return pokemonAlternativeNames.pokemonId;
+                            return pokemonAlternativeNames.PokemonId;
                         }
                     }
                 }
@@ -51,44 +53,47 @@ namespace PogoLocationFeeder
             return PokemonId.Missingno;
         }
 
-        private static bool matchesPokemonNameExactly(String input, String name)
+        private static bool MatchesPokemonNameExactly(string input, string name)
         {
             return Regex.IsMatch(input, @"(?i)\b" + name + @"\b");
         }
 
-        private static bool matchesPokemonNamePartially(String input, String name)
+        private static bool MatchesPokemonNamePartially(string input, string name)
         {
             return Regex.IsMatch(input, @"(?i)" + name);
         }
 
-        public static PokemonId parseById(long pokemonId)
+        public static PokemonId ParseById(long pokemonId)
         {
-            return (PokemonId)pokemonId;
+            return (PokemonId) pokemonId;
         }
 
         internal class PokemonAlternativeNames
         {
-            internal PokemonId pokemonId { get; }
-            internal ISet<String> exactMatches { get; }
-            internal ISet<String> partialMatches { get; }
-
-            internal PokemonAlternativeNames(PokemonId pokemonId, ISet<String> exactMatches, ISet<String> partialMatches)
+            internal PokemonAlternativeNames(PokemonId pokemonId, ISet<string> exactMatches, ISet<string> partialMatches)
             {
-                this.pokemonId = pokemonId;
-                this.exactMatches = exactMatches;
-                this.partialMatches = partialMatches;
+                this.PokemonId = pokemonId;
+                this.ExactMatches = exactMatches;
+                this.PartialMatches = partialMatches;
             }
 
-            internal static PokemonAlternativeNames createAllMatches(PokemonId pokemonId, ISet<String> exactMatches, ISet<String> partialMatches)
+            internal PokemonId PokemonId { get; }
+            internal ISet<string> ExactMatches { get; }
+            internal ISet<string> PartialMatches { get; }
+
+            internal static PokemonAlternativeNames CreateAllMatches(PokemonId pokemonId, ISet<string> exactMatches,
+                ISet<string> partialMatches)
             {
                 return new PokemonAlternativeNames(pokemonId, exactMatches, partialMatches);
             }
-            internal static PokemonAlternativeNames createPartialMatches(PokemonId pokemonId, ISet<String> partialMatches)
+
+            internal static PokemonAlternativeNames CreatePartialMatches(PokemonId pokemonId,
+                ISet<string> partialMatches)
             {
                 return new PokemonAlternativeNames(pokemonId, null, partialMatches);
             }
 
-            internal static PokemonAlternativeNames createExactMatches(PokemonId pokemonId, ISet<String> exactMatches)
+            internal static PokemonAlternativeNames CreateExactMatches(PokemonId pokemonId, ISet<string> exactMatches)
             {
                 return new PokemonAlternativeNames(pokemonId, exactMatches, null);
             }

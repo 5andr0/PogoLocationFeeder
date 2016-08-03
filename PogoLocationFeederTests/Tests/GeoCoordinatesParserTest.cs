@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeederTests
@@ -7,17 +6,19 @@ namespace PogoLocationFeederTests
     [TestClass]
     public class GeoCoordinatesParserTest
     {
-        
         [TestMethod]
         public void TestCoordinatesCoordBot()
         {
-             testCoordinates("[192 seconds remaining] 55% IV - Porygon at 48.880245472813,2.3258381797353 [Moveset: TackleFast/Psybeam]", 48.880245472813, 2.3258381797353);
+            testCoordinates(
+                "[192 seconds remaining] 55% IV - Porygon at 48.880245472813,2.3258381797353 [Moveset: TackleFast/Psybeam]",
+                48.880245472813, 2.3258381797353);
         }
 
         [TestMethod]
         public void TestCoordinatesRandomPerson1()
         {
-            testCoordinates("50.846499257055854,4.421932697296143 Lapras 11min 92IV Frosth Breath Dragon Pulse", 50.846499257055854, 4.421932697296143);
+            testCoordinates("50.846499257055854,4.421932697296143 Lapras 11min 92IV Frosth Breath Dragon Pulse",
+                50.846499257055854, 4.421932697296143);
         }
 
         [TestMethod]
@@ -29,24 +30,24 @@ namespace PogoLocationFeederTests
         [TestMethod]
         public void TestCoordinatesPokeSniper()
         {
-            testCoordinates("-33.8304880738,151.087396206",-33.8304880738, 151.087396206);
+            testCoordinates("-33.8304880738,151.087396206", -33.8304880738, 151.087396206);
         }
 
         [TestMethod]
         public void TestInvalidCoordinates()
         {
-            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("181.6969696969696,-1"));
-            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("-181.6969696969696,-1"));
-            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("69.6969696969696,-420"));
-            Assert.IsNull(GeoCoordinatesParser.parseGeoCoordinates("69.6969696969696,420"));
+            Assert.IsNull(GeoCoordinatesParser.ParseGeoCoordinates("181.6969696969696,-1"));
+            Assert.IsNull(GeoCoordinatesParser.ParseGeoCoordinates("-181.6969696969696,-1"));
+            Assert.IsNull(GeoCoordinatesParser.ParseGeoCoordinates("69.6969696969696,-420"));
+            Assert.IsNull(GeoCoordinatesParser.ParseGeoCoordinates("69.6969696969696,420"));
         }
 
-        private void testCoordinates(String text, Double expectedLatitude, Double expectedLongitude)
+        private void testCoordinates(string text, double expectedLatitude, double expectedLongitude)
         {
-            GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(text);
+            var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(text);
             Assert.IsNotNull(geoCoordinates);
-            Assert.AreEqual(expectedLatitude, geoCoordinates.latitude);
-            Assert.AreEqual(expectedLongitude, geoCoordinates.longitude);
+            Assert.AreEqual(expectedLatitude, geoCoordinates.Latitude);
+            Assert.AreEqual(expectedLongitude, geoCoordinates.Longitude);
         }
     }
 }
