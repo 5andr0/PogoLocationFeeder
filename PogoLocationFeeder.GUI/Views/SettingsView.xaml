@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:PogoLocationFeeder.GUI.Views"
              xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
@@ -25,11 +24,14 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Listen ip</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomIp, Mode=TwoWay}" IsEnabled="False"/>
+        <TextBox Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomIp, Mode=TwoWay}"
+                 IsEnabled="False" />
         <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Server port</TextBlock>
-        <TextBox Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomPort, Mode=TwoWay}" IsEnabled="False"/>
+        <TextBox Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomPort, Mode=TwoWay}"
+                 IsEnabled="False" />
         <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Max Pokemon to display</TextBlock>
-        <TextBox Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" Text="{Binding ShowLimit, Mode=TwoWay}" PreviewTextInput="NumberValidationTextBox" />
+        <TextBox Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" Text="{Binding ShowLimit, Mode=TwoWay}"
+                 PreviewTextInput="NumberValidationTextBox" />
 
     </Grid>
 </UserControl>

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using PogoLocationFeeder.Helper;
-using PoGo.LocationFeeder.Settings;
+using PogoLocationFeeder.Config;
 
 #endregion
 
@@ -39,7 +39,8 @@ namespace PoGoLocationFeeder.Helper
 
             if (!needupdate)
             {
-                Log.Info("Great! You already have the newest version (v{0}, or later master)", RemoteVersion.ToString().Remove(RemoteVersion.ToString().Length-2));
+                Log.Info("Great! You already have the newest version (v{0}, or later master)",
+                    RemoteVersion.ToString().Remove(RemoteVersion.ToString().Length - 2));
             }
             else
             {
@@ -47,7 +48,6 @@ namespace PoGoLocationFeeder.Helper
                 if (GlobalSettings.Output != null)
                     GlobalSettings.Output.SetStatus($"Version outdated! {RemoteVersion} is available");
             }
-            return;
         }
 
         private static string DownloadServerVersion()
@@ -73,20 +73,21 @@ namespace PoGoLocationFeeder.Helper
                 {
                     return new Tuple<bool, bool>(false, false);
                 }
- 
+
                 if (!match.Success)
                     return new Tuple<bool, bool>(false, false);
                 var gitVersion = new Version($"{match.Groups[1]}.0");
                 RemoteVersion = gitVersion;
 
-                Log.Debug($"My version: {Assembly.GetExecutingAssembly().GetName().Version} (or a later master). Remote version: {RemoteVersion}.");
+                Log.Debug(
+                    $"My version: {Assembly.GetExecutingAssembly().GetName().Version} (or a later master). Remote version: {RemoteVersion}.");
 
                 if (gitVersion > Assembly.GetExecutingAssembly().GetName().Version)
                     return new Tuple<bool, bool>(true, true);
             }
             catch (Exception e)
             {
-                Log.Fatal($"Version exception: {e.ToString()}");
+                Log.Fatal($"Version exception: {e}");
                 return new Tuple<bool, bool>(false, false);
             }
 

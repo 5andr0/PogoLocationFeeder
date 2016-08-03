@@ -1,61 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using log4net.Config;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
-using PoGo.LocationFeeder.Settings;
-using System.Globalization;
+using PogoLocationFeeder.Readers;
 using PogoLocationFeeder.Repository;
 using PogoLocationFeeder.Writers;
-using static PogoLocationFeeder.DiscordWebReader;
 using PoGoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder
 {
     public class Program
     {
+        private readonly ChannelParser _channelParser = new ChannelParser();
+        private readonly ClientWriter _clientWriter = new ClientWriter();
+        private readonly MessageParser _parser = new MessageParser();
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.Title = "PogoLocationFeeder";
-            log4net.Config.XmlConfigurator.Configure(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.App.config"));
+            XmlConfigurator.Configure(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.App.config"));
             try
             {
                 new Program().Start();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Fatal("Error during startup", e);
             }
-            
         }
-        private MessageParser parser = new MessageParser();
-        private ChannelParser channel_parser = new ChannelParser();
-        private ClientWriter clientWriter = new ClientWriter();
 
 
-        public async Task relayMessageToClients(string message, ChannelInfo channelInfo)
+        public async Task RelayMessageToClients(string message, ChannelInfo channelInfo)
         {
-            var snipeList = parser.parseMessage(message);
-            await clientWriter.FeedToClients(snipeList, channelInfo);
+            var snipeList = _parser.parseMessage(message);
+            await _clientWriter.FeedToClients(snipeList, channelInfo);
         }
 
 
         public void Start()
         {
             var settings = GlobalSettings.Load();
-            channel_parser.LoadChannelSettings();
+            _channelParser.LoadChannelSettings();
 
             if (settings == null) return;
 
             VersionCheckState.Execute(new CancellationToken());
 
-            clientWriter.StartNet(settings.Port);
+            _clientWriter.StartNet(settings.Port);
 
             PollRarePokemonRepositories(settings);
 
@@ -80,7 +81,7 @@ namespace PogoLocationFeeder
                 }
                 finally
                 {
-                    Thread.Sleep(20 * 1000);
+                    Thread.Sleep(20*1000);
                 }
             }
 
@@ -89,21 +90,21 @@ namespace PogoLocationFeeder
 
         private static IEnumerable<string> ReadLines(StreamReader stream)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            int symbol = stream.Peek();
+            var symbol = stream.Peek();
             while (symbol != -1)
             {
                 symbol = stream.Read();
-                sb.Append((char)symbol);
-                if (stream.Peek() == 10)
-                {
-                    stream.Read();
-                    string line = sb.ToString();
-                    sb.Clear();
+                sb.Append((char) symbol);
 
-                    yield return line;
-                }
+                if (stream.Peek() != 10) continue;
+
+                stream.Read();
+                var line = sb.ToString();
+                sb.Clear();
+
+                yield return line;
             }
 
             yield return sb.ToString();
@@ -111,81 +112,81 @@ namespace PogoLocationFeeder
 
         private void PollDiscordFeed(Stream stream)
         {
-            int delay = 10 * 1000;
+            const int delay = 10*1000;
             var cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
             Task.Factory.StartNew(async () =>
             {
-            while (true)
-            {
-                for (int retrys = 0; retrys <= 3; retrys++)
+                while (true)
                 {
-                    foreach (string line in ReadLines(new StreamReader(stream)))
+                    for (var retrys = 0; retrys <= 3; retrys++)
                     {
-                        try
+                        foreach (var line in ReadLines(new StreamReader(stream)))
                         {
-                            string[] splitted = line.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (splitted.Length == 2 && splitted[0] == "data")
+                            try
                             {
+                                var splitted = line.Split(new[] {':'}, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                                if (splitted.Length != 2 || splitted[0] != "data") continue;
+
                                 var jsonPayload = splitted[1];
                                 //Log.Debug($"JSON: {jsonPayload}");
 
-                                var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
-                                if (result != null)
+                                var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
+
+                                if (result == null) continue;
+
+                                //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                                Log.Debug("Discord message received: {0}: {1}", result.channel_id,
+                                    result.content);
+                                var channelInfo = _channelParser.ToChannelInfo(result.channel_id);
+                                if (channelInfo.isValid)
                                 {
-                                    //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                    Log.Debug("Discord message received: {0}: {1}", result.channel_id, result.content);
-                                    var channelInfo = channel_parser.ToChannelInfo(result.channel_id);
-                                    if (channelInfo.isValid)
-                                    {
-                                        await relayMessageToClients(result.content, channelInfo);
-                                    }
-                                    else
-                                    {
-                                        Log.Debug("Channelid {0} was not found the discord_channels.json", result.channel_id);
-                                    }
+                                    await RelayMessageToClients(result.content, channelInfo);
+                                }
+                                else
+                                {
+                                    Log.Debug("Channelid {0} was not found in discord_channels.json",
+                                        result.channel_id);
                                 }
                             }
+                            catch (Exception e)
+                            {
+                                Log.Warn($"Exception:", e);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            Log.Warn($"Exception:", e);
-                        }
-
+                        if (token.IsCancellationRequested)
+                            break;
+                        Thread.Sleep(delay);
                     }
-                    if (token.IsCancellationRequested)
-                        break;
-                    Thread.Sleep(delay);
                 }
-            }
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void PollRarePokemonRepositories(GlobalSettings globalSettings)
         {
-            List<RarePokemonRepository> rarePokemonRepositories = RarePokemonRepositoryFactory.createRepositories(globalSettings);
+            var rarePokemonRepositories = RarePokemonRepositoryFactory.CreateRepositories(globalSettings);
 
-            int delay = 30 * 1000;
-            foreach(RarePokemonRepository rarePokemonRepository in rarePokemonRepositories) {
+            const int delay = 30*1000;
+            foreach (var rarePokemonRepository in rarePokemonRepositories)
+            {
                 var cancellationTokenSource = new CancellationTokenSource();
                 var token = cancellationTokenSource.Token;
-                var listener = Task.Factory.StartNew(async () =>
+                Task.Factory.StartNew(async () =>
                 {
-                    Thread.Sleep(5 * 1000);
+                    Thread.Sleep(5*1000);
                     while (true)
                     {
                         Thread.Sleep(delay);
-                        for (int retrys = 0; retrys <= 3; retrys++)
+                        for (var retrys = 0; retrys <= 3; retrys++)
                         {
                             var pokeSniperList = rarePokemonRepository.FindAll();
-                            var channelInfo = new ChannelInfo();
-                            channelInfo.server = rarePokemonRepository.GetChannel();
+                            var channelInfo = new ChannelInfo {server = rarePokemonRepository.GetChannel()};
                             if (pokeSniperList != null)
                             {
                                 if (pokeSniperList.Any())
                                 {
-                                    await clientWriter.FeedToClients(pokeSniperList, channelInfo);
+                                    await _clientWriter.FeedToClients(pokeSniperList, channelInfo);
                                 }
                                 else
                                 {
@@ -198,10 +199,8 @@ namespace PogoLocationFeeder
                             Thread.Sleep(1000);
                         }
                     }
-
                 }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
-            
         }
     }
 }

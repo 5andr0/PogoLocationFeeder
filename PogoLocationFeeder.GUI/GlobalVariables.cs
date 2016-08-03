@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using PogoLocationFeeder.GUI.Models;
+using PogoLocationFeeder.Common.Models;
 
-namespace PogoLocationFeeder.GUI {
-    public static class GlobalVariables {
+namespace PogoLocationFeeder.Common
+{
+    public static class GlobalVariables
+    {
         public static ObservableCollection<SniperInfoModel> PokemonsInternal =
             new ObservableCollection<SniperInfoModel>();
     }

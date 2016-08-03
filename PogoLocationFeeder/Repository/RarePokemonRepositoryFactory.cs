@@ -1,21 +1,14 @@
-﻿using PoGo.LocationFeeder.Settings;
-using POGOProtos.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using PogoLocationFeeder.Config;
 
 namespace PogoLocationFeeder.Repository
 {
-   public class RarePokemonRepositoryFactory
+    public class RarePokemonRepositoryFactory
     {
-
-        public static List<RarePokemonRepository> createRepositories(GlobalSettings globalSettings)
+        public static List<IRarePokemonRepository> CreateRepositories(GlobalSettings globalSettings)
         {
-            List<RarePokemonRepository> rarePokemonRepositories = new List<RarePokemonRepository>();
-            List<PokemonId> pokemonIds = RarePokemonsFactory.createRarePokemonList();
+            var rarePokemonRepositories = new List<IRarePokemonRepository>();
+            var pokemonIds = RarePokemonsFactory.createRarePokemonList();
             if (globalSettings.UsePokeSnipers)
             {
                 rarePokemonRepositories.Add(new PokeSniperRarePokemonRepository(pokemonIds));
@@ -26,6 +19,5 @@ namespace PogoLocationFeeder.Repository
             }
             return rarePokemonRepositories;
         }
-
     }
 }

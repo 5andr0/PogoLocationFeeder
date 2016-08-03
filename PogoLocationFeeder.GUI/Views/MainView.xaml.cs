@@ -1,17 +1,23 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using PoGo.LocationFeeder.Settings;
+using PogoLocationFeeder.Config;
 
-namespace PogoLocationFeeder.GUI.Views {
+namespace PogoLocationFeeder.GUI.Views
+{
     /// <summary>
     ///     Interaktionslogik für MainView.xaml
     /// </summary>
-    public partial class MainView : UserControl {
-        public MainView() {
+    public partial class MainView : UserControl
+    {
+        public MainView()
+        {
             InitializeComponent();
-            if(GlobalSettings.isOneClickSnipeSupported()) {
+            if (GlobalSettings.isOneClickSnipeSupported())
+            {
                 col.Visibility = Visibility.Visible;
-            } else {
+            }
+            else
+            {
                 col.Visibility = Visibility.Collapsed;
             }
         }

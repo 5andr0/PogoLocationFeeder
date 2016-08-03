@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using POGOProtos.Enums;
+﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -11,8 +7,12 @@ namespace PogoLocationFeeder.Helper
 {
     public class ChannelParser
     {
+        public int Port = 16969;
+        public List<DiscordChannels> Settings;
+        public bool usePokeSnipers = false;
+
+
         public static ChannelParser Default => new ChannelParser();
-        public List<DiscordChannels> settings = null;
 
         public void LoadChannelSettings()
         {
@@ -20,19 +20,19 @@ namespace PogoLocationFeeder.Helper
 
             if (File.Exists(configFile))
             {
-                //if the file exists, load the settings
+                //if the file exists, load the Settings
                 var input = File.ReadAllText(configFile);
 
                 var jsonSettings = new JsonSerializerSettings();
-                jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
-                settings = JsonConvert.DeserializeObject<List<DiscordChannels>>(input, jsonSettings);
+                Settings = JsonConvert.DeserializeObject<List<DiscordChannels>>(input, jsonSettings);
             }
             else
             {
-                settings = new List<DiscordChannels>();
+                Settings = new List<DiscordChannels>();
                 Log.Error($"Channel file \"{configFile}\" not found!");
             }
 
@@ -40,12 +40,12 @@ namespace PogoLocationFeeder.Helper
 
         public ChannelInfo ToChannelInfo(string channelId)
         {
-            ChannelInfo channelInfo = new ChannelInfo();
+            var channelInfo = new ChannelInfo();
             if (channelId != null)
             {
-                foreach (var channel in settings)
+                foreach (var channel in Settings)
                 {
-                    if (String.Compare(channelId, channel.id) == 0)
+                    if (string.Compare(channelId, channel.id) == 0)
                     {
                         channelInfo.server = channel.Server;
                         channelInfo.channel = channel.Name;
@@ -57,14 +57,19 @@ namespace PogoLocationFeeder.Helper
             channelInfo.server = "Unknown";
             channelInfo.channel = "Unknown";
             return channelInfo;
-
         }
 
         public class DiscordChannels
         {
             public string id;
-            public string Server;
             public string Name;
+            public string Server;
         }
+    }
+
+    public class SourceInfo
+    {
+        public string server { get; set; }
+        public string channelId { get; set; }
     }
 }

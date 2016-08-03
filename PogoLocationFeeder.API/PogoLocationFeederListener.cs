@@ -1,17 +1,17 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace PogoLocationFeeder.Api
+namespace PogoLocationFeeder.API
 {
     public class PogoLocationFeederListener
     {
         public delegate void PogoLocationFeederEventHandler(object sender, SniperInfoModel sniperInfo);
 
-        public event PogoLocationFeederEventHandler eventHandler;
+        public event PogoLocationFeederEventHandler EventHandler;
 
         public Task AsyncStart(string server, int port, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -58,12 +58,8 @@ namespace PogoLocationFeeder.Api
         {
             Task.Run(() =>
             {
-                if (eventHandler != null)
-                {
-                    eventHandler(this, sniperInfo);
-                }
+                EventHandler?.Invoke(this, sniperInfo);
             });
         }
-
     }
 }

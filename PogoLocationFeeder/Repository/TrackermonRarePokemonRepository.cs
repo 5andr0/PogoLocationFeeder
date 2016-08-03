@@ -1,35 +1,29 @@
-﻿using Newtonsoft.Json;
-using PogoLocationFeeder.Helper;
-using POGOProtos.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Runtime.Caching;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Text;
+using Newtonsoft.Json;
+using PogoLocationFeeder.Helper;
+using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Repository
 {
-
-    public class TrackemonRarePokemonRepository : RarePokemonRepository
+    public class TrackemonRarePokemonRepository : IRarePokemonRepository
     {
-        const int timeout = 20000;
-        const String channel = "Trackemon";
-        List<PokemonId> pokemonIdsToFind;
+        private const int Timeout = 20000;
+        private const string Channel = "Trackemon";
+        private readonly List<PokemonId> _pokemonIdsToFind;
 
         public TrackemonRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
         {
-            this.pokemonIdsToFind = pokemonIdsToFind;
+            _pokemonIdsToFind = pokemonIdsToFind;
         }
-        
+
         public List<SniperInfo> FindAll()
         {
-            TrackemonSession session = FindSessionId();
-            if (session == null || !session.validate())
+            var session = FindSessionId();
+            if (session == null || !session.Validate())
             {
                 session = FindSessionId();
                 if (session == null)
@@ -38,13 +32,13 @@ namespace PogoLocationFeeder.Repository
                     return null;
                 }
             }
-            List<SniperInfo> list = new List<SniperInfo>();
+            var list = new List<SniperInfo>();
 
-            IEnumerable<List<PokemonId>> pokemonTypeIdPartitions = Partitioner.Partition(pokemonIdsToFind, 5);
-            foreach(List<PokemonId> partition in pokemonTypeIdPartitions)
+            var pokemonTypeIdPartitions = _pokemonIdsToFind.Partition(5);
+            foreach (var partition in pokemonTypeIdPartitions)
             {
-                List<SniperInfo> resultList = findSubSetOfPokemon(partition, session);
-                if(resultList != null)
+                var resultList = FindSubSetOfPokemon(partition, session);
+                if (resultList != null)
                 {
                     list.AddRange(resultList);
                 }
@@ -53,34 +47,40 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
-        private List<SniperInfo> findSubSetOfPokemon(List<PokemonId> pokemomnIds, TrackemonSession session)
+        public string GetChannel()
         {
-            String pokemonTypeIds = buildPokemonTypeIds(pokemomnIds);
-            List<SniperInfo> list = new List<SniperInfo>();
+            return Channel;
+        }
 
-            string URL = $"https://www.trackemon.com/fetch/rare?pokedexTypeId={pokemonTypeIds}&sessionId={session.sessionId}";
+        private static List<SniperInfo> FindSubSetOfPokemon(List<PokemonId> pokemomnIds, TrackemonSession session)
+        {
+            var pokemonTypeIds = BuildPokemonTypeIds(pokemomnIds);
+            var list = new List<SniperInfo>();
+
+            string URL =
+                $"https://www.trackemon.com/fetch/rare?pokedexTypeId={pokemonTypeIds}&sessionId={session.sessionId}";
             try
             {
                 var request = WebRequest.CreateHttp(URL);
                 request.Accept = "*/*";
                 request.Method = "GET";
-                request.Timeout = timeout;
+                request.Timeout = Timeout;
                 request.Headers.Add("Cookie:" + session.cookieHeader);
                 using (var response = request.GetResponse())
                 {
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        List<TrackemonResult> resultList = JsonConvert.DeserializeObject<List<TrackemonResult>>(reader.ReadToEnd());
-                        foreach (TrackemonResult result in resultList)
+                        var resultList = JsonConvert.DeserializeObject<List<TrackemonResult>>(reader.ReadToEnd());
+                        foreach (var result in resultList)
                         {
-                            SniperInfo sniperInfo = map(result);
+                            var sniperInfo = Map(result);
                             if (sniperInfo != null)
                             {
                                 list.Add(sniperInfo);
                             }
                         }
                     }
-            
+
                     return list;
                 }
             }
@@ -91,10 +91,10 @@ namespace PogoLocationFeeder.Repository
             }
         }
 
-        private SniperInfo map(TrackemonResult result)
+        private static SniperInfo Map(TrackemonResult result)
         {
-            SniperInfo sniperInfo = new SniperInfo();
-            PokemonId pokemonId = PokemonParser.parseById(result.id);
+            var sniperInfo = new SniperInfo();
+            var pokemonId = PokemonParser.ParseById(result.id);
             sniperInfo.Id = pokemonId;
 
             sniperInfo.Latitude = result.latitude;
@@ -107,84 +107,77 @@ namespace PogoLocationFeeder.Repository
 
         public TrackemonSession FindSessionId()
         {
-            TrackemonSession TrackemonSession = new TrackemonSession();
+            var trackemonSession = new TrackemonSession();
             try
             {
                 var cookieContainer = new CookieContainer();
-                string homepageUrl = "https://www.trackemon.com";
+                const string homepageUrl = "https://www.trackemon.com";
                 var request = WebRequest.CreateHttp(homepageUrl);
                 request.Method = "GET";
-                request.Timeout = timeout;
+                request.Timeout = Timeout;
                 request.CookieContainer = cookieContainer;
                 using (var response = request.GetResponse())
                 {
-                    String cookieHeader = cookieContainer.GetCookieHeader(new Uri("https://www.trackemon.com"));
-                    TrackemonSession.cookieHeader = cookieHeader;
+                    var cookieHeader = cookieContainer.GetCookieHeader(new Uri("https://www.trackemon.com"));
+                    trackemonSession.cookieHeader = cookieHeader;
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        String line;
+                        string line;
 
                         while ((line = reader.ReadLine()) != null)
                         {
-                            Match match = Regex.Match(line, @"var\s+sessionId\s*=\s*\'(1?.*)\'\s*;");
+                            var match = Regex.Match(line, @"var\s+sessionId\s*=\s*\'(1?.*)\'\s*;");
                             if (match.Success)
                             {
-                                TrackemonSession.sessionId = match.Groups[1].Value;
-                                return TrackemonSession;
+                                trackemonSession.sessionId = match.Groups[1].Value;
+                                return trackemonSession;
                             }
                         }
                     }
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Debug("Error trying to get a sessionId for Trackemon: {0}", e.Message);
             }
             return null;
         }
 
-        
-        private String buildPokemonTypeIds(List<PokemonId> pokemonIds)
-        {
-            return String.Join(",", pokemonIds.ConvertAll<long>(p => (long) p));
-        }
 
-        public string GetChannel()
+        private static string BuildPokemonTypeIds(List<PokemonId> pokemonIds)
         {
-            return channel;
+            return string.Join(",", pokemonIds.ConvertAll(p => (long) p));
         }
     }
 
 
-    class TrackemonResult
+    internal class TrackemonResult
     {
         [JsonProperty("pokedexTypeId")]
         public long id { get; set; }
-        [JsonProperty("longitude")]
+
+        [JsonProperty("Longitude")]
         public double longitude { get; set; }
-        [JsonProperty("latitude")]
+
+        [JsonProperty("Latitude")]
         public double latitude { get; set; }
+
         [JsonProperty("expirationTime")]
         public long expiration { get; set; }
     }
 
     public class TrackemonSession
     {
-        public String cookieHeader { get; set; }
-        public String sessionId { get; set; }
+        public string cookieHeader { get; set; }
+        public string sessionId { get; set; }
 
-        public bool validate()
+        public bool Validate()
         {
-            if(cookieHeader == null)
+            if (cookieHeader == null)
             {
                 return false;
             }
-            if (sessionId == null)
-            {
-                return false;
-            }
-            return true;
+            return sessionId != null;
         }
     }
-
 }
-

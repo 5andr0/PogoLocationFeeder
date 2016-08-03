@@ -1,33 +1,30 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder.Repository;
-using POGOProtos.Enums;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PogoLocationFeeder.Repository;
 
-namespace PogoLocationFeeder.Repository.Tests
+namespace PogoLocationFeeder.Helper.Helper.Repository.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class TrackemonRarePokemonRepositoryTests
     {
-        RarePokemonRepository trackemonRarePokemonRepository = new TrackemonRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+        private readonly IRarePokemonRepository trackemonRarePokemonRepository =
+            new TrackemonRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
 
-        [TestMethod()]
+        [TestMethod]
         [Ignore]
         public void FindAll()
         {
-            List<SniperInfo> sniperInfos = trackemonRarePokemonRepository.FindAll();
+            var sniperInfos = trackemonRarePokemonRepository.FindAll();
             Assert.IsNotNull(sniperInfos);
             Assert.IsTrue(sniperInfos.Any());
-            foreach(SniperInfo sniperInfo in sniperInfos)
+            foreach (var sniperInfo in sniperInfos)
             {
                 Console.WriteLine(sniperInfo);
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetChannel()
         {
             Assert.AreEqual("Trackemon", trackemonRarePokemonRepository.GetChannel());
