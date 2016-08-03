@@ -37,8 +37,8 @@
                 <DataGridTemplateColumn x:Name="col">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Height="30" Command="{Binding PokeSnipersCommand}" Background="Black" BorderThickness="0" Margin="-5">
-                                <Image Source="PogoLocationFeeder.GUI;component/Assets/snipers.png"></Image>
+                            <Button Height="30" Command="{Binding PokeSnipersCommand}" Background="Transparent" BorderThickness="0" Margin="-5">
+                                <Image Source="/Assets/snipers.png"></Image>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

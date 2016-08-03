@@ -18,8 +18,6 @@ namespace PogoLocationFeeder.GUI.Common
 {
     public class Output : PogoLocationFeeder.Common.IOutput
     {
-        private static readonly string assetPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
-        private static readonly string iconPath = Path.Combine(assetPath, "icons");
         private static object _MessageLock = new object();
         private static int ShowLimit = Settings.Default.ShowLimit;
 
@@ -63,7 +61,7 @@ namespace PogoLocationFeeder.GUI.Common
                 var info = new SniperInfoModel
                 {
                     Info = sniperInfo,
-                    Icon = new BitmapImage(new Uri(Path.Combine(iconPath, $"{(int)sniperInfo.Id}.png"))),
+                    Icon = new BitmapImage(new Uri($"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int)sniperInfo.Id}.png", UriKind.Absolute)),
                     Server = server,
                     Channel = channel
                 };
