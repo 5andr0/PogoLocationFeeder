@@ -49,7 +49,7 @@ namespace PogoLocationFeeder
         public void Start()
         {
             var settings = GlobalSettings.Load();
-            channel_parser.Init();
+            channel_parser.LoadChannelSettings();
 
             if (settings == null) return;
 

@@ -11,13 +11,10 @@ namespace PogoLocationFeeder.Helper
 {
     public class ChannelParser
     {
-        public int Port = 16969;
-        public bool usePokeSnipers = false;
-
         public static ChannelParser Default => new ChannelParser();
         public List<DiscordChannels> settings = null;
 
-        public List<DiscordChannels> Init()
+        public void LoadChannelSettings()
         {
             var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "discord_channels.json");
 
@@ -39,7 +36,6 @@ namespace PogoLocationFeeder.Helper
                 Log.Error($"Channel file \"{configFile}\" not found!");
             }
 
-            return settings;
         }
 
         public ChannelInfo ToChannelInfo(string channelId)
@@ -60,7 +56,6 @@ namespace PogoLocationFeeder.Helper
             }
             channelInfo.server = "Unknown";
             channelInfo.channel = "Unknown";
-
             return channelInfo;
 
         }
@@ -72,11 +67,4 @@ namespace PogoLocationFeeder.Helper
             public string Name;
         }
     }
-
-    public class SourceInfo
-    {
-        public string server { get; set; }
-        public string channelId { get; set; }
-    }
-
 }
