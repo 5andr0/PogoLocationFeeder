@@ -9,9 +9,10 @@ We have been contacted by Discord regarding server load issues. They will be blo
 Bitcoin Donations: 1FeederpUZXQN6F45M5cpYuYP6MzE2huPp
 
 ## Gui
-[Download latest Release](https://github.com/5andr0/PogoLocationFeeder/releases/latest "5andr0/PogoLocationFeeder/releases/latest")
-
 ![Gui](resources/gui.gif "Pressing Shift, Command and ALt arrows draws single double lines or erases")
+
+## Downloads
+[Download latest Release](https://github.com/5andr0/PogoLocationFeeder/releases/latest "5andr0/PogoLocationFeeder/releases/latest")
 
 ## Milestones
 - FeroxRev api integration to live check for IV, expiration time and encounter id to allow snipes without timeconsuming lookups
