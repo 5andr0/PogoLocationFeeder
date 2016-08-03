@@ -9,6 +9,11 @@ namespace PogoLocationFeeder.GUI.Views {
     public partial class MainView : UserControl {
         public MainView() {
             InitializeComponent();
+            if(GlobalSettings.isOneClickSnipeSupported()) {
+                col.Visibility = Visibility.Visible;
+            } else {
+                col.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
