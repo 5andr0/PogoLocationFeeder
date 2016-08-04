@@ -23,6 +23,7 @@ namespace PogoLocationFeeder
         private readonly ChannelParser _channelParser = new ChannelParser();
         private readonly ClientWriter _clientWriter = new ClientWriter();
         private readonly MessageParser _parser = new MessageParser();
+        private DiscordWebReader _discordWebReader;
 
         private static void Main(string[] args)
         {
@@ -58,34 +59,83 @@ namespace PogoLocationFeeder
 
             _clientWriter.StartNet(settings.Port);
 
-            PollRarePokemonRepositories(settings);
+            WebSourcesManager(settings);
 
-            var discordWebReader = new DiscordWebReader();
+            Console.Read();
+        }
+
+        private void WebSourcesManager(GlobalSettings settings)
+        {
+            var rarePokemonRepositories = RarePokemonRepositoryFactory.CreateRepositories(settings);
+
+            var repoTasks = rarePokemonRepositories.Select(rarePokemonRepository => StartPollRarePokemonRepository(settings, rarePokemonRepository)).Cast<Task>().ToList();
+
+            var discordTask = TryStartDiscordReader();
 
             while (true)
             {
+                if (!_clientWriter.Listener.Server.IsBound)
+                {
+                    Log.Info("Server has lost connection. Restarting...");
+                    _clientWriter.StartNet(settings.Port);
+                }
                 try
                 {
-                    PollDiscordFeed(discordWebReader.stream);
+                    // Manage repo tasks
+                    for (var i = 0; i < repoTasks.Count; ++i)
+                    {
+                        var t = repoTasks[i];
+                        if (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun && t.Status != TaskStatus.WaitingForActivation)
+                        {
+                            // Replace broken tasks with a new one
+                            repoTasks[i].Dispose();
+                            repoTasks[i] = StartPollRarePokemonRepository(settings, rarePokemonRepositories[i]);
+                        }
+                    }
+
+                    // Manage Discord task
+                    if (discordTask.Status != TaskStatus.Running && discordTask.Status != TaskStatus.WaitingToRun && discordTask.Status != TaskStatus.WaitingForActivation)
+                    {
+                        // Replace broken task with a new one
+                        discordTask.Dispose();
+                        discordTask = TryStartDiscordReader();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception in thread manager: {e}");
+                    throw;
+                }
+                Thread.Sleep(20 * 1000);
+            }
+        }
+
+        private async Task<Task> TryStartDiscordReader()
+        {
+            while (true)
+            {
+                _discordWebReader = new DiscordWebReader();
+
+                try
+                {
+                    return await StartPollDiscordFeed(_discordWebReader.stream);
                 }
                 catch (WebException)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
-                    Thread.Sleep(30*1000);
-                    discordWebReader.InitializeWebClient();
+                    Thread.Sleep(30 * 1000);
+                    _discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
                 {
                     Log.Warn($"Unknown exception", e);
-                    break;
+                    continue;
                 }
                 finally
                 {
-                    Thread.Sleep(20*1000);
+                    Thread.Sleep(20 * 1000);
                 }
             }
-
-            Console.ReadKey(true);
         }
 
         private static IEnumerable<string> ReadLines(StreamReader stream)
@@ -110,97 +160,93 @@ namespace PogoLocationFeeder
             yield return sb.ToString();
         }
 
-        private void PollDiscordFeed(Stream stream)
+        private async Task DiscordThread(Stream stream)
         {
-            const int delay = 10*1000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            Task.Factory.StartNew(async () =>
+            const int delay = 10 * 1000;
+            while (true)
             {
-                while (true)
+                for (var retrys = 0; retrys <= 3; retrys++)
                 {
-                    for (var retrys = 0; retrys <= 3; retrys++)
+                    foreach (var line in ReadLines(new StreamReader(stream)))
                     {
-                        foreach (var line in ReadLines(new StreamReader(stream)))
+                        try
                         {
-                            try
+                            var splitted = line.Split(new[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                            if (splitted.Length != 2 || splitted[0] != "data") continue;
+
+                            var jsonPayload = splitted[1];
+                            //Log.Debug($"JSON: {jsonPayload}");
+
+                            var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
+
+                            if (result == null) continue;
+
+                            //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                            Log.Debug("Discord message received: {0}: {1}", result.channel_id,
+                                result.content);
+                            var channelInfo = _channelParser.ToChannelInfo(result.channel_id);
+                            if (channelInfo.isValid)
                             {
-                                var splitted = line.Split(new[] {':'}, 2, StringSplitOptions.RemoveEmptyEntries);
-
-                                if (splitted.Length != 2 || splitted[0] != "data") continue;
-
-                                var jsonPayload = splitted[1];
-                                //Log.Debug($"JSON: {jsonPayload}");
-
-                                var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
-
-                                if (result == null) continue;
-
-                                //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                Log.Debug("Discord message received: {0}: {1}", result.channel_id,
-                                    result.content);
-                                var channelInfo = _channelParser.ToChannelInfo(result.channel_id);
-                                if (channelInfo.isValid)
-                                {
-                                    await RelayMessageToClients(result.content, channelInfo);
-                                }
-                                else
-                                {
-                                    Log.Debug("Channelid {0} was not found in discord_channels.json",
-                                        result.channel_id);
-                                }
+                                await RelayMessageToClients(result.content, channelInfo);
                             }
-                            catch (Exception e)
+                            else
                             {
-                                Log.Warn($"Exception:", e);
+                                Log.Debug("Channelid {0} was not found in discord_channels.json",
+                                    result.channel_id);
                             }
                         }
-                        if (token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(delay);
+                        catch (Exception e)
+                        {
+                            Log.Warn($"Exception:", e);
+                        }
                     }
+                    Thread.Sleep(delay);
                 }
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        }
-
-        private void PollRarePokemonRepositories(GlobalSettings globalSettings)
-        {
-            var rarePokemonRepositories = RarePokemonRepositoryFactory.CreateRepositories(globalSettings);
-
-            const int delay = 30*1000;
-            foreach (var rarePokemonRepository in rarePokemonRepositories)
-            {
-                var cancellationTokenSource = new CancellationTokenSource();
-                var token = cancellationTokenSource.Token;
-                Task.Factory.StartNew(async () =>
-                {
-                    Thread.Sleep(5*1000);
-                    while (true)
-                    {
-                        Thread.Sleep(delay);
-                        for (var retrys = 0; retrys <= 3; retrys++)
-                        {
-                            var pokeSniperList = rarePokemonRepository.FindAll();
-                            var channelInfo = new ChannelInfo {server = rarePokemonRepository.GetChannel()};
-                            if (pokeSniperList != null)
-                            {
-                                if (pokeSniperList.Any())
-                                {
-                                    await _clientWriter.FeedToClients(pokeSniperList, channelInfo);
-                                }
-                                else
-                                {
-                                    Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
-                                }
-                                break;
-                            }
-                            if (token.IsCancellationRequested)
-                                break;
-                            Thread.Sleep(1000);
-                        }
-                    }
-                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
         }
+
+        private async Task RareRepoThread(IRarePokemonRepository rarePokemonRepository)
+        {
+            const int delay = 30 * 1000;
+            Thread.Sleep(5*1000);
+            while (true)
+            {
+                Thread.Sleep(delay);
+                for (var retrys = 0; retrys <= 3; retrys++)
+                {
+                    var pokeSniperList = rarePokemonRepository.FindAll();
+                    var channelInfo = new ChannelInfo {server = rarePokemonRepository.GetChannel()};
+                    if (pokeSniperList != null)
+                    {
+                        if (pokeSniperList.Any())
+                        {
+                            await _clientWriter.FeedToClients(pokeSniperList, channelInfo);
+                        }
+                        else
+                        {
+                            Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                        }
+                        break;
+                    }
+                    Thread.Sleep(1000);
+                }
+            }
+        }
+
+        private async Task<Task> StartPollDiscordFeed(Stream stream)
+        {
+            return await Task.Factory.StartNew(async () => await DiscordThread(stream), TaskCreationOptions.LongRunning);
+        }
+
+        private async Task<Task> StartPollRarePokemonRepository(GlobalSettings globalSettings, IRarePokemonRepository rarePokemonRepository)
+        {
+            return await Task.Factory.StartNew(async () => await RareRepoThread(rarePokemonRepository), TaskCreationOptions.LongRunning);
+        }
+    }
+
+    public class ThreadManager
+    {
+        // TODO: Refactor
     }
 }

@@ -14,9 +14,8 @@ namespace PogoLocationFeeder.Writers
     public class ClientWriter
     {
         private readonly List<TcpClient> _arrSocket = new List<TcpClient>();
-        private TcpListener _listener;
+        public TcpListener Listener;
         private readonly MessageCache _messageCache = new MessageCache();
-
 
         public void StartNet(int port)
         {
@@ -26,8 +25,8 @@ namespace PogoLocationFeeder.Writers
             Log.Info("Application starting...");
             try
             {
-                _listener = new TcpListener(IPAddress.Any, port);
-                _listener.Start();
+                Listener = new TcpListener(IPAddress.Any, port);
+                Listener.Start();
             }
             catch (SocketException e)
             {
@@ -42,13 +41,13 @@ namespace PogoLocationFeeder.Writers
 
         private void StartAccept()
         {
-            _listener.BeginAcceptTcpClient(HandleAsyncConnection, _listener);
+            Listener.BeginAcceptTcpClient(HandleAsyncConnection, Listener);
         }
 
         private void HandleAsyncConnection(IAsyncResult res)
         {
             StartAccept();
-            var client = _listener.EndAcceptTcpClient(res);
+            var client = Listener.EndAcceptTcpClient(res);
             if (client != null && IsConnected(client.Client))
             {
                 _arrSocket.Add(client);
