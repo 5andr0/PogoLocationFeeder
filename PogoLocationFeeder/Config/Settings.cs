@@ -1,5 +1,6 @@
 #region using directives
 
+using System;
 using System.IO;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -48,7 +49,7 @@ namespace PogoLocationFeeder.Config
                 UseTrackemon = set.UseTrackemon;
                 UsePokeSnipers = set.UsePokeSnipers;
                 RemoveAfter = set.RemoveAfter;
-                ShowLimit = set.ShowLimit;
+                ShowLimit = Math.Max(set.ShowLimit, 1);
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
             }
             else
@@ -100,7 +101,7 @@ namespace PogoLocationFeeder.Config
         public bool UseTrackemon = GlobalSettings.UseTrackemon;
         public string PokeSnipers2Exe = GlobalSettings.PokeSnipers2Exe;
         public int RemoveAfter = GlobalSettings.RemoveAfter;
-        public  int ShowLimit = GlobalSettings.ShowLimit;
+        public int ShowLimit = Math.Max(GlobalSettings.ShowLimit, 1);
 
     }
 }
