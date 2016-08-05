@@ -90,9 +90,11 @@ namespace PogoLocationFeeder.GUI.Models {
         public void CleanupThread() {
             while(true) {
                 try {
+                    var ukn = "";
                     var expiration = Info.ExpirationTimestamp;
                     if(expiration.Equals(default(DateTime))) {
                         expiration = Created.AddMinutes(GlobalSettings.RemoveAfter);
+                        ukn = "unk. ";
                     }
                     var remaining = expiration - DateTime.Now;
 
@@ -102,7 +104,7 @@ namespace PogoLocationFeeder.GUI.Models {
                         }));
                     }
                     Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                        Date = $"{remaining.Minutes}m {remaining.Seconds}s";
+                        Date = $"{ukn}{remaining.Minutes}m {remaining.Seconds}s";
                     }));
                     Thread.Sleep(1000);
                 } catch (Exception) {

@@ -76,20 +76,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public int ShowLimit { get; set; }
 
-        public string Sniper2Exe {
-            get {
-                if (GlobalSettings.PokeSnipers2Exe != null && GlobalSettings.PokeSnipers2Exe.Contains(".exe")) {
-                    ColVisibility = Visibility.Visible;
-                }
-                return GlobalSettings.PokeSnipers2Exe;
-            }
-            set {
-                GlobalSettings.PokeSnipers2Exe = value;
-                if (string.IsNullOrEmpty(value)) {
-                    ColVisibility = Visibility.Collapsed;
-                }
-            }
-        }
+        public string Sniper2Exe { get; set; }
 
         public string RemoveMinutes { get; set; }
 
@@ -106,7 +93,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         }
 
         public void RemovePath() {
-            Sniper2Exe = string.Empty;
+            Sniper2Exe = "";
         }
 
         public void SetStatus(string status) {
@@ -129,6 +116,13 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         }
 
         public void SaceClick() {
+            if(Sniper2Exe != null && Sniper2Exe.Contains(".exe")) {
+                ColVisibility = Visibility.Visible;
+            }
+            if (Sniper2Exe == null || Sniper2Exe.Equals("")) {
+                Sniper2Exe = "";
+                ColVisibility = Visibility.Collapsed;
+            }
             GlobalSettings.ShowLimit = ShowLimit;
             GlobalSettings.Port = CustomPort;
             GlobalSettings.PokeSnipers2Exe = Sniper2Exe;
