@@ -78,7 +78,7 @@ namespace PogoLocationFeeder
                 if (!_clientWriter.Listener.Server.IsBound)
                 {
                     Log.Info("Server has lost connection. Restarting...");
-                    _clientWriter.StartNet(settings.Port);
+                    _clientWriter.StartNet(GlobalSettings.Port);
                 }
                 try
                 {
