@@ -36,10 +36,8 @@ namespace PogoLocationFeeder.GUI.Views
             if (Directory.Exists(p)) {
                 if (File.Exists(Path.Combine(p, "PokeSniper2.exe"))) {
                     path.Text = Path.Combine(p, "PokeSniper2.exe");
-                    GlobalSettings.PokeSnipers2exe = Path.Combine(p, "PokeSniper2.exe");
-                    Settings.Default.Sniper2Path = Path.Combine(p, "PokeSniper2.exe");
-                    Settings.Default.Save();
-                    //GlobalSettings.Settings.Save();
+                    GlobalSettings.PokeSnipers2Exe = Path.Combine(p, "PokeSniper2.exe");
+                    GlobalSettings.Save();
                     return;
                 }
             }

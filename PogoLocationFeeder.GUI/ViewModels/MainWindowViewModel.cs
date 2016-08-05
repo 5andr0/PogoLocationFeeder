@@ -1,32 +1,37 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using log4net.Config;
 using MaterialDesignThemes.Wpf;
 using PogoLocationFeeder.Common;
-using PogoLocationFeeder.Common.Models;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
+using PogoLocationFeeder.GUI.Models;
 using PogoLocationFeeder.GUI.Properties;
 using PropertyChanged;
 
 //using POGOProtos.Enums;
 
-namespace PogoLocationFeeder.GUI.ViewModels
-{
+namespace PogoLocationFeeder.GUI.ViewModels {
     [ImplementPropertyChanged]
-    public class MainWindowViewModel
-    {
-        public MainWindowViewModel()
-        {
+    public class MainWindowViewModel {
+        private Visibility _colVisibility;
+
+        public MainWindowViewModel() {
             Instance = this;
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(Startstop);
             DebugComand = new ActionCommand(ShowDebug);
             RemovePathCommand = new ActionCommand(RemovePath);
+            SaveCommand = new ActionCommand(SaceClick);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -43,7 +48,6 @@ namespace PogoLocationFeeder.GUI.ViewModels
             XmlConfigurator.Configure(
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.GUI.App.config"));
             GlobalSettings.Output = new Output();
-            GlobalSettings.PokeSnipers2exe = Settings.Default.Sniper2Path;
             var p = new Program();
             var a = new Thread(p.Start) {IsBackground = true};
             a.Start();
@@ -60,6 +64,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public ICommand DebugComand { get; }
         public ICommand StartStopCommand { get; }
         public ICommand RemovePathCommand { get; }
+        public ICommand SaveCommand { get; }
 
         public string CustomIp { get; set; } = "localhost";
 
@@ -69,69 +74,80 @@ namespace PogoLocationFeeder.GUI.ViewModels
 
         public string ThreadStatus { get; set; } = "[Running]";
 
-        public int ShowLimit
-        {
-            get
-            {
-                if (Settings.Default.ShowLimit.Equals(0)) return 1;
-                return Settings.Default.ShowLimit;
+        public int ShowLimit { get; set; }
+
+        public string Sniper2Exe {
+            get {
+                if (GlobalSettings.PokeSnipers2Exe != null && GlobalSettings.PokeSnipers2Exe.Contains(".exe")) {
+                    ColVisibility = Visibility.Visible;
+                }
+                return GlobalSettings.PokeSnipers2Exe;
             }
-            set
-            {
-                if (value <= 0) value = 1;
-                Settings.Default.ShowLimit = value;
-                Settings.Default.Save();
+            set {
+                GlobalSettings.PokeSnipers2Exe = value;
+                if (string.IsNullOrEmpty(value)) {
+                    ColVisibility = Visibility.Collapsed;
+                }
             }
         }
 
-        public string Sniper2exe {
+        public string RemoveMinutes { get; set; }
+
+        public Visibility ColVisibility {
             get {
-                return Settings.Default.Sniper2Path;
+                if (GlobalSettings.PokeSnipers2Exe != null && GlobalSettings.PokeSnipers2Exe.Contains(".exe")) {
+                    _colVisibility = Visibility.Visible;
+                    return _colVisibility;
+                }
+                _colVisibility = GlobalSettings.IsOneClickSnipeSupported() ? Visibility.Visible : Visibility.Collapsed;
+                return _colVisibility;
             }
-            set {
-                Settings.Default.Sniper2Path = value;
-                Settings.Default.Save();
-            }
+            set { _colVisibility = value; }
         }
 
         public void RemovePath() {
-            Sniper2exe = string.Empty;
+            Sniper2Exe = string.Empty;
         }
 
-        public void SetStatus(string status)
-        {
+        public void SetStatus(string status) {
             Status = status;
         }
 
-        public void ShowSettings()
-        {
-            if (TransitionerIndex != 0)
-            {
+        public void ShowSettings() {
+            if (TransitionerIndex != 0) {
                 TransitionerIndex = 0;
                 return;
             }
+            GlobalSettings.Load();
+            ShowLimit = GlobalSettings.ShowLimit;
+            CustomPort = GlobalSettings.Port;
+            Sniper2Exe = GlobalSettings.PokeSnipers2Exe;
+            ShowLimit = GlobalSettings.ShowLimit;
+            RemoveMinutes = GlobalSettings.RemoveAfter.ToString();
             TransitionerIndex = 1;
-            if (GlobalSettings.Settings != null)
-            {
-                CustomPort = GlobalSettings.Settings.Port;
-            }
+
         }
 
-        public void ShowDebug()
-        {
-            if (TransitionerIndex != 0)
-            {
+        public void SaceClick() {
+            GlobalSettings.ShowLimit = ShowLimit;
+            GlobalSettings.Port = CustomPort;
+            GlobalSettings.PokeSnipers2Exe = Sniper2Exe;
+            GlobalSettings.ShowLimit = ShowLimit;
+            GlobalSettings.RemoveAfter = int.Parse(RemoveMinutes);
+            GlobalSettings.Save();
+        }
+
+        public void ShowDebug() {
+            if (TransitionerIndex != 0) {
                 TransitionerIndex = 0;
                 return;
             }
             TransitionerIndex = 2;
         }
 
-        private void Startstop()
-        {
+        private void Startstop() {
             var status = GlobalSettings.ThreadPause;
-            if (status)
-            {
+            if (status) {
                 GlobalSettings.ThreadPause = false;
                 ThreadStatus = "[Running]";
                 PausePlayButtonIcon = PackIconKind.Pause;
@@ -142,4 +158,23 @@ namespace PogoLocationFeeder.GUI.ViewModels
             PausePlayButtonIcon = PackIconKind.Play;
         }
     }
-}
+
+    public class BindingProxy : Freezable {
+            #region Overrides of Freezable
+
+            protected override Freezable CreateInstanceCore() {
+                return new BindingProxy();
+            }
+
+            #endregion
+
+            public object Data {
+                get { return (object) GetValue(DataProperty); }
+                set { SetValue(DataProperty, value); }
+            }
+
+            public static readonly DependencyProperty DataProperty =
+                DependencyProperty.Register("Data", typeof(object),
+                    typeof(BindingProxy));
+        }
+    }

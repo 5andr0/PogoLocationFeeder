@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using PogoLocationFeeder.Common.Models;
+using PogoLocationFeeder.GUI.Models;
 
 namespace PogoLocationFeeder.GUI
 {

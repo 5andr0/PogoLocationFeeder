@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using PogoLocationFeeder.GUI.ViewModels;
-using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Properties;
+using PogoLocationFeeder.GUI.ViewModels;
+using PogoLocationFeeder.Helper;
+using PropertyChanged;
 
-namespace PogoLocationFeeder.Common.Models
-{
+namespace PogoLocationFeeder.GUI.Models { 
+
+    [ImplementPropertyChanged]
     public class SniperInfoModel
     {
         private SniperInfo _info;
@@ -20,6 +23,11 @@ namespace PogoLocationFeeder.Common.Models
             copyCoordsCommand = new ActionCommand(CopyCoords);
             PokeSnipersCommand = new ActionCommand(PokeSnipers);
             SniperVisibility = GlobalSettings.SniperVisibility;
+            Created = DateTime.Now;
+
+
+            Thread clean = new Thread(CleanupThread) { IsBackground = true };
+            clean.Start();
         }
 
         public BitmapImage Icon { get; set; }
@@ -46,6 +54,8 @@ namespace PogoLocationFeeder.Common.Models
 
         public ICommand copyCoordsCommand { get; }
         public ICommand PokeSnipersCommand { get; }
+
+        public DateTime Created;
 
         public void CopyCoords()
         {
@@ -76,6 +86,32 @@ namespace PogoLocationFeeder.Common.Models
             {
                 Log.Error("Error while launching pokesniper2", e);
             }
+        }
+        public void CleanupThread() {
+            while(true) {
+                try {
+                    var expiration = Info.ExpirationTimestamp;
+                    if(expiration.Equals(default(DateTime))) {
+                        expiration = Created.AddMinutes(GlobalSettings.RemoveAfter);
+                    }
+                    var remaining = expiration - DateTime.Now;
+
+                    if(remaining < TimeSpan.Zero) {
+                        Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                            GlobalVariables.PokemonsInternal.Remove(this);
+                        }));
+                    }
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                        Date = $"{remaining.Minutes}m {remaining.Seconds}s";
+                    }));
+                    Thread.Sleep(1000);
+                } catch (Exception) {
+                    Thread.Sleep(1000);
+                    //hmm ignore?
+                }
+                
+            }
+            // ReSharper disable once FunctionNeverReturns
         }
     }
 }

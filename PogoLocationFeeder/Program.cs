@@ -57,7 +57,8 @@ namespace PogoLocationFeeder
 
             VersionCheckState.Execute(new CancellationToken());
 
-            _clientWriter.StartNet(settings.Port);
+            _clientWriter.StartNet(GlobalSettings.Port);
+            Log.Info($"Starting with Port: {GlobalSettings.Port}");
 
             WebSourcesManager(settings);
 

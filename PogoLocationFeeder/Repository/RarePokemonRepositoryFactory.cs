@@ -9,11 +9,11 @@ namespace PogoLocationFeeder.Repository
         {
             var rarePokemonRepositories = new List<IRarePokemonRepository>();
             var pokemonIds = RarePokemonsFactory.createRarePokemonList();
-            if (globalSettings.UsePokeSnipers)
+            if (GlobalSettings.UsePokeSnipers)
             {
                 rarePokemonRepositories.Add(new PokeSniperRarePokemonRepository(pokemonIds));
             }
-            if (globalSettings.UseTrackemon)
+            if (GlobalSettings.UseTrackemon)
             {
                 rarePokemonRepositories.Add(new TrackemonRarePokemonRepository(pokemonIds));
             }

@@ -16,6 +16,9 @@
     <Grid>
         <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
                   Background="Transparent" SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True">
+            <DataGrid.Resources>
+                <viewmodels:BindingProxy x:Key="proxy" Data="{Binding}"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
@@ -31,7 +34,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn x:Name="col">
+                <DataGridTemplateColumn x:Name="col" Visibility="{Binding Data.ColVisibility, Source={StaticResource proxy}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Height="30" Command="{Binding PokeSnipersCommand}" Background="Transparent"
