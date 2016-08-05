@@ -45,7 +45,7 @@ namespace PogoLocationFeeder.GUI.Common
         public void InsertToList(SniperInfoModel info)
         {
             var pokes = GlobalVariables.PokemonsInternal;
-            _showLimit = Settings.Default.ShowLimit;
+            _showLimit = GlobalSettings.ShowLimit;
             if (pokes.Count > _showLimit)
             {
                 var diff = pokes.Count - _showLimit;
