@@ -135,7 +135,7 @@
   <ItemGroup>
     <EmbeddedResource Include="App.config" />
     <None Include="Config\discord_channels.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
