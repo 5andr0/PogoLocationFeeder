@@ -37,16 +37,22 @@ namespace PogoLocationFeeder.GUI.Common
                     Channel = channelInfo.channel
                 };
                 InsertToList(info);
+                RemoveListExtras();
             });
+        }
+
+        public void RemoveListExtras()
+        {
+            var pokes = GlobalVariables.PokemonsInternal;
+            while (pokes.Count > GlobalSettings.ShowLimit)
+            {
+                pokes.Remove(pokes.Last());
+            }
         }
 
         public void InsertToList(SniperInfoModel info)
         {
             var pokes = GlobalVariables.PokemonsInternal;
-            while (pokes.Count >= GlobalSettings.ShowLimit)
-            {
-                pokes.Remove(pokes.Last());
-            };
             pokes.Insert(0, info);
         }
 

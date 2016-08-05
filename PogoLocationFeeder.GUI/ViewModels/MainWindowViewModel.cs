@@ -31,7 +31,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             StartStopCommand = new ActionCommand(Startstop);
             DebugComand = new ActionCommand(ShowDebug);
             RemovePathCommand = new ActionCommand(RemovePath);
-            SaveCommand = new ActionCommand(SaceClick);
+            SaveCommand = new ActionCommand(SaveClick);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -115,7 +115,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         }
 
-        public void SaceClick() {
+        public void SaveClick() {
             if(Sniper2Exe != null && Sniper2Exe.Contains(".exe")) {
                 ColVisibility = Visibility.Visible;
             }
@@ -123,12 +123,14 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 Sniper2Exe = "";
                 ColVisibility = Visibility.Collapsed;
             }
-            GlobalSettings.ShowLimit = ShowLimit;
+            GlobalSettings.ShowLimit = Math.Max(ShowLimit, 1);
             GlobalSettings.Port = CustomPort;
             GlobalSettings.PokeSnipers2Exe = Sniper2Exe;
             GlobalSettings.ShowLimit = ShowLimit;
             GlobalSettings.RemoveAfter = int.Parse(RemoveMinutes);
             GlobalSettings.Save();
+
+            GlobalSettings.Output.RemoveListExtras();
         }
 
         public void ShowDebug() {

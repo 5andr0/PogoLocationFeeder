@@ -6,5 +6,6 @@ namespace PogoLocationFeeder.Common
     {
         void PrintPokemon(SniperInfo info, ChannelInfo channelInfo);
         void SetStatus(string message);
+        void RemoveListExtras();
     }
 }

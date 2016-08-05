@@ -106,6 +106,7 @@ namespace PogoLocationFeeder.GUI.Models {
                     Application.Current.Dispatcher.BeginInvoke(new Action(() => {
                         Date = $"{ukn}{remaining.Minutes}m {remaining.Seconds}s";
                     }));
+                    GlobalSettings.Output.RemoveListExtras();
                     Thread.Sleep(1000);
                 } catch (Exception) {
                     Thread.Sleep(1000);
