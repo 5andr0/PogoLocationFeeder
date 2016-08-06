@@ -23,14 +23,9 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <materialDesign:PopupBox PlacementMode="BottomAndAlignLeftEdges"
-                                                     Margin="0, -5" Background="Gray">
-                                <StackPanel>
-                                    <Button Height="30"
+                                <Button Height="30"
                                             Command="{Binding copyCoordsCommand}"
-                                            Style="{DynamicResource MaterialDesignFlatButton}" Content="Copy Coords" />
-                                </StackPanel>
-                            </materialDesign:PopupBox>
+                                            Style="{DynamicResource MaterialDesignFlatButton}" ToolTip="Copy Coordinates" Content="CC"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

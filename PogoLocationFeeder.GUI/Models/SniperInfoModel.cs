@@ -59,8 +59,14 @@ namespace PogoLocationFeeder.GUI.Models {
 
         public void CopyCoords()
         {
-            Clipboard.SetText(
-                $"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+            try {
+                Clipboard.SetText(
+                    $"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+
+            } catch (Exception) {
+                Clipboard.SetDataObject(
+                    $"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+            }
         }
 
         private void StartProcessWithPath() {
