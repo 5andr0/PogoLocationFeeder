@@ -36,9 +36,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="POGOProtos, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\POGOProtos.1.5.0\lib\net45\POGOProtos.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="POGOProtos, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\POGOProtos.1.4.0\lib\net45\POGOProtos.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -55,6 +59,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Api\PogoLocationFeederListenerTests.cs" />
+    <Compile Include="Tests\ChannelParserTests.cs" />
     <Compile Include="Tests\GeoCoordinatesParserTest.cs" />
     <Compile Include="Tests\IVParserTests.cs" />
     <Compile Include="Tests\MessageCacheTests.cs" />
@@ -65,6 +71,10 @@
     <Compile Include="Tests\TrackemonRarePokemonRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PogoLocationFeeder.API\PogoLocationFeeder.API.csproj">
+      <Project>{e82fe137-7326-4efa-a4dd-a8592bf70f36}</Project>
+      <Name>PogoLocationFeeder.API</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PogoLocationFeeder\PogoLocationFeeder.csproj">
       <Project>{76F6EEEF-E89F-4E43-AA9D-1567CBC1420B}</Project>
       <Name>PogoLocationFeeder</Name>
@@ -72,6 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

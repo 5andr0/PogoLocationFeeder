@@ -1,63 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using POGOProtos.Enums;
+﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace PogoLocationFeeder.Helper
 {
-    public class DiscordChannelParser
+    public class ChannelParser
     {
         public int Port = 16969;
+        public List<DiscordChannels> Settings;
         public bool usePokeSnipers = false;
 
-        public static DiscordChannelParser Default => new DiscordChannelParser();
-        public List<DiscordChannels> settings = null;
 
-        public List<DiscordChannels> Init()
+        public static ChannelParser Default => new ChannelParser();
+
+        public void LoadChannelSettings()
         {
-            
             var configFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "discord_channels.json");
 
             if (File.Exists(configFile))
             {
-                //if the file exists, load the settings
+                //if the file exists, load the Settings
                 var input = File.ReadAllText(configFile);
 
                 var jsonSettings = new JsonSerializerSettings();
-                jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
-                settings = JsonConvert.DeserializeObject<List<DiscordChannels>>(input, jsonSettings);
+                Settings = JsonConvert.DeserializeObject<List<DiscordChannels>>(input, jsonSettings);
             }
             else
             {
-                settings = new List<DiscordChannels>();
+                Settings = new List<DiscordChannels>();
                 Log.Error($"Channel file \"{configFile}\" not found!");
             }
 
-            return settings;
         }
 
-        public string ToName(string id)
+        public ChannelInfo ToChannelInfo(string channelId)
         {
-            foreach (var e in settings)
+            var channelInfo = new ChannelInfo();
+            if (channelId != null)
             {
-                if (String.Compare(id, e.id) == 0)
-                    return ($"Server: {e.Server}, Channel: {e.Name}");
+                foreach (var channel in Settings)
+                {
+                    if (string.Compare(channelId, channel.id) == 0)
+                    {
+                        channelInfo.server = channel.Server;
+                        channelInfo.channel = channel.Name;
+                        channelInfo.isValid = true;
+                        return channelInfo;
+                    }
+                }
             }
-            return "UNKNOWN_SOURCE: ";
+            channelInfo.server = "Unknown";
+            channelInfo.channel = "Unknown";
+            return channelInfo;
         }
 
         public class DiscordChannels
         {
             public string id;
-            public string Server;
             public string Name;
+            public string Server;
         }
+    }
+
+    public class SourceInfo
+    {
+        public string server { get; set; }
+        public string channelId { get; set; }
     }
 }

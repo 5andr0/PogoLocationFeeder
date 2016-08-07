@@ -1,45 +1,48 @@
-﻿using log4net;
-using log4net.Config;
-using log4net.Layout.Pattern;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using log4net.Core;
-using System.IO;
+﻿using System;
+using System.Reflection;
+using log4net;
 using log4net.Appender;
+using log4net.Core;
 
 namespace PogoLocationFeeder.Helper
 {
     public static class Log
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(Log));
-        public static readonly log4net.Core.Level pokemonLevel = new log4net.Core.Level(log4net.Core.Level.Info.Value + 1000, "PKMN");
+        //private const string timeFormat = "HH:mm:ss";
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(Log));
+        public static readonly Level pokemonLevel = new Level(Level.Info.Value + 1000, "PKMN");
+        private static readonly object _MessageLock = new object();
 
         static Log()
         {
-            XmlConfigurator.Configure();
+            //XmlConfigurator.Configure(); // we are loading from the embedded resource file App.config so we don't have to deliver the config file
         }
-        const String timeFormat = "HH:mm:ss";
-        private static object _MessageLock = new object();
 
-        public static void Trace(String message, params string[] args)
+        public static void Debug(string message, params string[] args)
         {
-            logger.DebugFormat(message, args);
+            if (args == null)
+            {
+                Logger.Debug(message);
+            }
+            else
+            {
+                Logger.DebugFormat(message, args);
+            }
         }
 
-        public static void Debug(String message, params string[] args)
+        public static void Info(string message, params string[] args)
         {
-            logger.DebugFormat(message, args);
+            if (args == null)
+            {
+                Logger.Info(message);
+            }
+            else
+            {
+                Logger.InfoFormat(message, args);
+            }
         }
 
-        public static void Info(String message, params string[] args)
-        {
-            logger.InfoFormat( message, args);
-        }
-
-        public static void Plain(String message, params  string[] args)
+        public static void Plain(string message, params string[] args)
         {
             lock (_MessageLock)
             {
@@ -49,65 +52,92 @@ namespace PogoLocationFeeder.Helper
             }
         }
 
-        public static void Pokemon(String message, params string[] args)
+        public static void Pokemon(string message, params string[] args)
         {
-
-            LogPokemonFormat(logger, message, args);
-        }
-        public static void Warn(String message, params string[] args)
-        {
-            logger.WarnFormat(message, args);
-        }
-
-
-        public static void Warn(String message, Exception e)
-        {
-            logger.Warn(message, e);
+            if (args == null)
+            {
+                Logger.LogPokemon(message);
+            }
+            else
+            {
+                Logger.LogPokemonFormat(message, args);
+            }
         }
 
-        public static void Error(String message, params string[] args)
+        public static void Warn(string message, params string[] args)
         {
-            logger.ErrorFormat(message, args);
+            if (args == null)
+            {
+                Logger.Warn(message);
+            }
+            else
+            {
+                Logger.WarnFormat(message, args);
+            }
         }
 
-        public static void Error(String message, Exception e)
+
+        public static void Warn(string message, Exception e)
         {
-            logger.Error(message, e);
+            Logger.Warn(message + '\n', e);
         }
 
-        public static void Fatal(String message, params string[] args)
+        public static void Error(string message, params string[] args)
         {
-            logger.FatalFormat(message, args);
+            if (args == null)
+            {
+                Logger.Error(message);
+            }
+            else
+            {
+                Logger.ErrorFormat(message, args);
+            }
         }
 
-        public static void Fatal(String message, Exception e)
+        public static void Error(string message, Exception e)
         {
-            logger.Fatal(message, e);
+            Logger.Error(message + '\n', e);
         }
+
+        public static void Fatal(string message, params string[] args)
+        {
+            if (args == null)
+            {
+                Logger.Fatal(message);
+            }
+            else
+            {
+                Logger.FatalFormat(message + '\n', args);
+            }
+        }
+
+        public static void Fatal(string message, Exception e)
+        {
+            Logger.Fatal(message + '\n', e);
+        }
+
         private static void LogPokemon(this ILog log, string message)
         {
-            log.Logger.Log(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+            log.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType,
                 pokemonLevel, message, null);
         }
 
         public static void LogPokemonFormat(this ILog log, string message, params object[] args)
         {
-            string formattedMessage = string.Format(message, args);
-            log.Logger.Log(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+            var formattedMessage = string.Format(message, args);
+            log.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType,
                 pokemonLevel, formattedMessage, null);
         }
-
-
     }
 
-    public class CustomColoredConsoleAppender : ColoredConsoleAppender
+    public class CustomColoredConsoleAppender : ManagedColoredConsoleAppender
     {
         public CustomColoredConsoleAppender()
         {
-            AddMapping(new ColoredConsoleAppender.LevelColors
+            AddMapping(new LevelColors
             {
                 Level = Log.pokemonLevel,
-                ForeColor = ColoredConsoleAppender.Colors.Green
+                ForeColor = ConsoleColor.Green
             });
         }
     }

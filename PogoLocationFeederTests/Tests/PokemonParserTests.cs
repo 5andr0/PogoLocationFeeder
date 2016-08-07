@@ -1,20 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using POGOProtos.Enums;
-using PogoLocationFeeder.Helper;
-using System.Globalization;
 
-namespace PogoLocationFeeder.Tests
+namespace PogoLocationFeeder.Helper.Helper.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class PokemonParserTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void parsePokemonTest()
         {
             testPokemonParsing("kadabra", PokemonId.Kadabra);
@@ -34,17 +26,21 @@ namespace PogoLocationFeeder.Tests
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public void parsePokemonFullLine()
         {
-            testPokemonParsing("[302 seconds remaining] 70% IV - Snorlax at 37.729738754701,-97.372969967814 [ Moveset: ZenHeadbuttFast/HyperBeam ]", PokemonId.Snorlax);
-            testPokemonParsing("[482 seconds remaining] 73% IV - Wigglytuff at 31.934567351007,-4.4561212903872 [ Moveset: FeintAttackFast/HyperBeam ]", PokemonId.Wigglytuff);
+            testPokemonParsing(
+                "[302 seconds remaining] 70% IV - Snorlax at 37.729738754701,-97.372969967814 [ Moveset: ZenHeadbuttFast/HyperBeam ]",
+                PokemonId.Snorlax);
+            testPokemonParsing(
+                "[482 seconds remaining] 73% IV - Wigglytuff at 31.934567351007,-4.4561212903872 [ Moveset: FeintAttackFast/HyperBeam ]",
+                PokemonId.Wigglytuff);
             testPokemonParsing("52,6271480914, 13,2858625127 Magneton 90", PokemonId.Magneton);
         }
 
-        private void testPokemonParsing(String text, PokemonId expectedPokemonId)
+        private void testPokemonParsing(string text, PokemonId expectedPokemonId)
         {
-            Assert.AreEqual(expectedPokemonId, PokemonParser.parsePokemon(text));
+            Assert.AreEqual(expectedPokemonId, PokemonParser.ParsePokemon(text));
         }
     }
 }

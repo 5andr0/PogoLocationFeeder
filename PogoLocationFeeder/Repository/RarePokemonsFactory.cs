@@ -1,9 +1,5 @@
-﻿using POGOProtos.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Repository
 {
@@ -11,7 +7,7 @@ namespace PogoLocationFeeder.Repository
     {
         public static List<PokemonId> createRarePokemonList()
         {
-            List<PokemonId> rarePokemonIds = new List<PokemonId>()
+            var rarePokemonIds = new List<PokemonId>
             {
                 PokemonId.Venusaur,
                 PokemonId.Charizard,
@@ -52,6 +48,7 @@ namespace PogoLocationFeeder.Repository
                 PokemonId.Articuno,
                 PokemonId.Zapdos,
                 PokemonId.Moltres,
+                PokemonId.Dratini,
                 PokemonId.Dragonair,
                 PokemonId.Dragonite,
                 PokemonId.Mewtwo,

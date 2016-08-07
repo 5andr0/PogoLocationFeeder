@@ -1,36 +1,36 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PogoLocationFeeder.Helper.Tests
+namespace PogoLocationFeeder.Helper.Helper.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class IVParserTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void parseIVTest()
         {
-            Assert.AreEqual(100, IVParser.parseIV("100 IV"));
-            Assert.AreEqual(88.01, IVParser.parseIV("88,01 IV"));
-            Assert.AreEqual(5.2, IVParser.parseIV("5.2 %   IV"));
+            Assert.AreEqual(100, IVParser.ParseIV("100 IV"));
+            Assert.AreEqual(88.01, IVParser.ParseIV("88,01 IV"));
+            Assert.AreEqual(5.2, IVParser.ParseIV("5.2 %   IV"));
 
-            Assert.AreEqual(15.0, IVParser.parseIV("15 IV"));
-            Assert.AreEqual(85.11, IVParser.parseIV("IV 85.11 %"));
-            Assert.AreEqual(85.11, IVParser.parseIV("IV 85,11"));
+            Assert.AreEqual(15.0, IVParser.ParseIV("15 IV"));
+            Assert.AreEqual(85.11, IVParser.ParseIV("IV 85.11 %"));
+            Assert.AreEqual(85.11, IVParser.ParseIV("IV 85,11"));
 
-            Assert.AreEqual(100, IVParser.parseIV("100.00 %"));
+            Assert.AreEqual(100, IVParser.ParseIV("100.00 %"));
+            Assert.AreEqual(98, IVParser.ParseIV("Dratini 97,8.200341 IV 98"));
+            Assert.AreEqual(98, IVParser.ParseIV("Dratini IV 98 97,8.200341 "));
+
         }
 
-        
-        [TestMethod()]
+
+    [TestMethod]
         public void parseNoIV()
         {
-            Assert.AreEqual(0, IVParser.parseIV("[239 seconds remaining] Jolteon at 42.877637631245, 74.620142194759[Moveset: ThunderShockFast / Thunderbolt]"));
-        }
+            Assert.AreEqual(91, IVParser.ParseIV("209171120702619648: Vaporeon 40.736749, -74.010540 IV91 off"));
 
+            Assert.AreEqual(0,
+                IVParser.ParseIV(
+                    "[239 seconds remaining] Jolteon at 42.877637631245, 74.620142194759[Moveset: ThunderShockFast / Thunderbolt]"));
+        }
     }
 }

@@ -22,5 +22,41 @@ namespace PogoLocationFeeder.GUI.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int ShowLimit {
+            get {
+                return ((int)(this["ShowLimit"]));
+            }
+            set {
+                this["ShowLimit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Debug stuff in here!")]
+        public string DebugOutput {
+            get {
+                return ((string)(this["DebugOutput"]));
+            }
+            set {
+                this["DebugOutput"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Sniper2Path {
+            get {
+                return ((string)(this["Sniper2Path"]));
+            }
+            set {
+                this["Sniper2Path"] = value;
+            }
+        }
     }
 }

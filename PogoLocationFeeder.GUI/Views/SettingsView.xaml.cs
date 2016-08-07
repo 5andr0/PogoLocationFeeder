@@ -1,25 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using PogoLocationFeeder.Config;
+using PogoLocationFeeder.GUI.Properties;
+using UserControl = System.Windows.Controls.UserControl;
 
-namespace PogoLocationFeeder.GUI.Views {
+namespace PogoLocationFeeder.GUI.Views
+{
     /// <summary>
-    /// Interaktionslogik für SettingsView.xaml
+    ///     Interaktionslogik für SettingsView.xaml
     /// </summary>
-    public partial class SettingsView : UserControl {
-        public SettingsView() {
+    public partial class SettingsView : UserControl
+    {
+        public SettingsView()
+        {
             InitializeComponent();
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            var regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private string OpenFolderDialog() {
+            using(var f = new FolderBrowserDialog()) {
+                return f.ShowDialog() == DialogResult.OK ? f.SelectedPath : null;
+            }
+        }
+
+        private void TextBox_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            var p = OpenFolderDialog();
+            if (Directory.Exists(p)) {
+                if (File.Exists(Path.Combine(p, "PokeSniper2.exe"))) {
+                    path.Text = Path.Combine(p, "PokeSniper2.exe");
+                    GlobalSettings.PokeSnipers2Exe = Path.Combine(p, "PokeSniper2.exe");
+                    GlobalSettings.Save();
+                    return;
+                }
+            }
         }
     }
 }
