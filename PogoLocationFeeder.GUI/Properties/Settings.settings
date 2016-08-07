@@ -2,14 +2,8 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="PogoLocationFeeder.GUI.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="ShowLimit" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">30</Value>
-    </Setting>
     <Setting Name="DebugOutput" Type="System.String" Scope="User">
       <Value Profile="(Default)">Debug stuff in here!</Value>
-    </Setting>
-    <Setting Name="Sniper2Path" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

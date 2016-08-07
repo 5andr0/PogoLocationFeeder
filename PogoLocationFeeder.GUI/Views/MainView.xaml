@@ -23,13 +23,13 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                                <Button Height="30"
+                                <Button Height="25" Margin="0, -5"
                                             Command="{Binding copyCoordsCommand}"
                                             Style="{DynamicResource MaterialDesignFlatButton}" ToolTip="Copy Coordinates" Content="CC"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn x:Name="col" Visibility="{Binding Data.ColVisibility, Source={StaticResource proxy}}">
+                <DataGridTemplateColumn Visibility="{Binding Data.ColVisibility, Source={StaticResource proxy}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Height="30" Command="{Binding PokeSnipersCommand}" Background="Transparent"
