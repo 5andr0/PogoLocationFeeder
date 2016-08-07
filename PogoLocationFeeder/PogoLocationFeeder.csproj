@@ -112,6 +112,7 @@
     <Compile Include="Common\Output.cs" />
     <Compile Include="Common\ChannelInfo.cs" />
     <Compile Include="Helper\IVParser.cs" />
+    <Compile Include="Helper\JsonSerializerSettingsFactory.cs" />
     <Compile Include="Helper\Log.cs" />
     <Compile Include="Helper\MessageCache.cs" />
     <Compile Include="Helper\GeoCoordinatesParser.cs" />
