@@ -21,9 +21,11 @@ namespace PogoLocationFeeder.Config
         public static int Port = 16969;
         public static bool UsePokeSnipers = false;
         public static bool UseTrackemon = false;
+        public static bool UsePokeSpawns = false;
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
+        public static bool UsePokezz = false;
 
         public static bool SniperVisibility => IsOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();
@@ -47,7 +49,10 @@ namespace PogoLocationFeeder.Config
                 settings = new GlobalSettings();
                 Port = set.Port;
                 UseTrackemon = set.UseTrackemon;
+                UsePokeSpawns = set.UsePokeSpawns;
+
                 UsePokeSnipers = set.UsePokeSnipers;
+                UsePokezz = set.UsePokezz;
                 RemoveAfter = set.RemoveAfter;
                 ShowLimit = Math.Max(set.ShowLimit, 1);
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
@@ -99,6 +104,9 @@ namespace PogoLocationFeeder.Config
         public int Port = GlobalSettings.Port;
         public bool UsePokeSnipers = GlobalSettings.UsePokeSnipers;
         public bool UseTrackemon = GlobalSettings.UseTrackemon;
+        public bool UsePokezz = GlobalSettings.UsePokezz;
+        public bool UsePokeSpawns = GlobalSettings.UsePokeSpawns;
+
         public string PokeSnipers2Exe = GlobalSettings.PokeSnipers2Exe;
         public int RemoveAfter = GlobalSettings.RemoveAfter;
         public int ShowLimit = Math.Max(GlobalSettings.ShowLimit, 1);

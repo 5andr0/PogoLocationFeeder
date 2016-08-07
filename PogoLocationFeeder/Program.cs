@@ -210,7 +210,6 @@ namespace PogoLocationFeeder
         private async Task RareRepoThread(IRarePokemonRepository rarePokemonRepository)
         {
             const int delay = 30 * 1000;
-            Thread.Sleep(5*1000);
             while (true)
             {
                 Thread.Sleep(delay);

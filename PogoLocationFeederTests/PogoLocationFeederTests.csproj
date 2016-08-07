@@ -66,6 +66,7 @@
     <Compile Include="Tests\MessageCacheTests.cs" />
     <Compile Include="Tests\MessageParserTests.cs" />
     <Compile Include="Tests\PokemonParserTests.cs" />
+    <Compile Include="Tests\PokezzRarePokemonRepositoryTests .cs" />
     <Compile Include="Tests\PokeSniperRarePokemonRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\TrackemonRarePokemonRepositoryTests.cs" />
