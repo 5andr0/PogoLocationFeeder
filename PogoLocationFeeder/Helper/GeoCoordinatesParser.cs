@@ -6,7 +6,7 @@ namespace PogoLocationFeeder.Helper
 {
     public class GeoCoordinatesParser
     {
-        public const string GeoCoordinatesRegex = @"(?<lat>\-?\d+(?:[\,|\.]\d+)?)[,|\s]+(?<long>\-?\d+(?:[\,|\.]\d+)?)";
+        public const string GeoCoordinatesRegex = @"(?<lat>\-?\d+[\,|\.]\d+)[,|\s]+(?<long>\-?\d+[\,|\.]\d+)";
 
         public static GeoCoordinates ParseGeoCoordinates(string input)
         {

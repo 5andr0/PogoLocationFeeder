@@ -22,6 +22,8 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokeSnipers = false;
         public static bool UseTrackemon = false;
         public static bool UsePokeSpawns = false;
+        public static bool UsePokewatchers = false;
+
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
@@ -51,6 +53,7 @@ namespace PogoLocationFeeder.Config
                 //UseTrackemon = set.UseTrackemon;
                 UsePokeSpawns = set.UsePokeSpawns;
                 UsePokeSnipers = set.UsePokeSnipers;
+                UsePokewatchers = set.UsePokewatchers;
                 UsePokezz = set.UsePokezz;
                 RemoveAfter = set.RemoveAfter;
                 ShowLimit = Math.Max(set.ShowLimit, 1);
@@ -105,7 +108,7 @@ namespace PogoLocationFeeder.Config
         //public bool UseTrackemon = GlobalSettings.UseTrackemon;
         public bool UsePokezz = GlobalSettings.UsePokezz;
         public bool UsePokeSpawns = GlobalSettings.UsePokeSpawns;
-
+        public bool UsePokewatchers = GlobalSettings.UsePokewatchers;
         public string PokeSnipers2Exe = GlobalSettings.PokeSnipers2Exe;
         public int RemoveAfter = GlobalSettings.RemoveAfter;
         public int ShowLimit = Math.Max(GlobalSettings.ShowLimit, 1);
