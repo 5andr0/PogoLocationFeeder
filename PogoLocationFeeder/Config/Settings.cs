@@ -48,9 +48,8 @@ namespace PogoLocationFeeder.Config
                 set = JsonConvert.DeserializeObject<SettingsToSave>(input, jsonSettings);
                 settings = new GlobalSettings();
                 Port = set.Port;
-                UseTrackemon = set.UseTrackemon;
+                //UseTrackemon = set.UseTrackemon;
                 UsePokeSpawns = set.UsePokeSpawns;
-
                 UsePokeSnipers = set.UsePokeSnipers;
                 UsePokezz = set.UsePokezz;
                 RemoveAfter = set.RemoveAfter;
@@ -103,7 +102,7 @@ namespace PogoLocationFeeder.Config
     public class SettingsToSave {
         public int Port = GlobalSettings.Port;
         public bool UsePokeSnipers = GlobalSettings.UsePokeSnipers;
-        public bool UseTrackemon = GlobalSettings.UseTrackemon;
+        //public bool UseTrackemon = GlobalSettings.UseTrackemon;
         public bool UsePokezz = GlobalSettings.UsePokezz;
         public bool UsePokeSpawns = GlobalSettings.UsePokeSpawns;
 
