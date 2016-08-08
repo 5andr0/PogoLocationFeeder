@@ -52,7 +52,10 @@ namespace PogoLocationFeeder.Repository
                 PokemonId.Dragonair,
                 PokemonId.Dragonite,
                 PokemonId.Mewtwo,
-                PokemonId.Mew
+                PokemonId.Mew,
+                PokemonId.Charmander  ,
+                PokemonId.Magmar,
+                PokemonId.Scyther
             };
             return rarePokemonIds;
         }
