@@ -20,7 +20,8 @@ using PropertyChanged;
 
 //using POGOProtos.Enums;
 
-namespace PogoLocationFeeder.GUI.ViewModels {
+namespace PogoLocationFeeder.GUI.ViewModels
+{
     [ImplementPropertyChanged]
     public class MainWindowViewModel {
         private Visibility _colVisibility;

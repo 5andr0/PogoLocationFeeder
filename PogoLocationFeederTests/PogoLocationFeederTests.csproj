@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PogoLocationFeeder.API\PogoLocationFeeder.API.csproj">
-      <Project>{E82FE137-7326-4EFA-A4DD-A8592BF70F36}</Project>
+      <Project>{e82fe137-7326-4efa-a4dd-a8592bf70f36}</Project>
       <Name>PogoLocationFeeder.API</Name>
     </ProjectReference>
     <ProjectReference Include="..\PogoLocationFeeder\PogoLocationFeeder.csproj">
