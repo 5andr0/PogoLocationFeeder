@@ -30,6 +30,11 @@ namespace PogoLocationFeeder.Helper
             }
         }
 
+        public static void Debug(string message, Exception e)
+        {
+            Logger.Debug(message, e);
+        }
+
         public static void Info(string message, params string[] args)
         {
             if (args == null)

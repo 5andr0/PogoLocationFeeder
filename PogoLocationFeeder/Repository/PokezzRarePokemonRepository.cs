@@ -64,7 +64,9 @@ namespace PogoLocationFeeder.Repository
             }
             catch (Exception e)
             {
-                Log.Warn("Error", e);
+                Log.Warn("Received error from Pokezz. More info the logs");
+                Log.Debug("Received error from Pokezz: ", e);
+
                 _started = false;
             }
         }
