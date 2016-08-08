@@ -87,10 +87,6 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public Visibility ColVisibility {
             get {
-                if (GlobalSettings.PokeSnipers2Exe != null && GlobalSettings.PokeSnipers2Exe.Contains(".exe")) {
-                    _colVisibility = Visibility.Visible;
-                    return _colVisibility;
-                }
                 _colVisibility = GlobalSettings.IsOneClickSnipeSupported() ? Visibility.Visible : Visibility.Collapsed;
                 return _colVisibility;
             }

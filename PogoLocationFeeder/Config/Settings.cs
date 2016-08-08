@@ -79,6 +79,10 @@ namespace PogoLocationFeeder.Config
 
         public static bool IsOneClickSnipeSupported()
         {
+            if (GlobalSettings.PokeSnipers2Exe != null && GlobalSettings.PokeSnipers2Exe.Contains(".exe"))
+            {
+                return true;
+            }
             const string keyName = @"pokesniper2\Shell\Open\Command";
             //return Registry.GetValue(keyName, valueName, null) == null;
             using (var Key = Registry.ClassesRoot.OpenSubKey(keyName))
