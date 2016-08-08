@@ -25,7 +25,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "ws://pokezz.com/socket.io/?EIO=3&transport=websocket";
-        private const string Channel = "Pokezz";
+        private const string Channel = "PokeZZ";
         private readonly List<PokemonId> _pokemonIdsToFind;
         private bool _started = false;
         private ConcurrentBag<SniperInfo> _snipersInfos = new ConcurrentBag<SniperInfo>();
