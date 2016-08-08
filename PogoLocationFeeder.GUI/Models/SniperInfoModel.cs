@@ -72,7 +72,9 @@ namespace PogoLocationFeeder.GUI.Models {
         private void StartProcessWithPath() {
             var sta = new Process();
             var sniperFilePath = GlobalSettings.PokeSnipers2Exe;
+            var sniperFileDir = System.IO.Path.GetDirectoryName(sniperFilePath);
             sta.StartInfo.FileName = sniperFilePath;
+            sta.StartInfo.WorkingDirectory = sniperFileDir;
             sta.StartInfo.Arguments = $"{Info.Id} {Info.Latitude.ToString(CultureInfo.InvariantCulture)} {Info.Longitude.ToString(CultureInfo.InvariantCulture)}";
             sta.Start();
             sta.Dispose();
