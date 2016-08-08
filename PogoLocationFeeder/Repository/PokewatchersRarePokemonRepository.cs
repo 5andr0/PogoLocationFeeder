@@ -44,7 +44,10 @@ namespace PogoLocationFeeder.Repository
             {
                 try
                 {
-                    var client = new HttpClient();
+                    var handler = new ClearanceHandler();
+
+                    // Create a HttpClient that uses the handler.
+                    var client = new HttpClient(handler);
 
                     // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
                     var content = client.GetStringAsync(URL).Result;
