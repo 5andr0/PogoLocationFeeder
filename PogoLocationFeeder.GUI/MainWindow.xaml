@@ -27,7 +27,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
-            <RowDefinition Height="25" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <materialDesign:Transitioner SelectedIndex="{Binding TransitionerIndex}">
             <views1:MainView />
@@ -41,8 +41,8 @@
         </TextBlock>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Label>Want a validated feed? Consider Donating via </Label>
-            <Button Height="23" Command="{Binding PayPalCommand}">PayPal</Button>
-            <Button Height="23" Command="{Binding BitcoinCommand}" Margin="5,0,-2,0">Bitcoin</Button>
+            <Button Height="25" Command="{Binding PayPalCommand}" Padding="16, 2">PayPal</Button>
+            <Button Height="25" Command="{Binding BitcoinCommand}" Padding="16, 2" Margin="5,0">Bitcoin</Button>
         </StackPanel>
     </Grid>
 </controls:MetroWindow>
