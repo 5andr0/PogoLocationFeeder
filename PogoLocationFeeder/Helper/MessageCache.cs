@@ -20,6 +20,7 @@ namespace PogoLocationFeeder.Helper
             var coordinates = GetCoordinatesString(sniperInfo);
             if (MemoryCache.Default.Contains(coordinates))
             {
+                Log.Debug($"Skipping duplicate {sniperInfo}");
                 return true;
             }
             var expirationDate = sniperInfo.ExpirationTimestamp != default(DateTime)
