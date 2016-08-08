@@ -68,7 +68,7 @@ namespace PogoLocationFeeder.Repository
 
         private List<SniperInfo> GetJsonList(string reader)
         {
-            var wrapper = JsonConvert.DeserializeObject<Wrapper>(reader, JsonSerializerSettingsFactory.create());
+            var wrapper = JsonConvert.DeserializeObject<Wrapper>(reader, new JsonSerializerSettingsCultureInvariant());
             var list = new List<SniperInfo>();
             foreach (var result in wrapper.results)
             {

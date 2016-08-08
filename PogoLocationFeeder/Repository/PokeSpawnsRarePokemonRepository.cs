@@ -146,7 +146,7 @@ namespace PogoLocationFeeder.Repository
         {
 
 
-            var results = JsonConvert.DeserializeObject<List<PokeSpawnsPokemon>>(reader, JsonSerializerSettingsFactory.create());
+            var results = JsonConvert.DeserializeObject<List<PokeSpawnsPokemon>>(reader, new JsonSerializerSettingsCultureInvariant());
             var list = new List<SniperInfo>();
             foreach (var result in results)
             {
@@ -161,7 +161,7 @@ namespace PogoLocationFeeder.Repository
 
         private SniperInfo GetJson(string reader)
         {
-            var result = JsonConvert.DeserializeObject<PokeSpawnsPokemon>(reader, JsonSerializerSettingsFactory.create());
+            var result = JsonConvert.DeserializeObject<PokeSpawnsPokemon>(reader, new JsonSerializerSettingsCultureInvariant());
             return Map(result);
         }
 

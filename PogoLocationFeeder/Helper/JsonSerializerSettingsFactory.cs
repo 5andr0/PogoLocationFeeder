@@ -8,12 +8,11 @@ using Newtonsoft.Json;
 
 namespace PogoLocationFeeder.Helper
 {
-    public class JsonSerializerSettingsFactory
+    public class JsonSerializerSettingsCultureInvariant : JsonSerializerSettings
     {
-
-        public static JsonSerializerSettings create()
+        public JsonSerializerSettingsCultureInvariant()
         {
-            return new JsonSerializerSettings { Culture = CultureInfo.InvariantCulture };
+            Culture = CultureInfo.InvariantCulture;
         }
     }
 }
