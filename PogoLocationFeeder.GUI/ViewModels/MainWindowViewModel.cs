@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,6 +33,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             DebugComand = new ActionCommand(ShowDebug);
             RemovePathCommand = new ActionCommand(RemovePath);
             SaveCommand = new ActionCommand(SaveClick);
+            PayPalCommand = new ActionCommand(OpenPaypal);
+            BitcoinCommand = new ActionCommand(OpenBitcoin);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -65,6 +68,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public ICommand StartStopCommand { get; }
         public ICommand RemovePathCommand { get; }
         public ICommand SaveCommand { get; }
+        public ICommand PayPalCommand { get; }
+        public ICommand BitcoinCommand { get; }
 
         public string CustomIp { get; set; } = "localhost";
 
@@ -152,6 +157,23 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             GlobalSettings.ThreadPause = true;
             ThreadStatus = "[Paused]";
             PausePlayButtonIcon = PackIconKind.Play;
+        }
+
+        public void OpenPaypal() {
+            try {
+                Process.Start("https://www.paypal.com/en_US/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QZCKGUUQ9RYPY");
+
+            } catch (Exception) {
+                //ignore
+            }
+        }
+        public void OpenBitcoin() {
+            try {
+                Process.Start("bitcoin:1FeederpUZXQN6F45M5cpYuYP6MzE2huPp?label=PogoLocationFeeder");
+
+            } catch (Exception) {
+                //ignore
+            }
         }
     }
 

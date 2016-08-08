@@ -10,7 +10,7 @@
                       BorderBrush="{DynamicResource AccentColorBrush}"
                       BorderThickness="1"
                       WindowStartupLocation="CenterScreen"
-                      Title="Location Feeder" MinHeight="450" MinWidth="700" Height="450" Width="850"
+                      Title="Location Feeder" MinHeight="450" MinWidth="750" Height="450" Width="850"
                       xmlns:views1="clr-namespace:PogoLocationFeeder.GUI.Views"
                       TitleCaps="False"
                       d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
@@ -39,5 +39,10 @@
             <Run Text=" Status: " />
             <Run Text="{Binding Status}" />
         </TextBlock>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Label>Want a validated feed? Consider Donating via </Label>
+            <Button Height="23" Command="{Binding PayPalCommand}">PayPal</Button>
+            <Button Height="23" Command="{Binding BitcoinCommand}" Margin="5,0,-2,0">Bitcoin</Button>
+        </StackPanel>
     </Grid>
 </controls:MetroWindow>
