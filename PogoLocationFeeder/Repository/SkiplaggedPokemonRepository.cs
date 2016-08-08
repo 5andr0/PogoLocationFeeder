@@ -100,7 +100,7 @@ namespace PogoLocationFeeder.Repository
         private SkiplaggedSniperInfo Map(pokemon result)
         {
             var sniperInfo = new SkiplaggedSniperInfo();
-            var pokemonId = PokemonParser.ParsePokemon(result.pokemon_name);
+            var pokemonId = PokemonParser.ParseById(result.pokemon_id);
             if (!_pokemonIdsToFind.Contains(pokemonId))
             {
                 return null;
