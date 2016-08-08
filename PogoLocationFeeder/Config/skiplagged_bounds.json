@@ -18,6 +18,11 @@
   {
     "name": "Hongkong",
     "bound": "22.251269,114.11878,22.371646,114.284605",
-    "enabled": false
+    "enabled": true
+  },
+  {
+    "name": "London",
+    "bound": "51.476719,-0.208555,51.55769,-0.04273",
+    "enabled": true
   }
 ]
