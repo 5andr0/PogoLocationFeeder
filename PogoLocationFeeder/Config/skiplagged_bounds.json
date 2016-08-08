@@ -2,22 +2,22 @@
   {
     "name": "Melbourne City",
     "bound": "-37.837022,144.925045,-37.788607,145.02109",
-    "enable": true
+    "enabled": true
 
   },
   {
     "name": "Time squares",
     "bound": "40.672713,-74.134956,40.869797,-73.803306",
-    "enable": true
+    "enabled": true
   },
   {
     "name": "Sydney",
     "bound": "-33.877453,151.185064,-33.850441,151.22652",
-    "enable": true
+    "enabled": true
   },
   {
     "name": "Hongkong",
     "bound": "22.251269,114.11878,22.371646,114.284605",
-    "enable": true
+    "enabled": false
   }
 ]

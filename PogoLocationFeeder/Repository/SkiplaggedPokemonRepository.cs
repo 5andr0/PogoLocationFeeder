@@ -37,7 +37,7 @@ namespace PogoLocationFeeder.Repository
                 }
                 var allBounds = JsonConvert.DeserializeObject<List<BoundInfo>>(File.ReadAllText("config/skiplagged_bounds.json"));
                 Parallel.ForEach(allBounds, (bound) =>
-                {
+                {    if (!bound.enabled) return;
                     var subset = FetchSingleBound(bound);
 
                     lock (results)
@@ -122,6 +122,7 @@ namespace PogoLocationFeeder.Repository
     {
         public string name { get; set; }
         public string bound { get; set; }
+        public bool enabled { get; set; }
     }
 
 
