@@ -13,9 +13,7 @@ namespace PogoLocationFeeder.Helper
 
         public static JsonSerializerSettings create()
         {
-            var jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.Culture = CultureInfo.InvariantCulture;
-            return jsonSerializerSettings;
+            return new JsonSerializerSettings { Culture = CultureInfo.InvariantCulture };
         }
     }
 }
