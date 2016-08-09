@@ -16,11 +16,9 @@ namespace PogoLocationFeeder.Repository
 
         private const string URL = "https://pokewatchers.com/api.php?act=grab";
         private const string Channel = "Pokewatchers";
-        private readonly List<PokemonId> _pokemonIdsToFind;
 
-        public PokewatchersRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
+        public PokewatchersRarePokemonRepository()
         {
-            _pokemonIdsToFind = pokemonIdsToFind;
         }
 
         public List<SniperInfo> FindAll()
@@ -68,10 +66,6 @@ namespace PogoLocationFeeder.Repository
         {
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParsePokemon(result.name);
-            if (!_pokemonIdsToFind.Contains(pokemonId))
-            {
-                return null;
-            }
             sniperInfo.Id = pokemonId;
             var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(result.coords);
             if (geoCoordinates == null)

@@ -8,26 +8,25 @@ namespace PogoLocationFeeder.Repository
         public static List<IRarePokemonRepository> CreateRepositories(GlobalSettings globalSettings)
         {
             var rarePokemonRepositories = new List<IRarePokemonRepository>();
-            var pokemonIds = RarePokemonsFactory.createRarePokemonList();
             if (GlobalSettings.UsePokeSnipers)
             {
-                rarePokemonRepositories.Add(new PokeSniperRarePokemonRepository(pokemonIds));
+                rarePokemonRepositories.Add(new PokeSniperRarePokemonRepository());
             }
             if (GlobalSettings.UseTrackemon)
             {
-                rarePokemonRepositories.Add(new TrackemonRarePokemonRepository(pokemonIds));
+                rarePokemonRepositories.Add(new TrackemonRarePokemonRepository());
             }
             if (GlobalSettings.UsePokezz)
             {
-                rarePokemonRepositories.Add(new PokezzRarePokemonRepository(pokemonIds));
+                rarePokemonRepositories.Add(new PokezzRarePokemonRepository());
             }
             if (GlobalSettings.UsePokeSpawns)
             {
-                rarePokemonRepositories.Add(new PokeSpawnsRarePokemonRepository(pokemonIds));
+                rarePokemonRepositories.Add(new PokeSpawnsRarePokemonRepository());
             }
             if (GlobalSettings.UsePokewatchers)
             {
-                rarePokemonRepositories.Add(new PokewatchersRarePokemonRepository(pokemonIds));
+                rarePokemonRepositories.Add(new PokewatchersRarePokemonRepository());
             }
             return rarePokemonRepositories;
         }

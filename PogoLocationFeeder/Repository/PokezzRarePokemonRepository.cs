@@ -18,14 +18,12 @@ namespace PogoLocationFeeder.Repository
 
         private const string URL = "ws://pokezz.com/socket.io/?EIO=3&transport=websocket";
         private const string Channel = "PokeZZ";
-        private readonly List<PokemonId> _pokemonIdsToFind;
         private WebSocket _client;
         private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
         private bool _started;
 
-        public PokezzRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
+        public PokezzRarePokemonRepository()
         {
-            _pokemonIdsToFind = pokemonIdsToFind;
         }
 
         public List<SniperInfo> FindAll()
@@ -123,10 +121,6 @@ namespace PogoLocationFeeder.Repository
         {
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParseById(result.id);
-            if (!_pokemonIdsToFind.Contains(pokemonId))
-            {
-                return null;
-            }
             sniperInfo.Id = pokemonId;
             sniperInfo.Latitude = result.lat;
             sniperInfo.Longitude = result.lng;

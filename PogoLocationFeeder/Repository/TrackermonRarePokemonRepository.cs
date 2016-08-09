@@ -15,9 +15,9 @@ namespace PogoLocationFeeder.Repository
         private const string Channel = "Trackemon";
         private readonly List<PokemonId> _pokemonIdsToFind;
 
-        public TrackemonRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
+        public TrackemonRarePokemonRepository()
         {
-            _pokemonIdsToFind = pokemonIdsToFind;
+            this._pokemonIdsToFind = RarePokemonsFactory.createRarePokemonList();
         }
 
         public List<SniperInfo> FindAll()

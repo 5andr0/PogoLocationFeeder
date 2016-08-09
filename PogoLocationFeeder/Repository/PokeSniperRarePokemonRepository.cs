@@ -16,11 +16,9 @@ namespace PogoLocationFeeder.Repository
 
         private const string URL = "http://pokesnipers.com/api/v1/pokemon.json";
         private const string Channel = "Pokesnipers";
-        private readonly List<PokemonId> _pokemonIdsToFind;
 
-        public PokeSniperRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
+        public PokeSniperRarePokemonRepository()
         {
-            _pokemonIdsToFind = pokemonIdsToFind;
         }
 
         public List<SniperInfo> FindAll()
@@ -69,10 +67,6 @@ namespace PogoLocationFeeder.Repository
         {
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParsePokemon(result.name);
-            if (!_pokemonIdsToFind.Contains(pokemonId))
-            {
-                return null;
-            }
             sniperInfo.Id = pokemonId;
             var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(result.coords);
             if (geoCoordinates == null)

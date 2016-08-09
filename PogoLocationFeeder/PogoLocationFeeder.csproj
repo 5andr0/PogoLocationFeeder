@@ -145,8 +145,9 @@
     <Compile Include="Repository\PokezzRarePokemonRepository.cs" />
     <Compile Include="Repository\PokewatchersRarePokemonRepository.cs" />
     <Compile Include="Repository\IRarePokemonRepository.cs" />
-    <Compile Include="Repository\RarePokemonRepositoryFactory.cs"/>
-    <Compile Include="Repository\RarePokemonsFactory.cs" />
+    <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
+	<Compile Include="Repository\RarePokemonsFactory.cs" />
+
     <Compile Include="Repository\TrackermonRarePokemonRepository.cs" />
     <Compile Include="SniperInfo.cs" />
     <Compile Include="Writers\ClientWriter.cs" />

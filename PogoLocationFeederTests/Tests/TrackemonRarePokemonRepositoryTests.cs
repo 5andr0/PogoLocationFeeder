@@ -9,7 +9,7 @@ namespace PogoLocationFeeder.Helper.Helper.Repository.Tests
     public class TrackemonRarePokemonRepositoryTests
     {
         private readonly IRarePokemonRepository trackemonRarePokemonRepository =
-            new TrackemonRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+            new TrackemonRarePokemonRepository();
 
         [TestMethod]
         [Ignore]

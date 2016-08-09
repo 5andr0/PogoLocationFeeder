@@ -21,7 +21,7 @@ namespace PogoLocationFeeder.GUI.Common {
                     new Uri(
                         $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) id}.png",
                         UriKind.Absolute));
-
+                img.Freeze();
                 pokes.Add(new PokemonFilterModel(id.ToString(), img, true));
             }
             return pokes;
@@ -55,7 +55,7 @@ namespace PogoLocationFeeder.GUI.Common {
                         new Uri(
                             $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) id}.png",
                             UriKind.Absolute));
-
+                    img.Freeze();
                     GlobalVariables.PokemonToFilterInternal.Add(new PokemonFilterModel(id.ToString(), img, true));
                 }
             } else {

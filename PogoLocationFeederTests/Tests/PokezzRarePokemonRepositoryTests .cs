@@ -14,7 +14,7 @@ namespace PogoLocationFeederTests.Tests
         //This still can be used to test if the pokesnipers api works
         public void ReadAllTest()
         {
-            var rarePokemonRepository = new PokezzRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+            var rarePokemonRepository = new PokezzRarePokemonRepository();
             rarePokemonRepository.FindAll();
         }
     }
