@@ -20,7 +20,7 @@ namespace PogoLocationFeeder.Repository
         private const string Channel = "PokeZZ";
         private readonly List<PokemonId> _pokemonIdsToFind;
         private WebSocket _client;
-        private ConcurrentBag<SniperInfo> _snipersInfos = new ConcurrentBag<SniperInfo>();
+        private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
         private bool _started;
 
         public PokezzRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
@@ -39,11 +39,12 @@ namespace PogoLocationFeeder.Repository
             var newSniperInfos = new List<SniperInfo>();
             lock (_snipersInfos)
             {
-                foreach (var sniperInfo in _snipersInfos)
+                SniperInfo sniperInfo = null;
+                while (_snipersInfos.TryDequeue(out sniperInfo))
                 {
                     newSniperInfos.Add(sniperInfo);
+
                 }
-                _snipersInfos = new ConcurrentBag<SniperInfo>();
             }
             return newSniperInfos;
         }
@@ -95,7 +96,7 @@ namespace PogoLocationFeeder.Repository
                     {
                         lock (_snipersInfos)
                         {
-                            sniperInfos.ForEach(i => _snipersInfos.Add(i));
+                            sniperInfos.ForEach(i => _snipersInfos.Enqueue(i));
                         }
                     }
                 }

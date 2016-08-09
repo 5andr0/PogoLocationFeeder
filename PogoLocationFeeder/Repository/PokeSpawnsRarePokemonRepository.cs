@@ -20,7 +20,7 @@ namespace PogoLocationFeeder.Repository
         private const string Channel = "PokeSpawns";
         private readonly List<PokemonId> _pokemonIdsToFind;
         private WebSocket _client;
-        private ConcurrentBag<SniperInfo> _snipersInfos = new ConcurrentBag<SniperInfo>();
+        private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
         private bool _started;
 
         public PokeSpawnsRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
@@ -39,11 +39,12 @@ namespace PogoLocationFeeder.Repository
             var newSniperInfos = new List<SniperInfo>();
             lock (_snipersInfos)
             {
-                foreach (var sniperInfo in _snipersInfos)
+                SniperInfo sniperInfo = null;
+                while (_snipersInfos.TryDequeue(out sniperInfo))
                 {
                     newSniperInfos.Add(sniperInfo);
+
                 }
-                _snipersInfos = new ConcurrentBag<SniperInfo>();
             }
             return newSniperInfos;
         }
@@ -71,6 +72,7 @@ namespace PogoLocationFeeder.Repository
                 {
                     _client.Close();
                     _client.Dispose();
+                    _client = null;
                 } catch(Exception) { }
                 _started = false;
             }
@@ -95,7 +97,7 @@ namespace PogoLocationFeeder.Repository
                     {
                         lock (_snipersInfos)
                         {
-                            sniperInfos.ForEach(i => _snipersInfos.Add(i));
+                            sniperInfos.ForEach(i => _snipersInfos.Enqueue(i));
                         }
                     }
                 }
@@ -110,7 +112,7 @@ namespace PogoLocationFeeder.Repository
                     {
                         lock (_snipersInfos)
                         {
-                            _snipersInfos.Add(sniperInfo);
+                            _snipersInfos.Enqueue(sniperInfo);
                         }
                     }
                 }

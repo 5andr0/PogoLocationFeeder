@@ -3,12 +3,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using PogoLocationFeeder.Config;
-using PogoLocationFeeder.GUI.Properties;
 using PogoLocationFeeder.GUI.ViewModels;
 using PogoLocationFeeder.Helper;
 using PropertyChanged;
@@ -78,7 +76,7 @@ namespace PogoLocationFeeder.GUI.Models {
                 var process = new Process();
                 var sniperFilePath = GlobalSettings.PokeSnipers2Exe;
                 var sniperFileDir = System.IO.Path.GetDirectoryName(sniperFilePath);
-                process.StartInfo.FileName = System.IO.Path.GetFileName(sniperFilePath);
+                process.StartInfo.FileName = sniperFilePath;
                 process.StartInfo.WorkingDirectory = sniperFileDir;
                 process.StartInfo.Arguments =
                     $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}";
