@@ -81,7 +81,7 @@ namespace PogoLocationFeeder.GUI.Models {
                 process.StartInfo.FileName = System.IO.Path.GetFileName(sniperFilePath);
                 process.StartInfo.WorkingDirectory = sniperFileDir;
                 process.StartInfo.Arguments =
-                    $"yes | pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}";
+                    $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}";
                 process.Start();
 
                 KillProcessLater(process);
@@ -103,7 +103,7 @@ namespace PogoLocationFeeder.GUI.Models {
                     StartProcessWithPath();
                 } else {
                     Log.Debug("using url to start pokesniper2 ");
-                    var process = Process.Start($"yes | pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                    var process = Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
                     KillProcessLater(process);
                 }
             }
