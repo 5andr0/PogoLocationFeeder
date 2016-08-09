@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Models;
+using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.GUI.Common {
@@ -59,13 +60,20 @@ namespace PogoLocationFeeder.GUI.Common {
             var set = GlobalSettings.PokekomsToFeedFilter;
 
             foreach (var s in set) {
-                var id = (PokemonId) Enum.Parse(typeof(PokemonId), s);
-                var img = new BitmapImage(
+                try
+                {
+                    var id = PokemonParser.ParsePokemon(s, true);
+                    var img = new BitmapImage(
                     new Uri(
-                        $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) id}.png",
+                        $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int)id}.png",
                         UriKind.Absolute));
-                img.Freeze();
-                GlobalVariables.PokemonToFeedFilterInternal.Add(new PokemonFilterModel(id.ToString(), img, true));
+                    img.Freeze();
+                    GlobalVariables.PokemonToFeedFilterInternal.Add(new PokemonFilterModel(id.ToString(), img, true));
+                }
+                catch (Exception e)
+                {
+                    Log.Warn("Could not add pokemon to the filter" , e);
+                }
             }
         }
     }
