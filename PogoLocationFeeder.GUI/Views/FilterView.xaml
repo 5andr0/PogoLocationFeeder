@@ -9,6 +9,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -16,28 +17,27 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0"  Grid.Column="0" >
-            <Button Content="Add" Margin="5" Command="{Binding FilterAddCommand}"/>
-            <Label HorizontalAlignment="Center">All Pokemon's</Label>
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <Label Margin="10, 0">Sort by:</Label>
+            <Button Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding SortAlphabeticalCommand}">Alphabetical</Button>
+            <Button Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding SortIdCommand}" Margin="10,0">Id</Button>
         </StackPanel>
-        <ListBox x:Name="AllPokes" ItemsSource="{Binding PokemonFilter}" Grid.Column="0" Grid.Row="1" Margin="5" SelectedItem="{Binding SelectedPokemonFilter, Mode=TwoWay}" MouseDoubleClick="ListBox_MouseDoubleClick">
+        <Label  Grid.Row="1"  Grid.Column="0" HorizontalAlignment="Center">All Pokemon's</Label>
+        <ListBox x:Name="AllPokes" ItemsSource="{Binding PokemonFilter}" Grid.Column="0" Grid.Row="2" Margin="5" SelectedItem="{Binding SelectedPokemonFilter, Mode=TwoWay}" MouseDoubleClick="ListBox_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="10,0" Orientation="Horizontal">
+                    <StackPanel Margin="10,-8" Orientation="Horizontal">
                         <Image Source="{Binding Image}" Height="25" Width="40"/>
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <StackPanel Grid.Row="0" Grid.Column="1" >
-            <Button  Content="Remove" Margin="5" Command="{Binding FilterRemoveCommand}"/>
-            <Label HorizontalAlignment="Center">Pokemon's to feed</Label>
-        </StackPanel>
-        <ListBox x:Name="FilterPokes" ItemsSource="{Binding PokemonToFilter}" Grid.Row="1" Grid.Column="1" Margin="5" SelectedItem="{Binding SelectedPokemonFiltered, Mode=TwoWay}" SelectedIndex="{Binding IndexPokemonToFilter, Mode=TwoWay}" MouseDoubleClick="ListBox_MouseDoubleClick_1">
+        <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">Pokemon's to feed</Label>
+        <ListBox x:Name="FilterPokes" ItemsSource="{Binding PokemonToFilter}" Grid.Row="2" Grid.Column="1" Margin="5" SelectedItem="{Binding SelectedPokemonFiltered, Mode=TwoWay}" SelectedIndex="{Binding IndexPokemonToFilter, Mode=TwoWay}" MouseDoubleClick="ListBox_MouseDoubleClick_1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="10,0" Orientation="Horizontal">
+                    <StackPanel Margin="10,-8" Orientation="Horizontal">
                         <Image Source="{Binding Image}" Height="25" Width="40"/>
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                     </StackPanel>
