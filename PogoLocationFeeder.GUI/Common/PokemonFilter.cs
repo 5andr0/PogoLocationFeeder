@@ -31,7 +31,7 @@ namespace PogoLocationFeeder.GUI.Common {
 
         public static void Save() {
             var list = new List<string>();
-            foreach (var pokemonFilterModel in GlobalVariables.PokemonToFilterInternal) {
+            foreach (var pokemonFilterModel in GlobalVariables.PokemonToFeedFilterInternal) {
                 list.Add(pokemonFilterModel.Name);
             }
             var output = JsonConvert.SerializeObject(list, Formatting.Indented,
@@ -45,21 +45,8 @@ namespace PogoLocationFeeder.GUI.Common {
         }
 
         public static void Load() {
-            if (File.Exists(ConfigFile)) {
-                GlobalSettings.Filter = GlobalSettings.LoadFilter();
-                var set = GlobalSettings.Filter;
-
-                foreach (var s in set) {
-                    var id = (PokemonId) Enum.Parse(typeof(PokemonId), s);
-                    var img = new BitmapImage(
-                        new Uri(
-                            $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) id}.png",
-                            UriKind.Absolute));
-                    img.Freeze();
-                    GlobalVariables.PokemonToFilterInternal.Add(new PokemonFilterModel(id.ToString(), img, true));
-                }
-            } else {
-                var output = JsonConvert.SerializeObject(new List<string> { "Mew", "Mewtwo" }, Formatting.Indented,
+            if (!File.Exists(ConfigFile)) { 
+                var output = JsonConvert.SerializeObject(GlobalSettings.DefaultPokemonsToFeed, Formatting.Indented,
                     new StringEnumConverter {CamelCaseText = true});
 
                 var folder = Path.GetDirectoryName(ConfigFile);
@@ -67,6 +54,18 @@ namespace PogoLocationFeeder.GUI.Common {
                     Directory.CreateDirectory(folder);
                 }
                 File.WriteAllText(ConfigFile, output);
+            }
+            GlobalSettings.PokekomsToFeedFilter = GlobalSettings.LoadFilter();
+            var set = GlobalSettings.PokekomsToFeedFilter;
+
+            foreach (var s in set) {
+                var id = (PokemonId) Enum.Parse(typeof(PokemonId), s);
+                var img = new BitmapImage(
+                    new Uri(
+                        $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) id}.png",
+                        UriKind.Absolute));
+                img.Freeze();
+                GlobalVariables.PokemonToFeedFilterInternal.Add(new PokemonFilterModel(id.ToString(), img, true));
             }
         }
     }

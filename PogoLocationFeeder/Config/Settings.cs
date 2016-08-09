@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Config
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
 
-        public static List<string> Filter;
+        public static List<string> PokekomsToFeedFilter;
 
         public static bool SniperVisibility => IsOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();
@@ -68,7 +68,7 @@ namespace PogoLocationFeeder.Config
             {
                 settings = new GlobalSettings();
             }
-            Filter = LoadFilter();
+            PokekomsToFeedFilter = LoadFilter();
             var firstRun = !File.Exists(ConfigFile);
             Save();
 
@@ -106,12 +106,16 @@ namespace PogoLocationFeeder.Config
             {
                 Directory.CreateDirectory(folder);
             }
-            try
-            {
+            try {
                 File.WriteAllText(ConfigFile, output);
-            } catch(Exception) { }
+            } catch (Exception) {
+                //ignore
+            }
         }
-
+        public static List<string> DefaultPokemonsToFeed = new List<string>() {"Venusaur", "Charizard", "Blastoise","Beedrill","Raichu","Sandslash","Nidoking","Nidoqueen","Clefable","Ninetales",
+            "Golbat","Vileplume","Golduck","Primeape","Arcanine","Poliwrath","Alakazam","Machamp","Golem","Rapidash","Slowbro","Farfetchd","Muk","Cloyster","Gengar","Exeggutor",
+          "Marowak","Hitmonchan","Lickitung","Rhydon","Chansey","Kangaskhan","Starmie","MrMime","Scyther","Magmar","Electabuzz","Magmar","Jynx","Gyarados","Lapras","Ditto",
+          "Vaporeon","Jolteon","Flareon","Porygon","Kabutops","Aerodactyl","Snorlax","Articuno","Zapdos","Moltres","Dragonite", "Mewtwo", "Mew"};
         public static List<string> LoadFilter() {
             if (File.Exists(FilterPath)) {
                 var input = File.ReadAllText(FilterPath);
@@ -121,7 +125,7 @@ namespace PogoLocationFeeder.Config
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
                 return JsonConvert.DeserializeObject<List<string>>(input, jsonSettings);
             } else {
-                var output = JsonConvert.SerializeObject(new List<string> {"Mew", "Mewtwo"}, Formatting.Indented,
+                var output = JsonConvert.SerializeObject(DefaultPokemonsToFeed, Formatting.Indented,
                 new StringEnumConverter { CamelCaseText = true });
 
                 var folder = Path.GetDirectoryName(FilterPath);

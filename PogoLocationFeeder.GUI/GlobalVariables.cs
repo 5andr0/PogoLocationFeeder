@@ -9,9 +9,9 @@ namespace PogoLocationFeeder.GUI
     {
         public static ObservableCollection<SniperInfoModel> PokemonsInternal =
             new ObservableCollection<SniperInfoModel>();
-        public static ObservableCollection<PokemonFilterModel> PokemonFilterInternal =
+        public static ObservableCollection<PokemonFilterModel> AllPokemonsInternal =
             new ObservableCollection<PokemonFilterModel>(PokemonFilter.GetPokemons());
-        public static ObservableCollection<PokemonFilterModel> PokemonToFilterInternal =
+        public static ObservableCollection<PokemonFilterModel> PokemonToFeedFilterInternal =
             new ObservableCollection<PokemonFilterModel>();
     }
 }

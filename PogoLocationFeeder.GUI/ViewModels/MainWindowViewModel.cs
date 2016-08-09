@@ -28,8 +28,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public MainWindowViewModel() {
             Instance = this;
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
-            PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonFilterInternal);
-            PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFilterInternal);
+            PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.AllPokemonsInternal);
+            PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFeedFilterInternal);
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(Startstop);
             DebugComand = new ActionCommand(ShowDebug);
@@ -196,20 +196,19 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         }
 
         public void AddToFilter() {
-            var filter = GlobalVariables.PokemonToFilterInternal;
+            var filter = GlobalVariables.PokemonToFeedFilterInternal;
             if (SelectedPokemonFilter != null && !filter.Contains(SelectedPokemonFilter)) {
                 filter.Add(SelectedPokemonFilter);
-                GlobalSettings.Filter.Add(SelectedPokemonFilter.Name);
+                GlobalSettings.PokekomsToFeedFilter.Add(SelectedPokemonFilter.Name);
                 Common.PokemonFilter.Save();
             }
         }
 
         public void RemoveFromFilter() {
-            if (SelectedPokemonFiltered != null) {
-                GlobalVariables.PokemonToFilterInternal.Remove(SelectedPokemonFiltered);
-                GlobalSettings.Filter.Remove(SelectedPokemonFiltered.Name);
-                Common.PokemonFilter.Save();
-            }
+            if (IndexPokemonToFilter == -1) return;
+            GlobalSettings.PokekomsToFeedFilter.Remove(SelectedPokemonFiltered.Name);
+            GlobalVariables.PokemonToFeedFilterInternal.Remove(SelectedPokemonFiltered);
+            Common.PokemonFilter.Save();
         }
     }
 

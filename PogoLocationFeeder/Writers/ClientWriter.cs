@@ -98,7 +98,7 @@ namespace PogoLocationFeeder.Writers
             var unsentMessages = _messageCache.FindUnSentMessages(snipeList);
             foreach (var target in unsentMessages)
             {
-                if (GlobalSettings.Filter.Contains(target.Id.ToString())) {
+                if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {
                     Log.Info($"Ignoring {target.Id}, it's in Filterlist");
                     continue;
                 }

@@ -16,8 +16,11 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Grid.Row="0" Content=">>" Grid.Column="0" Margin="5" Command="{Binding FilterAddCommand}"/>
-        <ListBox x:Name="AllPokes" ItemsSource="{Binding PokemonFilter}" Grid.Column="0" Grid.Row="1" Margin="5" SelectedItem="{Binding SelectedPokemonFilter}" MouseDoubleClick="ListBox_MouseDoubleClick">
+        <StackPanel Grid.Row="0"  Grid.Column="0" >
+            <Button Content="Add" Margin="5" Command="{Binding FilterAddCommand}"/>
+            <Label HorizontalAlignment="Center">All Pokemon's</Label>
+        </StackPanel>
+        <ListBox x:Name="AllPokes" ItemsSource="{Binding PokemonFilter}" Grid.Column="0" Grid.Row="1" Margin="5" SelectedItem="{Binding SelectedPokemonFilter, Mode=TwoWay}" MouseDoubleClick="ListBox_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10,0" Orientation="Horizontal">
@@ -27,8 +30,11 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Grid.Row="0" Content="&lt;&lt;" Grid.Column="1" Margin="5" Command="{Binding FilterRemoveCommand}"/>
-        <ListBox x:Name="FilterPokes" ItemsSource="{Binding PokemonToFilter}" Grid.Row="1" Grid.Column="1" Margin="5" SelectedItem="{Binding SelectedPokemonFiltered}" SelectedIndex="{Binding IndexPokemonToFilter}" MouseDoubleClick="ListBox_MouseDoubleClick_1">
+        <StackPanel Grid.Row="0" Grid.Column="1" >
+            <Button  Content="Remove" Margin="5" Command="{Binding FilterRemoveCommand}"/>
+            <Label HorizontalAlignment="Center">Pokemon's to feed</Label>
+        </StackPanel>
+        <ListBox x:Name="FilterPokes" ItemsSource="{Binding PokemonToFilter}" Grid.Row="1" Grid.Column="1" Margin="5" SelectedItem="{Binding SelectedPokemonFiltered, Mode=TwoWay}" SelectedIndex="{Binding IndexPokemonToFilter, Mode=TwoWay}" MouseDoubleClick="ListBox_MouseDoubleClick_1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10,0" Orientation="Horizontal">

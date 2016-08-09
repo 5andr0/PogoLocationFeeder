@@ -27,21 +27,21 @@ namespace PogoLocationFeeder.GUI.Views {
 
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             if(AllPokes.SelectedIndex == -1) return;
-            var filter = GlobalVariables.PokemonToFilterInternal;
+            var filter = GlobalVariables.PokemonToFeedFilterInternal;
             var selected = (PokemonFilterModel)AllPokes.SelectedItem;
             if(!filter.Contains(selected)) {
                 filter.Add(selected);
-                GlobalSettings.Filter.Add(selected.Name);
+                GlobalSettings.PokekomsToFeedFilter.Add(selected.Name);
                 PokemonFilter.Save();
             }
         }
 
         private void ListBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e) {
             if(FilterPokes.SelectedIndex == -1) return;
-            var filter = GlobalVariables.PokemonToFilterInternal;
+            var filter = GlobalVariables.PokemonToFeedFilterInternal;
             var selected = (PokemonFilterModel)FilterPokes.SelectedItem;
             filter.Remove(selected);
-            GlobalSettings.Filter.Remove(selected.Name);
+            GlobalSettings.PokekomsToFeedFilter.Remove(selected.Name);
             PokemonFilter.Save();
         }
     }
