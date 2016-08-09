@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.ViewModels;
 
 namespace PogoLocationFeeder.GUI
@@ -14,6 +15,7 @@ namespace PogoLocationFeeder.GUI
             {
                 DataContext = new MainWindowViewModel()
             };
+            GlobalSettings.Load();
             mainWindow.Show();
         }
     }

@@ -101,7 +101,10 @@ namespace PogoLocationFeeder.Config
             {
                 Directory.CreateDirectory(folder);
             }
-            File.WriteAllText(ConfigFile, output);
+            try
+            {
+                File.WriteAllText(ConfigFile, output);
+            } catch(Exception) { }
         }
 
     }
