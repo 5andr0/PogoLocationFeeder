@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
+using POGOProtos.Enums;
 using PropertyChanged;
 
 namespace PogoLocationFeeder.GUI.Models {
@@ -12,11 +13,11 @@ namespace PogoLocationFeeder.GUI.Models {
     public class PokemonFilterModel {
         [JsonIgnore]
         public BitmapImage Image { get; set; }
-        public string Name { get; set; }
+        public PokemonId Id { get; set; }
 
-        public PokemonFilterModel(string name, BitmapImage img, bool filtered) {
+        public PokemonFilterModel(PokemonId id, BitmapImage img) {
             Image = img;
-            Name = name;
+            Id = id;
         }
     }
 }

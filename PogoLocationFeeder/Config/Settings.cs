@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
+using POGOProtos.Enums;
 
 #endregion
 
@@ -123,7 +125,10 @@ namespace PogoLocationFeeder.Config
                 jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-                return JsonConvert.DeserializeObject<List<string>>(input, jsonSettings);
+                return JsonConvert.DeserializeObject<List<string>>(input, jsonSettings).
+                    Where(x => PokemonParser.ParsePokemon(x, true) != PokemonId.Missingno).
+                    GroupBy(x => PokemonParser.ParsePokemon(x)).
+                    Select(y => y.FirstOrDefault()).ToList();
             } else {
                 var output = JsonConvert.SerializeObject(DefaultPokemonsToFeed, Formatting.Indented,
                 new StringEnumConverter { CamelCaseText = true });

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using log4net.Config;
 using MaterialDesignThemes.Wpf;
 using PogoLocationFeeder.Common;
@@ -38,8 +39,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             PayPalCommand = new ActionCommand(OpenPaypal);
             BitcoinCommand = new ActionCommand(OpenBitcoin);
             FilterCommand = new ActionCommand(ShowFilter);
-            FilterAddCommand = new ActionCommand(AddToFilter);
-            FilterRemoveCommand = new ActionCommand(RemoveFromFilter);
+            SortAlphabeticalCommand = new ActionCommand(SortByAlphabetical);
+            SortIdCommand = new ActionCommand(SortById);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -68,8 +69,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
         public ReadOnlyObservableCollection<SniperInfoModel> Pokemons { get; }
-        public ReadOnlyObservableCollection<PokemonFilterModel> PokemonFilter { get; }
-        public ReadOnlyObservableCollection<PokemonFilterModel> PokemonToFilter { get; }
+        public ReadOnlyObservableCollection<PokemonFilterModel> PokemonFilter { get; set; }
+        public ReadOnlyObservableCollection<PokemonFilterModel> PokemonToFilter { get; set; }
 
         public ICommand SettingsComand { get; }
         public ICommand DebugComand { get; }
@@ -79,8 +80,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public ICommand PayPalCommand { get; }
         public ICommand BitcoinCommand { get; }
         public ICommand FilterCommand { get; }
-        public ICommand FilterAddCommand { get; }
-        public ICommand FilterRemoveCommand { get; }
+        public ICommand SortAlphabeticalCommand { get; }
+        public ICommand SortIdCommand { get; }
 
         public string CustomIp { get; set; } = "localhost";
 
@@ -99,6 +100,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public PokemonFilterModel SelectedPokemonFilter { get; set; }
         public PokemonFilterModel SelectedPokemonFiltered { get; set; }
         public int IndexPokemonToFilter { get; set; }
+        public SolidColorBrush SortAlphaActive { get; set; }
+        public SolidColorBrush SortIdActive { get; set; } = new SolidColorBrush(Colors.DimGray);
 
         public Visibility ColVisibility {
             get {
@@ -160,6 +163,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public void ShowFilter() {
             if (TransitionerIndex != 0) {
                 TransitionerIndex = 0;
+                Common.PokemonFilter.Save();
                 return;
             }
             TransitionerIndex = 3;
@@ -195,20 +199,36 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             }
         }
 
-        public void AddToFilter() {
-            var filter = GlobalVariables.PokemonToFeedFilterInternal;
-            if (SelectedPokemonFilter != null && !filter.Contains(SelectedPokemonFilter)) {
-                filter.Add(SelectedPokemonFilter);
-                GlobalSettings.PokekomsToFeedFilter.Add(SelectedPokemonFilter.Name);
-                Common.PokemonFilter.Save();
-            }
+        public void SortByAlphabetical()
+        {
+            SortIdActive = new SolidColorBrush(Colors.Transparent);
+            SortAlphaActive = new SolidColorBrush(Colors.DimGray);
+
+            GlobalVariables.SortMode = SortMode.AlphabeticalAsc;
+            var list = GlobalVariables.AllPokemonsInternal;
+            GlobalVariables.AllPokemonsInternal = new ObservableCollection<PokemonFilterModel>(list.OrderBy(x => x.Id.ToString()));
+
+            list = GlobalVariables.PokemonToFeedFilterInternal;
+            GlobalVariables.PokemonToFeedFilterInternal = new ObservableCollection<PokemonFilterModel>(list.OrderBy(x => x.Id.ToString()));
+
+            PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.AllPokemonsInternal);
+            PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFeedFilterInternal);
         }
 
-        public void RemoveFromFilter() {
-            if (IndexPokemonToFilter == -1) return;
-            GlobalSettings.PokekomsToFeedFilter.Remove(SelectedPokemonFiltered.Name);
-            GlobalVariables.PokemonToFeedFilterInternal.Remove(SelectedPokemonFiltered);
-            Common.PokemonFilter.Save();
+        public void SortById()
+        {
+            SortIdActive = new SolidColorBrush(Colors.DimGray);
+            SortAlphaActive = new SolidColorBrush(Colors.Transparent);
+
+            GlobalVariables.SortMode = SortMode.IdAsc;
+            var list = GlobalVariables.AllPokemonsInternal;
+            GlobalVariables.AllPokemonsInternal = new ObservableCollection<PokemonFilterModel>(list.OrderBy(x => x.Id));
+
+            list = GlobalVariables.PokemonToFeedFilterInternal;
+            GlobalVariables.PokemonToFeedFilterInternal = new ObservableCollection<PokemonFilterModel>(list.OrderBy(x => x.Id));
+
+            PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.AllPokemonsInternal);
+            PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFeedFilterInternal);
         }
     }
 

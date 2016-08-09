@@ -23,7 +23,7 @@ namespace PogoLocationFeeder.GUI.Common {
                         $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) id}.png",
                         UriKind.Absolute));
                 img.Freeze();
-                pokes.Add(new PokemonFilterModel(id.ToString(), img, true));
+                pokes.Add(new PokemonFilterModel(id, img));
             }
             return pokes;
         }
@@ -33,7 +33,7 @@ namespace PogoLocationFeeder.GUI.Common {
         public static void Save() {
             var list = new List<string>();
             foreach (var pokemonFilterModel in GlobalVariables.PokemonToFeedFilterInternal) {
-                list.Add(pokemonFilterModel.Name);
+                list.Add(pokemonFilterModel.Id.ToString());
             }
             var output = JsonConvert.SerializeObject(list, Formatting.Indented,
                 new StringEnumConverter {CamelCaseText = true});
@@ -57,18 +57,19 @@ namespace PogoLocationFeeder.GUI.Common {
                 File.WriteAllText(ConfigFile, output);
             }
             GlobalSettings.PokekomsToFeedFilter = GlobalSettings.LoadFilter();
-            var set = GlobalSettings.PokekomsToFeedFilter;
+            var set = GlobalSettings.PokekomsToFeedFilter.OrderBy(x => PokemonParser.ParsePokemon(x));
 
             foreach (var s in set) {
                 try
                 {
-                    var id = PokemonParser.ParsePokemon(s, true);
+                    var id = PokemonParser.ParsePokemon(s, false);
                     var img = new BitmapImage(
                     new Uri(
                         $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int)id}.png",
                         UriKind.Absolute));
                     img.Freeze();
-                    GlobalVariables.PokemonToFeedFilterInternal.Add(new PokemonFilterModel(id.ToString(), img, true));
+                    GlobalVariables.PokemonToFeedFilterInternal.Add(new PokemonFilterModel(id, img));
+                    GlobalVariables.AllPokemonsInternal.Remove(GlobalVariables.AllPokemonsInternal.Single(x => x.Id == id));
                 }
                 catch (Exception e)
                 {

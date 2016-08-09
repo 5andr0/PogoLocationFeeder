@@ -16,7 +16,7 @@ namespace PogoLocationFeeder.Helper
                 new HashSet<string> {"Mime"})
         };
 
-        public static PokemonId ParsePokemon(string input, bool throwException = false)
+        public static PokemonId ParsePokemon(string input, bool showError = false, bool throwException = false)
         {
             foreach (var name in Enum.GetNames(typeof(PokemonId)))
             {
@@ -49,6 +49,10 @@ namespace PogoLocationFeeder.Helper
                 }
             }
 
+            if (showError)
+            {
+                Log.Error($"No pokemon found with name {input}");
+            }
             if (throwException)
             {
                 throw new Exception($"No pokemon found with name {input}");

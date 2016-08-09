@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
 using PogoLocationFeeder.GUI.Models;
+using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.GUI.Views {
     /// <summary>
@@ -25,24 +26,39 @@ namespace PogoLocationFeeder.GUI.Views {
             InitializeComponent();
         }
 
-        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if(AllPokes.SelectedIndex == -1) return;
-            var filter = GlobalVariables.PokemonToFeedFilterInternal;
+        private void AllPokes_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (AllPokes.SelectedIndex == -1) return;
+
+            var right = GlobalVariables.PokemonToFeedFilterInternal;
+            var left = GlobalVariables.AllPokemonsInternal;
+
             var selected = (PokemonFilterModel)AllPokes.SelectedItem;
-            if(!filter.Contains(selected)) {
-                filter.Add(selected);
-                GlobalSettings.PokekomsToFeedFilter.Add(selected.Name);
-                PokemonFilter.Save();
-            }
+            GlobalSettings.PokekomsToFeedFilter.Add(selected.Id.ToString());
+
+            int i = right.Count(x => (GlobalVariables.SortMode == SortMode.AlphabeticalAsc) ?
+                x.Id.ToString().CompareTo(selected.Id.ToString()) < 0 :
+                x.Id < selected.Id);
+            right.Insert(i, selected);
+            left.Remove(selected);
+
         }
 
-        private void ListBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e) {
-            if(FilterPokes.SelectedIndex == -1) return;
-            var filter = GlobalVariables.PokemonToFeedFilterInternal;
+        private void FilterPokes_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (FilterPokes.SelectedIndex == -1) return;
+
+            var right = GlobalVariables.PokemonToFeedFilterInternal;
+            var left = GlobalVariables.AllPokemonsInternal;
+
             var selected = (PokemonFilterModel)FilterPokes.SelectedItem;
-            filter.Remove(selected);
-            GlobalSettings.PokekomsToFeedFilter.Remove(selected.Name);
-            PokemonFilter.Save();
+            GlobalSettings.PokekomsToFeedFilter.Remove(selected.Id.ToString());
+
+            int i = left.Count(x => (GlobalVariables.SortMode == SortMode.AlphabeticalAsc) ? 
+                x.Id.ToString().CompareTo(selected.Id.ToString()) < 0 : 
+                x.Id < selected.Id);
+            left.Insert(i, selected);
+            right.Remove(selected);
         }
     }
 }
