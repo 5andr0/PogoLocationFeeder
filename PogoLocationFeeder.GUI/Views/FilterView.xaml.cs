@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
 using PogoLocationFeeder.GUI.Models;
 
@@ -25,18 +26,23 @@ namespace PogoLocationFeeder.GUI.Views {
         }
 
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            if(AllPokes.SelectedIndex == -1) return;
             var filter = GlobalVariables.PokemonToFilterInternal;
-            if(AllPokes.SelectedIndex != -1 && !filter.Contains((PokemonFilterModel)AllPokes.SelectedItem)) {
-                filter.Add((PokemonFilterModel)AllPokes.SelectedItem);
+            var selected = (PokemonFilterModel)AllPokes.SelectedItem;
+            if(!filter.Contains(selected)) {
+                filter.Add(selected);
+                GlobalSettings.Filter.Add(selected.Name);
                 PokemonFilter.Save();
             }
         }
 
         private void ListBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e) {
-            if(FilterPokes.SelectedIndex != -1) {
-                GlobalVariables.PokemonToFilterInternal.Remove((PokemonFilterModel)FilterPokes.SelectedItem);
-                PokemonFilter.Save();
-            }
+            if(FilterPokes.SelectedIndex == -1) return;
+            var filter = GlobalVariables.PokemonToFilterInternal;
+            var selected = (PokemonFilterModel)FilterPokes.SelectedItem;
+            filter.Remove(selected);
+            GlobalSettings.Filter.Remove(selected.Name);
+            PokemonFilter.Save();
         }
     }
 }

@@ -98,6 +98,11 @@ namespace PogoLocationFeeder.Writers
             var unsentMessages = _messageCache.FindUnSentMessages(snipeList);
             foreach (var target in unsentMessages)
             {
+                if (GlobalSettings.Filter.Contains(target.Id.ToString())) {
+                    Log.Info($"Ignoring {target.Id}, it's in Filterlist");
+                    continue;
+                }
+
                 foreach (var socket in _arrSocket) // Repeat for each connected client (socket held in a dynamic array)
                 {
                     try

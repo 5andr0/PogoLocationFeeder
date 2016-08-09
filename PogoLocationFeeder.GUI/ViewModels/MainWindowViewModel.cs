@@ -199,13 +199,15 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             var filter = GlobalVariables.PokemonToFilterInternal;
             if (SelectedPokemonFilter != null && !filter.Contains(SelectedPokemonFilter)) {
                 filter.Add(SelectedPokemonFilter);
+                GlobalSettings.Filter.Add(SelectedPokemonFilter.Name);
                 Common.PokemonFilter.Save();
             }
         }
 
         public void RemoveFromFilter() {
-            if (SelectedPokemonFilter != null) {
+            if (SelectedPokemonFiltered != null) {
                 GlobalVariables.PokemonToFilterInternal.Remove(SelectedPokemonFiltered);
+                GlobalSettings.Filter.Remove(SelectedPokemonFiltered.Name);
                 Common.PokemonFilter.Save();
             }
         }

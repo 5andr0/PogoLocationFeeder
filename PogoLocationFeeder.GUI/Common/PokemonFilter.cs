@@ -46,13 +46,8 @@ namespace PogoLocationFeeder.GUI.Common {
 
         public static void Load() {
             if (File.Exists(ConfigFile)) {
-                var input = File.ReadAllText(ConfigFile);
-
-                var jsonSettings = new JsonSerializerSettings();
-                jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
-                jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
-                jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-                var set = JsonConvert.DeserializeObject<List<string>>(input, jsonSettings);
+                GlobalSettings.Filter = GlobalSettings.LoadFilter();
+                var set = GlobalSettings.Filter;
 
                 foreach (var s in set) {
                     var id = (PokemonId) Enum.Parse(typeof(PokemonId), s);

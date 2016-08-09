@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
 using PogoLocationFeeder.GUI.Models;
 
