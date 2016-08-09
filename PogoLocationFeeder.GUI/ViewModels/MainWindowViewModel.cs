@@ -28,6 +28,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public MainWindowViewModel() {
             Instance = this;
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
+            PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonFilterInternal);
+            PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFilterInternal);
             SettingsComand = new ActionCommand(ShowSettings);
             StartStopCommand = new ActionCommand(Startstop);
             DebugComand = new ActionCommand(ShowDebug);
@@ -35,6 +37,9 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             SaveCommand = new ActionCommand(SaveClick);
             PayPalCommand = new ActionCommand(OpenPaypal);
             BitcoinCommand = new ActionCommand(OpenBitcoin);
+            FilterCommand = new ActionCommand(ShowFilter);
+            FilterAddCommand = new ActionCommand(AddToFilter);
+            FilterRemoveCommand = new ActionCommand(RemoveFromFilter);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -54,6 +59,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             var p = new Program();
             var a = new Thread(p.Start) {IsBackground = true};
             a.Start();
+            Common.PokemonFilter.Load();
         }
 
         public static MainWindowViewModel Instance { get; private set; }
@@ -62,6 +68,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
         public ReadOnlyObservableCollection<SniperInfoModel> Pokemons { get; }
+        public ReadOnlyObservableCollection<PokemonFilterModel> PokemonFilter { get; }
+        public ReadOnlyObservableCollection<PokemonFilterModel> PokemonToFilter { get; }
 
         public ICommand SettingsComand { get; }
         public ICommand DebugComand { get; }
@@ -70,6 +78,9 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public ICommand SaveCommand { get; }
         public ICommand PayPalCommand { get; }
         public ICommand BitcoinCommand { get; }
+        public ICommand FilterCommand { get; }
+        public ICommand FilterAddCommand { get; }
+        public ICommand FilterRemoveCommand { get; }
 
         public string CustomIp { get; set; } = "localhost";
 
@@ -84,6 +95,10 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public string Sniper2Exe { get; set; }
 
         public string RemoveMinutes { get; set; }
+
+        public PokemonFilterModel SelectedPokemonFilter { get; set; }
+        public PokemonFilterModel SelectedPokemonFiltered { get; set; }
+        public int IndexPokemonToFilter { get; set; }
 
         public Visibility ColVisibility {
             get {
@@ -142,6 +157,14 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             TransitionerIndex = 2;
         }
 
+        public void ShowFilter() {
+            if (TransitionerIndex != 0) {
+                TransitionerIndex = 0;
+                return;
+            }
+            TransitionerIndex = 3;
+        }
+
         private void Startstop() {
             var status = GlobalSettings.ThreadPause;
             if (status) {
@@ -169,6 +192,21 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
             } catch (Exception) {
                 //ignore
+            }
+        }
+
+        public void AddToFilter() {
+            var filter = GlobalVariables.PokemonToFilterInternal;
+            if (SelectedPokemonFilter != null && !filter.Contains(SelectedPokemonFilter)) {
+                filter.Add(SelectedPokemonFilter);
+                Common.PokemonFilter.Save();
+            }
+        }
+
+        public void RemoveFromFilter() {
+            if (SelectedPokemonFilter != null) {
+                GlobalVariables.PokemonToFilterInternal.Remove(SelectedPokemonFiltered);
+                Common.PokemonFilter.Save();
             }
         }
     }

@@ -23,7 +23,12 @@
             <Button Command="{Binding SettingsComand}" Content="Settings" />
             <Button Command="{Binding DebugComand}" Content="Debug" />
         </controls:WindowCommands>
-    </controls:MetroWindow.RightWindowCommands>
+    </controls:MetroWindow.RightWindowCommands>    
+    <controls:MetroWindow.LeftWindowCommands>
+        <controls:WindowCommands>
+            <Button Command="{Binding FilterCommand}" Content="Filter" />
+        </controls:WindowCommands>
+    </controls:MetroWindow.LeftWindowCommands>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -33,6 +38,7 @@
             <views1:MainView />
             <views1:SettingsView />
             <views1:DebugOutputView />
+            <views1:FilterView />
         </materialDesign:Transitioner>
         <TextBlock Grid.Row="1" Margin="16,0,0,0" VerticalAlignment="Center">
             <Run Text="{Binding ThreadStatus}" />

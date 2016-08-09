@@ -1,6 +1,7 @@
 #region using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -29,9 +30,13 @@ namespace PogoLocationFeeder.Config
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
 
+        public static List<string> Filter;
+
         public static bool SniperVisibility => IsOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();
         public static string ConfigFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "config.json");
+
+        public static string FilterPath = Path.Combine(Directory.GetCurrentDirectory(), "Config", "filter.json");
 
 
         public static GlobalSettings Load()
@@ -63,7 +68,7 @@ namespace PogoLocationFeeder.Config
             {
                 settings = new GlobalSettings();
             }
-
+            Filter = LoadFilter();
             var firstRun = !File.Exists(ConfigFile);
             Save();
 
@@ -102,6 +107,27 @@ namespace PogoLocationFeeder.Config
                 Directory.CreateDirectory(folder);
             }
             File.WriteAllText(ConfigFile, output);
+        }
+
+        public static List<string> LoadFilter() {
+            if (File.Exists(FilterPath)) {
+                var input = File.ReadAllText(FilterPath);
+                var jsonSettings = new JsonSerializerSettings();
+                jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
+                jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
+                return JsonConvert.DeserializeObject<List<string>>(input, jsonSettings);
+            } else {
+                var output = JsonConvert.SerializeObject(new List<string> {"Mew", "Mewtwo"}, Formatting.Indented,
+                new StringEnumConverter { CamelCaseText = true });
+
+                var folder = Path.GetDirectoryName(FilterPath);
+                if(folder != null && !Directory.Exists(folder)) {
+                    Directory.CreateDirectory(folder);
+                }
+                File.WriteAllText(FilterPath, output);
+                return new List<string>();
+            }
         }
 
     }

@@ -110,12 +110,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Output.cs" />
+    <Compile Include="Common\PokemonFilter.cs" />
     <Compile Include="GlobalVariables.cs" />
+    <Compile Include="Models\PokemonFilterModel.cs" />
     <Compile Include="Models\SniperInfoModel.cs" />
     <Compile Include="ViewModels\ActionCommand.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\DebugOutputView.xaml.cs">
       <DependentUpon>DebugOutputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FilterView.xaml.cs">
+      <DependentUpon>FilterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -136,6 +141,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\DebugOutputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

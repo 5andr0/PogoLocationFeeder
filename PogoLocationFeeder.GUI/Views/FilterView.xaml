@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="PogoLocationFeeder.GUI.Views.FilterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PogoLocationFeeder.GUI.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Row="0" Content=">>" Grid.Column="0" Margin="5" Command="{Binding FilterAddCommand}"/>
+        <ListBox x:Name="AllPokes" ItemsSource="{Binding PokemonFilter}" Grid.Column="0" Grid.Row="1" Margin="5" SelectedItem="{Binding SelectedPokemonFilter}" MouseDoubleClick="ListBox_MouseDoubleClick">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="10,0" Orientation="Horizontal">
+                        <Image Source="{Binding Image}" Height="25" Width="40"/>
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Grid.Row="0" Content="&lt;&lt;" Grid.Column="1" Margin="5" Command="{Binding FilterRemoveCommand}"/>
+        <ListBox x:Name="FilterPokes" ItemsSource="{Binding PokemonToFilter}" Grid.Row="1" Grid.Column="1" Margin="5" SelectedItem="{Binding SelectedPokemonFiltered}" SelectedIndex="{Binding IndexPokemonToFilter}" MouseDoubleClick="ListBox_MouseDoubleClick_1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="10,0" Orientation="Horizontal">
+                        <Image Source="{Binding Image}" Height="25" Width="40"/>
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>
+
