@@ -36,6 +36,7 @@ namespace PogoLocationFeeder.GUI.Common
                     Server = channelInfo.server,
                     Channel = channelInfo.channel
                 };
+                info.Icon.Freeze();
                 InsertToList(info);
                 RemoveListExtras();
             });
