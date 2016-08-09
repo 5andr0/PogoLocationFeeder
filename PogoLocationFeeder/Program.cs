@@ -223,7 +223,16 @@ namespace PogoLocationFeeder
                     {
                         if (pokeSniperList.Any())
                         {
-                            await _clientWriter.FeedToClients(pokeSniperList, channelInfo);
+                            if(rarePokemonRepository is SkiplaggedPokemonRepository)
+                            {
+                                foreach (var item in pokeSniperList.Cast<SkiplaggedSniperInfo>().GroupBy(p=>p.RegionName))
+                                {
+                                    channelInfo.channel = item.Key;
+                                    await _clientWriter.FeedToClients(item.Cast<SniperInfo>().ToList(), channelInfo);
+                                }
+
+                            }
+                            else await _clientWriter.FeedToClients(pokeSniperList, channelInfo);
                         }
                         else
                         {
