@@ -27,37 +27,20 @@ namespace PogoLocationFeeder.Repository
         {
             try
             {
-                var request = WebRequest.CreateHttp(URL);
-                request.Accept = "application/json";
-                request.Method = "GET";
-                request.Timeout = 20000;
+                var handler = new ClearanceHandler();
 
-                using (var response = request.GetResponse())
+                // Create a HttpClient that uses the handler.
+                using (var client = new HttpClient(handler))
                 {
-                    using (var reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        return GetJsonList(reader.ReadToEnd());
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    var handler = new ClearanceHandler();
-
-                    // Create a HttpClient that uses the handler.
-                    var client = new HttpClient(handler);
-
                     // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
                     var content = client.GetStringAsync(URL).Result;
                     return GetJsonList(content);
                 }
-                catch (Exception)
-                {
-                    Log.Debug("Pokewatchers API error: {0}", e.Message);
-                    return null;
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Debug("Pokewatchers API error: {0}", e.Message);
+                return null;
             }
         }
 
