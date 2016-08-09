@@ -27,6 +27,8 @@ namespace PogoLocationFeeder
 
         private static void Main(string[] args)
         {
+            System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
+
             Console.Title = "PogoLocationFeeder";
             XmlConfigurator.Configure(
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.App.config"));
@@ -243,10 +245,19 @@ namespace PogoLocationFeeder
         {
             return await Task.Factory.StartNew(async () => await RareRepoThread(rarePokemonRepository), TaskCreationOptions.LongRunning);
         }
+
+        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Error("Uncaught fatal error", e.ExceptionObject.ToString());
+            Console.ReadKey();
+            Environment.Exit(1);
+        }
     }
 
     public class ThreadManager
     {
         // TODO: Refactor
     }
+
+
 }

@@ -9,6 +9,7 @@ namespace PogoLocationFeeder.Repository
         {
             var rarePokemonIds = new List<PokemonId>
             {
+                PokemonId.Onix,
                 PokemonId.Venusaur,
                 PokemonId.Charizard,
                 PokemonId.Blastoise,
