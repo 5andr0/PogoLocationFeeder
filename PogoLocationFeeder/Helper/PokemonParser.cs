@@ -12,10 +12,26 @@ namespace PogoLocationFeeder.Helper
         {
             PokemonAlternativeNames.CreateAllMatches(PokemonId.Farfetchd, new HashSet<string> {"Farfetch'd"},
                 new HashSet<string> {"Farfetch"}),
-            PokemonAlternativeNames.CreateAllMatches(PokemonId.MrMime, new HashSet<string> {"mr.Mime", "mr mime"},
-                new HashSet<string> {"Mime"})
+            PokemonAlternativeNames.CreateAllMatches(PokemonId.MrMime, new HashSet<string> {"mr.Mime", "mr mime","Mr.Maleime"},
+                new HashSet<string> {"Mime"}),
+            PokemonAlternativeNames.CreateAllMatches(PokemonId.NidoranMale, new HashSet<string> {"nidoranm"}, new HashSet<string>()),
+            PokemonAlternativeNames.CreateAllMatches(PokemonId.NidoranFemale, new HashSet<string> {"nidoranf"}, new HashSet<string>())
+
         };
 
+        public static List<PokemonId> ParsePokemons(List<string> inputs)
+        {
+            List<PokemonId> newPokemonIds = new List<PokemonId>();
+            foreach (var input in inputs)
+            {
+                try
+                {
+                    newPokemonIds.Add(ParsePokemon(input, false, true));
+                }catch(Exception e) { }
+                
+            }
+            return newPokemonIds;
+        }
         public static PokemonId ParsePokemon(string input, bool showError = false, bool throwException = false)
         {
             foreach (var name in Enum.GetNames(typeof(PokemonId)))

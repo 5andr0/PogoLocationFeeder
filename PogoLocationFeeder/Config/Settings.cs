@@ -32,7 +32,7 @@ namespace PogoLocationFeeder.Config
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
-
+        public static bool VerifyOnSkiplagged = true;
         public static List<string> PokekomsToFeedFilter;
 
         public static bool SniperVisibility => IsOneClickSnipeSupported();
@@ -63,6 +63,7 @@ namespace PogoLocationFeeder.Config
                 UsePokeSnipers = set.UsePokeSnipers;
                 UsePokewatchers = set.UsePokewatchers;
                 UsePokezz = set.UsePokezz;
+                VerifyOnSkiplagged = set.VerifyOnSkiplagged;
                 RemoveAfter = set.RemoveAfter;
                 ShowLimit = Math.Max(set.ShowLimit, 1);
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
@@ -179,6 +180,6 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(30)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int ShowLimit = Math.Max(GlobalSettings.ShowLimit, 1);
-
+        public bool VerifyOnSkiplagged = GlobalSettings.VerifyOnSkiplagged;
     }
 }

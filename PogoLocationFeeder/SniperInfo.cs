@@ -14,6 +14,7 @@ namespace PogoLocationFeeder.Helper
         public PokemonMove Move1 { get; set; }
         public PokemonMove Move2 { get; set; }
         public double IV { get; set; }
+        public bool Verified { get; set; } = false;
 
         public override string ToString()
         {

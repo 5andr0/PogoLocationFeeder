@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
+using PogoLocationFeeder.Repository;
 
 namespace PogoLocationFeeder.Writers
 {
@@ -95,7 +96,8 @@ namespace PogoLocationFeeder.Writers
             // Remove any clients that have disconnected
             if (GlobalSettings.ThreadPause) return;
             _arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            var unsentMessages = _messageCache.FindUnSentMessages(snipeList);
+            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(snipeList);
+            var unsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
             foreach (var target in unsentMessages)
             {
                 if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {

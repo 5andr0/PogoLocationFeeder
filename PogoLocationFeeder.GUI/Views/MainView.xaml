@@ -53,6 +53,8 @@
                 <DataGridTextColumn Binding="{Binding Info.Latitude}" Header="Latitude" />
                 <DataGridTextColumn Binding="{Binding Info.Longitude}" Header="Longitude" />
                 <DataGridTextColumn Binding="{Binding Date}" Header="Expiration" />
+                <DataGridTextColumn Binding="{Binding Info.Verified}" Header="Verified" />
+
             </DataGrid.Columns>
         </DataGrid>
         <!--<ListBox HorizontalContentAlignment="Stretch" ItemsSource="{Binding Pokemons}">

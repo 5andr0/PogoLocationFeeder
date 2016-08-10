@@ -157,6 +157,7 @@
     <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
     <Compile Include="Repository\RarePokemonsFactory.cs" />
     <Compile Include="Repository\TrackermonRarePokemonRepository.cs" />
+    <Compile Include="Repository\SkipLaggedPokemonLocationValidator.cs" />
     <Compile Include="SniperInfo.cs" />
     <Compile Include="Writers\ClientWriter.cs" />
   </ItemGroup>

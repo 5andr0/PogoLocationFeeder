@@ -34,6 +34,8 @@ namespace PogoLocationFeeder.GUI.Models {
         public BitmapImage Icon { get; set; }
         public string Server { get; set; }
         public string Channel { get; set; }
+        public string Verified { get; set; }
+
         public bool SniperVisibility { get; set; }
 
         public SniperInfo Info
