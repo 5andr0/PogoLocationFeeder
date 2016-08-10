@@ -17,6 +17,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "ws://188.165.224.208:49001/socket.io/?EIO=3&transport=websocket";
+        private const string Channel = "RareSpawns";
         private WebSocket _client;
         private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
         private bool _started;
