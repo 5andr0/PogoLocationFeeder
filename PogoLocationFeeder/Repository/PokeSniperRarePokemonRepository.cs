@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using CloudFlareUtilities;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
-using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Repository
 {
