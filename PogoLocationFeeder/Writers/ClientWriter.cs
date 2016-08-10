@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -100,8 +101,8 @@ namespace PogoLocationFeeder.Writers
             var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(unsentMessages);
             //Filter again because dupes could have been added
             var verifiedUnsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
-
-            foreach (var target in verifiedUnsentMessages)
+            var sortedMessages = verifiedUnsentMessages.OrderBy(m => m.ExpirationTimestamp).ToList();
+            foreach (var target in sortedMessages)
             {
                 if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {
                     Log.Info($"Ignoring {target.Id}, it's not in Filterlist");
