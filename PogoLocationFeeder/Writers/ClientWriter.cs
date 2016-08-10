@@ -97,9 +97,11 @@ namespace PogoLocationFeeder.Writers
             if (GlobalSettings.ThreadPause) return;
             _arrSocket.RemoveAll(x => !IsConnected(x.Client));
             var unsentMessages = _messageCache.FindUnSentMessages(snipeList);
-
             var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(unsentMessages);
-            foreach (var target in verifiedSniperInfos)
+            //Filter again because dupes could have been added
+            var verifiedUnsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
+
+            foreach (var target in verifiedUnsentMessages)
             {
                 if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {
                     Log.Info($"Ignoring {target.Id}, it's not in Filterlist");
