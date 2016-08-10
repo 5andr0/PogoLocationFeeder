@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -14,8 +15,6 @@ namespace PogoLocationFeeder.Repository
 {
     public class PokezzRarePokemonRepository : IRarePokemonRepository
     {
-        //private const int timeout = 20000;
-
         private const string URL = "ws://pokezz.com/socket.io/?EIO=3&transport=websocket";
         private const string Channel = "PokeZZ";
         private WebSocket _client;
@@ -83,13 +82,12 @@ namespace PogoLocationFeeder.Repository
         private void Client_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             var message = e.Message;
-            //Log.Debug("Pokezz message: " + message);
-            var match = Regex.Match(message, @"^(1?\d+)\[""pokemons"",(2?.*)]$");
+            var match = Regex.Match(message, @"^(1?\d+)\[""[a|b]"",""(2?.*)""\]$");
             if (match.Success)
             {
                 if (match.Groups[1].Value == "42")
                 {
-                    var sniperInfos = GetJsonList(match.Groups[2].Value);
+                    var sniperInfos = Parse(match.Groups[2].Value);
                     if (sniperInfos != null && sniperInfos.Any())
                     {
                         lock (_snipersInfos)
@@ -101,14 +99,14 @@ namespace PogoLocationFeeder.Repository
             }
         }
 
-        private List<SniperInfo> GetJsonList(string reader)
+        private List<SniperInfo> Parse(string reader)
         {
-            var results = JsonConvert.DeserializeObject<List<PokezzPokemon>>(reader,
-                new JsonSerializerSettingsCultureInvariant());
+            var lines = reader.Split('~');
             var list = new List<SniperInfo>();
-            foreach (var result in results)
+
+            foreach (var line in lines)
             {
-                var sniperInfo = Map(result);
+                var sniperInfo = ParseLine(line);
                 if (sniperInfo != null)
                 {
                     list.Add(sniperInfo);
@@ -117,42 +115,35 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
-        private SniperInfo Map(PokezzPokemon result)
+        private SniperInfo ParseLine(string line)
         {
-            var sniperInfo = new SniperInfo();
-            var pokemonId = PokemonParser.ParseById(result.id);
-            sniperInfo.Id = pokemonId;
-            sniperInfo.Latitude = result.lat;
-            sniperInfo.Longitude = result.lng;
-            if (result.time != default(long))
+            var match = Regex.Match(line,
+                @"(?<id>\d+)\|(?<lat>\-?\d+[\,|\.]\d+)\|(?<lon>\-?\d+[\,|\.]\d+)\|(?<expires>\d+)\|(?<verified>[1|0])\|\|");
+            if (match.Success)
             {
-                var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                var untilTime = epoch.AddMilliseconds(result.time).ToLocalTime();
-                if (untilTime < DateTime.Now)
+                var sniperInfo = new SniperInfo();
+                var pokemonId = PokemonParser.ParseById(Convert.ToInt64(match.Groups["id"].Value));
+                sniperInfo.Id = pokemonId;
+                var lat = Convert.ToDouble(match.Groups["lat"].Value, CultureInfo.InvariantCulture);
+                var lon = Convert.ToDouble(match.Groups["lon"].Value, CultureInfo.InvariantCulture);
+
+                sniperInfo.Latitude = lat;
+                sniperInfo.Longitude = lon;
+
+                var expires = Convert.ToInt64(match.Groups["expires"].Value);
+                if (expires != default(long))
                 {
-                    return null;
+                    var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    var untilTime = epoch.AddSeconds(expires).ToLocalTime();
+                    if (untilTime < DateTime.Now)
+                    {
+                        return null;
+                    }
+                    sniperInfo.ExpirationTimestamp = untilTime;
                 }
-                sniperInfo.ExpirationTimestamp = untilTime;
+                return sniperInfo;
             }
-            return sniperInfo;
+            return null;
         }
-    }
-
-    internal class PokezzPokemon
-    {
-        [JsonProperty("id")]
-        public long id { get; set; }
-
-        [JsonProperty("name")]
-        public string name { get; set; }
-
-        [JsonProperty("lat")]
-        public double lat { get; set; }
-
-        [JsonProperty("lng")]
-        public double lng { get; set; }
-
-        [JsonProperty("time")]
-        public long time { get; set; }
     }
 }
