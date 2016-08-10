@@ -96,9 +96,10 @@ namespace PogoLocationFeeder.Writers
             // Remove any clients that have disconnected
             if (GlobalSettings.ThreadPause) return;
             _arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(snipeList);
-            var unsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
-            foreach (var target in unsentMessages)
+            var unsentMessages = _messageCache.FindUnSentMessages(snipeList);
+
+            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(unsentMessages);
+            foreach (var target in verifiedSniperInfos)
             {
                 if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {
                     Log.Info($"Ignoring {target.Id}, it's not in Filterlist");

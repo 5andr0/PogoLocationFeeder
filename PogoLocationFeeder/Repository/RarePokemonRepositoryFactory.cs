@@ -22,11 +22,15 @@ namespace PogoLocationFeeder.Repository
             }
             if (GlobalSettings.UseRareSpawns)
             {
-                //rarePokemonRepositories.Add(new RareSpawnsRarePokemonRepository());
+                rarePokemonRepositories.Add(new RareSpawnsRarePokemonRepository());
             }
             if (GlobalSettings.UsePokewatchers)
             {
                 rarePokemonRepositories.Add(new PokewatchersRarePokemonRepository());
+            }
+            if (GlobalSettings.UsePokemonGoIVClub)
+            {
+                rarePokemonRepositories.Add(new PokemonGoIVClubRarePokemonRepository());
             }
             return rarePokemonRepositories;
         }

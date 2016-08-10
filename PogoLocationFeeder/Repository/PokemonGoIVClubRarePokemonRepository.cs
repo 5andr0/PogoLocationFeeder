@@ -12,17 +12,17 @@ using WebSocket4Net;
 
 namespace PogoLocationFeeder.Repository
 {
-    public class RareSpawnsRarePokemonRepository : IRarePokemonRepository
+    public class PokemonGoIVClubRarePokemonRepository : IRarePokemonRepository
     {
         //private const int timeout = 20000;
 
-        private const string URL = "ws://188.165.224.208:49001/socket.io/?EIO=3&transport=websocket";
-        private const string Channel = "RareSpawns";
+        private const string URL = "ws://pokemongoivclub.com:49002/socket.io/?EIO=3&transport=websocket";
+        private const string Channel = "Pokemon Go IV Club";
         private WebSocket _client;
         private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
         private bool _started;
 
-        public RareSpawnsRarePokemonRepository()
+        public PokemonGoIVClubRarePokemonRepository()
         {
         }
 
@@ -41,7 +41,6 @@ namespace PogoLocationFeeder.Repository
                 while (_snipersInfos.TryDequeue(out sniperInfo))
                 {
                     newSniperInfos.Add(sniperInfo);
-
                 }
             }
             return newSniperInfos;
@@ -60,13 +59,12 @@ namespace PogoLocationFeeder.Repository
                 _client = new WebSocket(URL, "basic", WebSocketVersion.Rfc6455);
                 _client.Closed += Client_Closed;
                 _client.MessageReceived += Client_MessageReceived;
-
                 _client.Open();
             }
             catch (Exception e)
             {
-                Log.Warn("Received error from PokeSpawns. More info the logs");
-                Log.Debug("Received error from PokeSpawns: ", e);
+                Log.Warn("Received error from Pokemon Go IV Club. More info the logs");
+                Log.Debug("Received error from Pokemon Go IV Club: ", e);
                 CloseClient();
             }
         }
@@ -81,11 +79,7 @@ namespace PogoLocationFeeder.Repository
             try
             {
                 var message = e.Message;
-                if (message == "40")
-                {
-                    _client?.Send("40/pokes");
-                }
-                var match = Regex.Match(message, @"(1?\d+)+.*\[""helo"",(2?.*)\]");
+                var match = Regex.Match(message, @"(1?\d+)+\[""helo"",(2?.*)\]");
                 if (match.Success)
                 {
                     if (match.Groups[1].Value == "42")
@@ -102,7 +96,7 @@ namespace PogoLocationFeeder.Repository
                 }
                 else
                 {
-                    match = Regex.Match(message, @"(1?\d+)+.*\[""poke"",(2?.*)\]");
+                    match = Regex.Match(message, @"(1?\d+)+\[""poke"",(2?.*)\]");
                     if (match.Success)
                     {
                         if (match.Groups[1].Value == "42")
@@ -121,13 +115,13 @@ namespace PogoLocationFeeder.Repository
             }
             catch (Exception ex)
             {
-                Log.Debug("Error receiving message from RareSpawns", ex);
+                Log.Debug("Error receiving message from PokemonGoIVClub", ex);
             }
         }
 
         private List<SniperInfo> GetJsonList(string reader)
         {
-            var results = JsonConvert.DeserializeObject<List<PokeSpawnsPokemon>>(reader,
+            var results = JsonConvert.DeserializeObject<List<PokemongoivclubPokemon>>(reader,
                 new JsonSerializerSettingsCultureInvariant());
             var list = new List<SniperInfo>();
             foreach (var result in results)
@@ -143,12 +137,12 @@ namespace PogoLocationFeeder.Repository
 
         private SniperInfo GetJson(string reader)
         {
-            var result = JsonConvert.DeserializeObject<PokeSpawnsPokemon>(reader,
+            var result = JsonConvert.DeserializeObject<PokemongoivclubPokemon>(reader,
                 new JsonSerializerSettingsCultureInvariant());
             return Map(result);
         }
 
-        private SniperInfo Map(PokeSpawnsPokemon result)
+        private SniperInfo Map(PokemongoivclubPokemon result)
         {
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParsePokemon(result.name);
@@ -187,7 +181,7 @@ namespace PogoLocationFeeder.Repository
         }
     }
 
-    internal class PokeSpawnsPokemon
+    internal class PokemongoivclubPokemon
     {
         [JsonProperty("name")]
         public string name { get; set; }
