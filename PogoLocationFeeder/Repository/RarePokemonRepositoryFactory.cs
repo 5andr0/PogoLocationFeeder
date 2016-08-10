@@ -20,9 +20,9 @@ namespace PogoLocationFeeder.Repository
             {
                 rarePokemonRepositories.Add(new PokezzRarePokemonRepository());
             }
-            if (GlobalSettings.UsePokeSpawns)
+            if (GlobalSettings.UseRareSpawns)
             {
-                rarePokemonRepositories.Add(new PokeSpawnsRarePokemonRepository());
+                rarePokemonRepositories.Add(new RareSpawnsRarePokemonRepository());
             }
             if (GlobalSettings.UsePokewatchers)
             {

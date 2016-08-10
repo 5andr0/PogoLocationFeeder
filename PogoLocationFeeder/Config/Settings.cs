@@ -24,7 +24,7 @@ namespace PogoLocationFeeder.Config
         public static int Port = 16969;
         public static bool UsePokeSnipers = true;
         public static bool UseTrackemon = false;
-        public static bool UsePokeSpawns = true;
+        public static bool UseRareSpawns = true;
         public static bool UsePokewatchers = true;
         public static bool UsePokezz = true;
 
@@ -58,7 +58,7 @@ namespace PogoLocationFeeder.Config
                 settings = new GlobalSettings();
                 Port = set.Port;
                 //UseTrackemon = set.UseTrackemon;
-                UsePokeSpawns = set.UsePokeSpawns;
+                UseRareSpawns = set.UseRareSpawns;
                 UsePokeSnipers = set.UsePokeSnipers;
                 UsePokewatchers = set.UsePokewatchers;
                 UsePokezz = set.UsePokezz;
@@ -149,7 +149,7 @@ namespace PogoLocationFeeder.Config
         public bool UsePokeSnipers = GlobalSettings.UsePokeSnipers;
         //public bool UseTrackemon = GlobalSettings.UseTrackemon;
         public bool UsePokezz = GlobalSettings.UsePokezz;
-        public bool UsePokeSpawns = GlobalSettings.UsePokeSpawns;
+        public bool UseRareSpawns = GlobalSettings.UseRareSpawns;
         public bool UsePokewatchers = GlobalSettings.UsePokewatchers;
         public string PokeSnipers2Exe = GlobalSettings.PokeSnipers2Exe;
         public int RemoveAfter = GlobalSettings.RemoveAfter;
