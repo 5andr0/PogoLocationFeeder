@@ -38,7 +38,7 @@ namespace PogoLocationFeeder.Helper
             {
                 if (MatchesPokemonNameExactly(input, name))
                 {
-                    return (PokemonId) Enum.Parse(typeof(PokemonId), name);
+                    return (PokemonId) Enum.Parse(typeof(PokemonId), name, true);
                 }
             }
             foreach (var pokemonAlternativeNames in PokemonAlternativeNamesList)
