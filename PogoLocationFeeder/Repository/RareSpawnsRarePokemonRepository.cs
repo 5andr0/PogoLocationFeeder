@@ -87,14 +87,15 @@ namespace PogoLocationFeeder.Repository
             var message = e.Message;
             if (message == "40")
             {
-                _client.Send("40/pokes");
+                _client?.Send("40/pokes");
             }
-            //Log.Debug("Pokezz message: " + message);
-            var match = Regex.Match(message, @"(1?\d+)\[""helo"",(2?.*)\]");
+            Log.Debug("Pokezz message: " + message);
+            var match = Regex.Match(message, @"(1?\d+)[^\[]+\[""helo"",(2?.*)\]");
             if (match.Success)
             {
                 if (match.Groups[1].Value == "42")
                 {
+                    Log.Debug("Pokezz message: " + match.Groups[2].Value);
                     var sniperInfos = GetJsonList(match.Groups[2].Value);
                     if (sniperInfos != null && sniperInfos.Any())
                     {
@@ -104,18 +105,20 @@ namespace PogoLocationFeeder.Repository
                         }
                     }
                 }
-            }
-            match = Regex.Match(message, @"(1?\d+)\[""poke"",(2?.*)\]");
-            if (match.Success)
-            {
-                if (match.Groups[1].Value == "42")
+            } else { 
+                match = Regex.Match(message, @"(1?\d+)[^\[]+\[""poke"",(2?.*)\]");
+                if (match.Success)
                 {
-                    var sniperInfo = GetJson(match.Groups[2].Value);
-                    if (sniperInfo != null)
+                    if (match.Groups[1].Value == "42")
                     {
-                        lock (_snipersInfos)
+                        var sniperInfo = GetJson(match.Groups[2].Value);
+                        if (sniperInfo != null)
                         {
-                            _snipersInfos.Enqueue(sniperInfo);
+                            lock (_snipersInfos)
+                            {
+                                Log.Info($"sniperInfos message2: {sniperInfo.IV} {sniperInfo.Id.ToString()}");
+                                _snipersInfos.Enqueue(sniperInfo);
+                            }
                         }
                     }
                 }
@@ -130,6 +133,7 @@ namespace PogoLocationFeeder.Repository
             foreach (var result in results)
             {
                 var sniperInfo = Map(result);
+                Log.Info($"GetJsonList: {sniperInfo.IV} {sniperInfo.Id.ToString()}");
                 if (sniperInfo != null)
                 {
                     list.Add(sniperInfo);
@@ -162,13 +166,19 @@ namespace PogoLocationFeeder.Repository
             {
                 try
                 {
-                    _client.Close();
+                    _client?.Close();
                 }
-                catch (Exception) { }
+                catch (Exception e)
+                {
+                    // ignore
+                }
                 _client.Dispose();
                 _client = null;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                // ignore
+            }
         }
     }
 

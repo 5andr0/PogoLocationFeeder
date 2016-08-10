@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
@@ -144,15 +145,39 @@ namespace PogoLocationFeeder.Config
 
     }
 
-    public class SettingsToSave {
+    public class SettingsToSave
+    {
+        [DefaultValue(16969)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int Port = GlobalSettings.Port;
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokeSnipers = GlobalSettings.UsePokeSnipers;
+
         //public bool UseTrackemon = GlobalSettings.UseTrackemon;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokezz = GlobalSettings.UsePokezz;
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UseRareSpawns = GlobalSettings.UseRareSpawns;
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokewatchers = GlobalSettings.UsePokewatchers;
+
+        [DefaultValue("")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string PokeSnipers2Exe = GlobalSettings.PokeSnipers2Exe;
+
+        [DefaultValue(5)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int RemoveAfter = GlobalSettings.RemoveAfter;
+
+        [DefaultValue(30)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int ShowLimit = Math.Max(GlobalSettings.ShowLimit, 1);
 
     }

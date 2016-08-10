@@ -22,7 +22,7 @@ namespace PogoLocationFeeder.Repository
             }
             if (GlobalSettings.UseRareSpawns)
             {
-                rarePokemonRepositories.Add(new RareSpawnsRarePokemonRepository());
+                //rarePokemonRepositories.Add(new RareSpawnsRarePokemonRepository());
             }
             if (GlobalSettings.UsePokewatchers)
             {

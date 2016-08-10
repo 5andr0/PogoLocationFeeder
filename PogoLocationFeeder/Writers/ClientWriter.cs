@@ -99,7 +99,7 @@ namespace PogoLocationFeeder.Writers
             foreach (var target in unsentMessages)
             {
                 if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {
-                    Log.Info($"Ignoring {target.Id}, it's in Filterlist");
+                    Log.Info($"Ignoring {target.Id}, it's not in Filterlist");
                     continue;
                 }
 
