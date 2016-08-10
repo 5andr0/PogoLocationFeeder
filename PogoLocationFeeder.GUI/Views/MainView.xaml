@@ -15,10 +15,20 @@
     </UserControl.Resources>
     <Grid>
         <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
-                  Background="Transparent" SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True">
+                  SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True" Background="Transparent">
             <DataGrid.Resources>
                 <viewmodels:BindingProxy x:Key="proxy" Data="{Binding}"/>
             </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ToolTip" Value="{Binding VerifiedTooltip}"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Info.Verified}" Value="false">
+                            <Setter Property="Foreground" Value="Gray" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
@@ -39,6 +49,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <!--<DataGridTemplateColumn >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <materialDesign:PackIcon Kind="{Binding VerifiedIcon}" Margin="0,-5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -53,8 +70,6 @@
                 <DataGridTextColumn Binding="{Binding Info.Latitude}" Header="Latitude" />
                 <DataGridTextColumn Binding="{Binding Info.Longitude}" Header="Longitude" />
                 <DataGridTextColumn Binding="{Binding Date}" Header="Expiration" />
-                <DataGridTextColumn Binding="{Binding Info.Verified}" Header="Verified" />
-
             </DataGrid.Columns>
         </DataGrid>
         <!--<ListBox HorizontalContentAlignment="Stretch" ItemsSource="{Binding Pokemons}">

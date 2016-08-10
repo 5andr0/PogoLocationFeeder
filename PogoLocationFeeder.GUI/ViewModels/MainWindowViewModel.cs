@@ -96,6 +96,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public string Sniper2Exe { get; set; }
 
         public string RemoveMinutes { get; set; }
+        public bool UseSkiplagged { get; set; }
 
         public PokemonFilterModel SelectedPokemonFilter { get; set; }
         public PokemonFilterModel SelectedPokemonFiltered { get; set; }
@@ -129,6 +130,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             CustomPort = GlobalSettings.Port;
             Sniper2Exe = GlobalSettings.PokeSnipers2Exe;
             ShowLimit = GlobalSettings.ShowLimit;
+            UseSkiplagged = GlobalSettings.VerifyOnSkiplagged;
             RemoveMinutes = GlobalSettings.RemoveAfter.ToString();
             TransitionerIndex = 1;
 
@@ -147,6 +149,7 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             GlobalSettings.PokeSnipers2Exe = Sniper2Exe;
             GlobalSettings.ShowLimit = ShowLimit;
             GlobalSettings.RemoveAfter = int.Parse(RemoveMinutes);
+            GlobalSettings.VerifyOnSkiplagged = UseSkiplagged;
             GlobalSettings.Save();
 
             GlobalSettings.Output.RemoveListExtras();

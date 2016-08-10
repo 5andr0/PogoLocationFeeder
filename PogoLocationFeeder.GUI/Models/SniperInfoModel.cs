@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using MaterialDesignThemes.Wpf;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.ViewModels;
 using PogoLocationFeeder.Helper;
@@ -34,9 +35,9 @@ namespace PogoLocationFeeder.GUI.Models {
         public BitmapImage Icon { get; set; }
         public string Server { get; set; }
         public string Channel { get; set; }
-        public string Verified { get; set; }
-
         public bool SniperVisibility { get; set; }
+        public PackIconKind VerifiedIcon { get; set; } = PackIconKind.Close;
+        public string VerifiedTooltip { get; set; }
 
         public SniperInfo Info
         {
@@ -48,6 +49,8 @@ namespace PogoLocationFeeder.GUI.Models {
                     ? "Unknown"
                     : Info.ExpirationTimestamp.ToString(CultureInfo.InvariantCulture);
                 IV = Info.IV.Equals(0) ? "??" : Info.IV.ToString(CultureInfo.InvariantCulture);
+                VerifiedIcon = Info.Verified ? PackIconKind.Check : PackIconKind.Close;
+                VerifiedTooltip = Info.Verified ? "Verified " : "Not Verifed";
             }
         }
 

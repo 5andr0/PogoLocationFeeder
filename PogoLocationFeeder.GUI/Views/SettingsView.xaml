@@ -21,6 +21,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="16" />
@@ -68,6 +70,8 @@
         </ComboBox>
             <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">minutes.</TextBlock>
         </StackPanel>
-        <Button Grid.Row="11" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+        <Label Grid.Row="11" Grid.Column="1">Verify on Skiplagged</Label>
+        <ToggleButton Grid.Row="11" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseSkiplagged}"></ToggleButton>
+        <Button Grid.Row="13" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
     </Grid>
 </UserControl>
