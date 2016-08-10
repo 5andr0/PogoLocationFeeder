@@ -28,7 +28,7 @@ namespace PogoLocationFeeder.GUI.Models {
             Created = DateTime.Now;
 
 
-            Thread clean = new Thread(CleanupThread) { IsBackground = true };
+            Thread clean = new Thread(CleanupThread) { IsBackground = true, Name = $"cleanthread {Created}"};
             clean.Start();
         }
 
@@ -131,6 +131,8 @@ namespace PogoLocationFeeder.GUI.Models {
                         Application.Current.Dispatcher.BeginInvoke(new Action(() => {
                             GlobalVariables.PokemonsInternal.Remove(this);
                         }));
+                        Log.Debug($"Closin Thread with {Info.Id} {Info.Latitude} {Info.Longitude} in it.");
+                        return;
                     }
                     Application.Current.Dispatcher.BeginInvoke(new Action(() => {
                         Date = $"{ukn}{remaining.Minutes}m {remaining.Seconds}s";
@@ -140,7 +142,6 @@ namespace PogoLocationFeeder.GUI.Models {
                     Thread.Sleep(1000);
                     //hmm ignore?
                 }
-                
             }
             // ReSharper disable once FunctionNeverReturns
         }
