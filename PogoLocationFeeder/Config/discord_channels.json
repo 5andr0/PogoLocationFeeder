@@ -98,5 +98,11 @@
         "id": "208946520874156033",
         "Server": "Pokemon Go",
         "Name": "rares_gps_cordinates"
+    },
+
+    {
+        "id": "208726673456103425",
+        "Server": "GlitchNation OP",
+        "Name": "manual_coords"
     }
 ]
