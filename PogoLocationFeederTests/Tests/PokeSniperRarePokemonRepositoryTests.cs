@@ -9,7 +9,6 @@ namespace PogoLocationFeederTests.Tests
     public class PokeSniperReaderTests
     {
         [TestMethod]
-        [Ignore]
         //Test is on ignore because it can fail random
         //This still can be used to test if the pokesnipers api works
         public void ReadAllTest()
