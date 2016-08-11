@@ -8,6 +8,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <TextBox x:Name="Debug" IsReadOnly="True" Text="{Binding DebugOutput, Source={x:Static p:Settings.Default}}"
-                 Padding="5" TextChanged="TextBoxBase_OnTextChanged" TextWrapping="Wrap" MaxLines="1000" VerticalScrollBarVisibility="Auto"/>
+                 Padding="5" TextWrapping="Wrap" MaxLines="1000" VerticalScrollBarVisibility="Auto"/>
     </Grid>
 </UserControl>
