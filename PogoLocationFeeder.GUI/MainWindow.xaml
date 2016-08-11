@@ -46,7 +46,7 @@
             <Run Text="{Binding Status}" />
         </TextBlock>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Label>Want a validated feed? Consider Donating via </Label>
+            <Label>Like PogoLocationFeeder? Consider Donating via</Label>
             <Button Height="25" Command="{Binding PayPalCommand}" Padding="16, 2">PayPal</Button>
             <Button Height="25" Command="{Binding BitcoinCommand}" Padding="16, 2" Margin="5,0">Bitcoin</Button>
         </StackPanel>

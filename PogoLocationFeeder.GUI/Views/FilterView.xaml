@@ -22,7 +22,7 @@
             <Button Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding SortAlphabeticalCommand}" Background="{Binding SortAlphaActive}">Alphabetical</Button>
             <Button Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding SortIdCommand}" Margin="10,0" Background="{Binding SortIdActive}">Id</Button>
         </StackPanel>
-        <Label  Grid.Row="1"  Grid.Column="0" HorizontalAlignment="Center" Content="All Pokemon's" FontWeight="Bold" FontSize="16"></Label>
+        <Label  Grid.Row="1"  Grid.Column="0" HorizontalAlignment="Center" Content="All Pokemon" FontWeight="Bold" FontSize="16"></Label>
         <ListBox x:Name="AllPokes" ItemsSource="{Binding PokemonFilter}" Grid.Column="0" Grid.Row="2" Margin="5" SelectedItem="{Binding SelectedPokemonFilter, Mode=TwoWay}" MouseUp="AllPokes_PreviewMouseDown">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -33,7 +33,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Content="Pokemon's to feed" FontWeight="Bold" FontSize="16"></Label>
+        <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Content="Pokemon to feed" FontWeight="Bold" FontSize="16"></Label>
         <ListBox x:Name="FilterPokes" ItemsSource="{Binding PokemonToFilter}" Grid.Row="2" Grid.Column="1" Margin="5" SelectedItem="{Binding SelectedPokemonFiltered, Mode=TwoWay}" MouseUp="FilterPokes_PreviewMouseDown">
             <ListBox.ItemTemplate>
                 <DataTemplate>
