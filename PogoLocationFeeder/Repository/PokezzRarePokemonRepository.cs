@@ -17,9 +17,7 @@ namespace PogoLocationFeeder.Repository
     {
         private const string URL = "ws://pokezz.com/socket.io/?EIO=3&transport=websocket";
         private const string Channel = "PokeZZ";
-        private WebSocket _client;
-        private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
-        private bool _started;
+        private const int Timeout = 5000;
 
         public PokezzRarePokemonRepository()
         {
@@ -27,21 +25,37 @@ namespace PogoLocationFeeder.Repository
 
         public List<SniperInfo> FindAll()
         {
-            if (!_started)
+            List<SniperInfo> newSniperInfos = new List<SniperInfo>();
+            try
             {
-                Task.Run(() => StartClient());
-                _started = true;
-                Thread.Sleep(10*1000);
-            }
-            var newSniperInfos = new List<SniperInfo>();
-            lock (_snipersInfos)
-            {
-                SniperInfo sniperInfo = null;
-                while (_snipersInfos.TryDequeue(out sniperInfo))
+                using (var client = new WebSocket(URL, "basic", WebSocketVersion.Rfc6455))
                 {
-                    newSniperInfos.Add(sniperInfo);
-
+                    client.MessageReceived += (s, e) =>
+                    {
+                        var message = e.Message;
+                        var match = Regex.Match(message, @"^(1?\d+)\[""[a|b]"",""(2?.*)""\]$");
+                        if (match.Success)
+                        {
+                            if (match.Groups[1].Value == "42")
+                            {
+                                var sniperInfos = Parse(match.Groups[2].Value);
+                                if (sniperInfos != null && sniperInfos.Any())
+                                {
+                                    newSniperInfos.AddRange(sniperInfos);
+                                }
+                            }
+                        }
+                    };
+                    client.Open();
+                    Thread.Sleep(Timeout);
+                    client.Close();
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Warn("Received error from Pokezz. More info the logs");
+                Log.Debug("Received error from Pokezz: ", e);
+
             }
             return newSniperInfos;
         }
@@ -51,55 +65,8 @@ namespace PogoLocationFeeder.Repository
             return Channel;
         }
 
-        private async Task StartClient()
-        {
-            try
-            {
-                _client = new WebSocket(URL, "basic", WebSocketVersion.Rfc6455);
-                _client.Closed += Client_Closed;
-                _client.MessageReceived += Client_MessageReceived;
-                _client.Open();
-            }
-            catch (Exception e)
-            {
-                Log.Warn("Received error from Pokezz. More info the logs");
-                Log.Debug("Received error from Pokezz: ", e);
-                try
-                {
-                    _client.Close();
-                    _client.Dispose();
-                }
-                catch (Exception) { }
-                _started = false;
-            }
-        }
 
-        private void Client_Closed(object sender, EventArgs e)
-        {
-            _started = false;
-        }
-
-        private void Client_MessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            var message = e.Message;
-            var match = Regex.Match(message, @"^(1?\d+)\[""[a|b]"",""(2?.*)""\]$");
-            if (match.Success)
-            {
-                if (match.Groups[1].Value == "42")
-                {
-                    var sniperInfos = Parse(match.Groups[2].Value);
-                    if (sniperInfos != null && sniperInfos.Any())
-                    {
-                        lock (_snipersInfos)
-                        {
-                            sniperInfos.ForEach(i => _snipersInfos.Enqueue(i));
-                        }
-                    }
-                }
-            }
-        }
-
-        private List<SniperInfo> Parse(string reader)
+        private static List<SniperInfo> Parse(string reader)
         {
             var lines = reader.Split('~');
             var list = new List<SniperInfo>();
@@ -115,7 +82,7 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
-        private SniperInfo ParseLine(string line)
+        private static SniperInfo ParseLine(string line)
         {
             var match = Regex.Match(line,
                 @"(?<id>\d+)\|(?<lat>\-?\d+[\,|\.]\d+)\|(?<lon>\-?\d+[\,|\.]\d+)\|(?<expires>\d+)\|(?<verified>[1|0])\|\|");

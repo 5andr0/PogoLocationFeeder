@@ -18,7 +18,7 @@ namespace PogoLocationFeeder.Repository
         {
             if (!GlobalSettings.VerifyOnSkiplagged)
             {
-                return sniperInfos;;
+                return sniperInfos;
             }
             var newSniperInfos = new List<SniperInfo>();
             foreach (var sniperInfo in sniperInfos)
@@ -27,6 +27,7 @@ namespace PogoLocationFeeder.Repository
                 if (scanResult.Status == "fail")
                 {
                     sniperInfo.Verified = false;
+                    newSniperInfos.Add(sniperInfo);
                 } else if (scanResult.pokemons != null)
                     {
                     var st = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -70,7 +71,7 @@ namespace PogoLocationFeeder.Repository
 
         private static ScanResult ScanLocation(GeoCoordinates location)
         {
-            var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
+           var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
             var offset = 0.001;
             // 0.003 = half a mile; maximum 0.06 is 10 miles
