@@ -109,6 +109,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\CleanupThread.cs" />
     <Compile Include="Common\Output.cs" />
     <Compile Include="Common\PokemonFilter.cs" />
     <Compile Include="GlobalVariables.cs" />

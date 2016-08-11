@@ -60,6 +60,8 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             var p = new Program();
             var a = new Thread(p.Start) {IsBackground = true};
             a.Start();
+            var b = new Thread(CleanupThread.Start) {IsBackground = true};
+            b.Start();
             Common.PokemonFilter.Load();
         }
 

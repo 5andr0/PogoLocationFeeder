@@ -26,10 +26,6 @@ namespace PogoLocationFeeder.GUI.Models {
             PokeSnipersCommand = new ActionCommand(PokeSnipers);
             SniperVisibility = GlobalSettings.SniperVisibility;
             Created = DateTime.Now;
-
-
-            Thread clean = new Thread(CleanupThread) { IsBackground = true, Name = $"cleanthread {Created}"};
-            clean.Start();
         }
 
         public BitmapImage Icon { get; set; }
@@ -114,36 +110,6 @@ namespace PogoLocationFeeder.GUI.Models {
             {
                 Log.Error("Error while launching pokesniper2", e);
             }
-        }
-
-        public void CleanupThread() {
-            while(true) {
-                try {
-                    var ukn = "";
-                    var expiration = Info.ExpirationTimestamp;
-                    if(expiration.Equals(default(DateTime))) {
-                        expiration = Created.AddMinutes(GlobalSettings.RemoveAfter);
-                        ukn = "unk. ";
-                    }
-                    var remaining = expiration - DateTime.Now;
-
-                    if(remaining < TimeSpan.Zero) {
-                        Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                            GlobalVariables.PokemonsInternal.Remove(this);
-                        }));
-                        Log.Debug($"Closin Thread with {Info.Id} {Info.Latitude} {Info.Longitude} in it.");
-                        return;
-                    }
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                        Date = $"{ukn}{remaining.Minutes}m {remaining.Seconds}s";
-                    }));
-                    Thread.Sleep(1000);
-                } catch (Exception) {
-                    Thread.Sleep(1000);
-                    //hmm ignore?
-                }
-            }
-            // ReSharper disable once FunctionNeverReturns
         }
 
         private static void KillProcessLater(Process process)
