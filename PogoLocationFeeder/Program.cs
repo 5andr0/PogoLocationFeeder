@@ -33,14 +33,14 @@ namespace PogoLocationFeeder
             XmlConfigurator.Configure(
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.App.config"));
 
-            //try
-            //{
-            //    new Program().Start();
-            //}
-            //catch (Exception e)
-            //{
-            //    Log.Fatal("Error during startup", e);
-            //}
+            try
+            {
+                new Program().Start();
+            }
+            catch (Exception e)
+            {
+                Log.Fatal("Error during startup", e);
+            }
         }
 
         public async Task RelayMessageToClients(string message, ChannelInfo channelInfo)
