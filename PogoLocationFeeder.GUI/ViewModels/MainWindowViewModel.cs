@@ -21,12 +21,15 @@ using PropertyChanged;
 
 //using POGOProtos.Enums;
 
-namespace PogoLocationFeeder.GUI.ViewModels {
+namespace PogoLocationFeeder.GUI.ViewModels
+{
     [ImplementPropertyChanged]
-    public class MainWindowViewModel {
+    public class MainWindowViewModel
+    {
         private Visibility _colVisibility;
 
-        public MainWindowViewModel() {
+        public MainWindowViewModel()
+        {
             Instance = this;
             Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
             PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.AllPokemonsInternal);
@@ -58,9 +61,9 @@ namespace PogoLocationFeeder.GUI.ViewModels {
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.GUI.App.config"));
             GlobalSettings.Output = new Output();
             var p = new Program();
-            var a = new Thread(p.Start) {IsBackground = true};
+            var a = new Thread(p.Start) { IsBackground = true };
             a.Start();
-            var b = new Thread(CleanupThread.Start) {IsBackground = true};
+            var b = new Thread(CleanupThread.Start) { IsBackground = true };
             b.Start();
             Common.PokemonFilter.Load();
         }
@@ -106,24 +109,30 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         public SolidColorBrush SortAlphaActive { get; set; }
         public SolidColorBrush SortIdActive { get; set; } = new SolidColorBrush(Colors.DimGray);
 
-        public Visibility ColVisibility {
-            get {
+        public Visibility ColVisibility
+        {
+            get
+            {
                 _colVisibility = GlobalSettings.IsOneClickSnipeSupported() ? Visibility.Visible : Visibility.Collapsed;
                 return _colVisibility;
             }
             set { _colVisibility = value; }
         }
 
-        public void RemovePath() {
+        public void RemovePath()
+        {
             Sniper2Exe = "";
         }
 
-        public void SetStatus(string status) {
+        public void SetStatus(string status)
+        {
             Status = status;
         }
 
-        public void ShowSettings() {
-            if (TransitionerIndex != 0) {
+        public void ShowSettings()
+        {
+            if (TransitionerIndex != 0)
+            {
                 TransitionerIndex = 0;
                 return;
             }
@@ -138,11 +147,14 @@ namespace PogoLocationFeeder.GUI.ViewModels {
 
         }
 
-        public void SaveClick() {
-            if(Sniper2Exe != null && Sniper2Exe.Contains(".exe")) {
+        public void SaveClick()
+        {
+            if (Sniper2Exe != null && Sniper2Exe.Contains(".exe"))
+            {
                 ColVisibility = Visibility.Visible;
             }
-            if (Sniper2Exe == null || Sniper2Exe.Equals("")) {
+            if (Sniper2Exe == null || Sniper2Exe.Equals(""))
+            {
                 Sniper2Exe = "";
                 ColVisibility = Visibility.Collapsed;
             }
@@ -157,16 +169,20 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             GlobalSettings.Output.RemoveListExtras();
         }
 
-        public void ShowDebug() {
-            if (TransitionerIndex != 0) {
+        public void ShowDebug()
+        {
+            if (TransitionerIndex != 0)
+            {
                 TransitionerIndex = 0;
                 return;
             }
             TransitionerIndex = 2;
         }
 
-        public void ShowFilter() {
-            if (TransitionerIndex != 0) {
+        public void ShowFilter()
+        {
+            if (TransitionerIndex != 0)
+            {
                 TransitionerIndex = 0;
                 Common.PokemonFilter.Save();
                 return;
@@ -174,9 +190,11 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             TransitionerIndex = 3;
         }
 
-        private void Startstop() {
+        private void Startstop()
+        {
             var status = GlobalSettings.ThreadPause;
-            if (status) {
+            if (status)
+            {
                 GlobalSettings.ThreadPause = false;
                 ThreadStatus = "[Running]";
                 PausePlayButtonIcon = PackIconKind.Pause;
@@ -187,19 +205,27 @@ namespace PogoLocationFeeder.GUI.ViewModels {
             PausePlayButtonIcon = PackIconKind.Play;
         }
 
-        public void OpenPaypal() {
-            try {
+        public void OpenPaypal()
+        {
+            try
+            {
                 Process.Start("https://www.paypal.com/en_US/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QZCKGUUQ9RYPY");
 
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 //ignore
             }
         }
-        public void OpenBitcoin() {
-            try {
+        public void OpenBitcoin()
+        {
+            try
+            {
                 Process.Start("bitcoin:1FeederpUZXQN6F45M5cpYuYP6MzE2huPp?label=PogoLocationFeeder");
 
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 //ignore
             }
         }
@@ -237,22 +263,25 @@ namespace PogoLocationFeeder.GUI.ViewModels {
         }
     }
 
-    public class BindingProxy : Freezable {
-            #region Overrides of Freezable
+    public class BindingProxy : Freezable
+    {
+        #region Overrides of Freezable
 
-            protected override Freezable CreateInstanceCore() {
-                return new BindingProxy();
-            }
-
-            #endregion
-
-            public object Data {
-                get { return (object) GetValue(DataProperty); }
-                set { SetValue(DataProperty, value); }
-            }
-
-            public static readonly DependencyProperty DataProperty =
-                DependencyProperty.Register("Data", typeof(object),
-                    typeof(BindingProxy));
+        protected override Freezable CreateInstanceCore()
+        {
+            return new BindingProxy();
         }
+
+        #endregion
+
+        public object Data
+        {
+            get { return (object)GetValue(DataProperty); }
+            set { SetValue(DataProperty, value); }
+        }
+
+        public static readonly DependencyProperty DataProperty =
+            DependencyProperty.Register("Data", typeof(object),
+                typeof(BindingProxy));
     }
+}
