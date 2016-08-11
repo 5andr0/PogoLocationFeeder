@@ -218,7 +218,10 @@ namespace PogoLocationFeeder
                 for (var retrys = 0; retrys <= 3; retrys++)
                 {
                     var pokeSniperList = rarePokemonRepository.FindAll();
+                    Log.Debug($"{rarePokemonRepository.GetChannel()} returned {pokeSniperList?.Count} sniperInfos");
+
                     var channelInfo = new ChannelInfo {server = rarePokemonRepository.GetChannel()};
+
                     if (pokeSniperList != null)
                     {
                         if (pokeSniperList.Any())

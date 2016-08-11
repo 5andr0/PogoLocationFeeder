@@ -13,8 +13,7 @@ namespace PogoLocationFeeder.Repository.Tests
         public void TestRareSpawns()
         {
             var pokeSpawnsRarePokemonRepository  = new RareSpawnsRarePokemonRepository();
-            Task.Run(() => pokeSpawnsRarePokemonRepository.StartClient());
-            Thread.Sleep(120* 1000);
+            pokeSpawnsRarePokemonRepository.FindAll();
         }
     }
 }
