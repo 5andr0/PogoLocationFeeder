@@ -10,12 +10,25 @@ namespace PogoLocationFeeder.Helper
     {
         //private const string timeFormat = "HH:mm:ss";
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Log));
-        public static readonly Level pokemonLevel = new Level(Level.Info.Value + 1000, "PKMN");
+        public static readonly Level PokemonLevel = new Level(Level.Info.Value + 1000, "PKMN");
+        public static readonly Level TraceLevel = new Level(Level.Debug.Value - 1000, "TRACE");
+
         private static readonly object _MessageLock = new object();
 
         static Log()
         {
             //XmlConfigurator.Configure(); // we are loading from the embedded resource file App.config so we don't have to deliver the config file
+        }
+        public static void Trace(string message, params string[] args)
+        {
+            if (args == null)
+            {
+                Trace(message);
+            }
+            else
+            {
+                TraceFormat(Logger, message, args);
+            }
         }
 
         public static void Debug(string message, params string[] args)
@@ -124,14 +137,27 @@ namespace PogoLocationFeeder.Helper
         private static void LogPokemon(this ILog log, string message)
         {
             log.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType,
-                pokemonLevel, message, null);
+                PokemonLevel, message, null);
         }
 
         public static void LogPokemonFormat(this ILog log, string message, params object[] args)
         {
             var formattedMessage = string.Format(message, args);
             log.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType,
-                pokemonLevel, formattedMessage, null);
+                PokemonLevel, formattedMessage, null);
+        }
+
+        private static void Trace(this ILog log, string message)
+        {
+            log.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType,
+                TraceLevel, message, null);
+        }
+
+        public static void TraceFormat(this ILog log, string message, params object[] args)
+        {
+            var formattedMessage = string.Format(message, args);
+            log.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType,
+                TraceLevel, formattedMessage, null);
         }
     }
 
@@ -141,7 +167,7 @@ namespace PogoLocationFeeder.Helper
         {
             AddMapping(new LevelColors
             {
-                Level = Log.pokemonLevel,
+                Level = Log.PokemonLevel,
                 ForeColor = ConsoleColor.Green
             });
         }

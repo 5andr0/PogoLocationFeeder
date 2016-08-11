@@ -58,7 +58,7 @@ namespace PogoLocationFeeder.Repository
                         }
                         else
                         {
-                            Log.Debug($"No snipable pokemon found at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                            Log.Trace($"No snipable pokemon found at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}");
                         }
                 }
 
@@ -139,7 +139,7 @@ namespace PogoLocationFeeder.Repository
                 var coordinates = GetCoordinatesString(sniperInfo);
                 if (MemoryCache.Default.Contains(coordinates))
                 {
-                    Log.Debug($"Skipping duplicate {sniperInfo}");
+                    Log.Trace($"Skipping duplicate {sniperInfo}");
                     return true;
                 }
                 var expirationDate = DateTime.Now.AddMinutes(MinutesToAddInCache);
