@@ -29,6 +29,7 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokewatchers = true;
         public static bool UsePokezz = true;
         public static bool UsePokemonGoIVClub = true;
+        public static bool UseFilter = true;
 
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
@@ -69,6 +70,7 @@ namespace PogoLocationFeeder.Config
                 RemoveAfter = set.RemoveAfter;
                 ShowLimit = Math.Max(set.ShowLimit, 1);
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
+                UseFilter = set.UseFilter;
             }
             else
             {
@@ -185,8 +187,15 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool VerifyOnSkiplagged = GlobalSettings.VerifyOnSkiplagged;
+
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokemonGoIVClub = GlobalSettings.UsePokemonGoIVClub;
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool UseFilter = GlobalSettings.UseFilter;
+
+
     }
 }

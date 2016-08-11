@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="850"
+             d:DesignHeight="500" d:DesignWidth="850"
              d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
@@ -72,6 +74,9 @@
         </StackPanel>
         <Label Grid.Row="11" Grid.Column="1">Verify on Skiplagged</Label>
         <ToggleButton Grid.Row="11" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseSkiplagged}"></ToggleButton>
-        <Button Grid.Row="13" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+
+         <Label Grid.Row="13" Grid.Column="1" VerticalAlignment="Center">Use Filter</Label>
+        <ToggleButton Grid.Row="13" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}"></ToggleButton>
+        <Button Grid.Row="15" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
     </Grid>
 </UserControl>

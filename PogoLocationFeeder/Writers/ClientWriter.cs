@@ -102,7 +102,7 @@ namespace PogoLocationFeeder.Writers
             var sortedMessages = verifiedUnsentMessages.OrderBy(m => m.ExpirationTimestamp).ToList();
             foreach (var target in sortedMessages)
             {
-                if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString())) {
+                if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString()) && GlobalSettings.UseFilter) {
                     Log.Info($"Ignoring {target.Id}, it's not in Filterlist");
                     continue;
                 }
