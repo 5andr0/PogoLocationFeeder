@@ -13,7 +13,8 @@
                       Title="Location Feeder" MinHeight="450" MinWidth="750" Height="450" Width="850"
                       xmlns:views1="clr-namespace:PogoLocationFeeder.GUI.Views"
                       TitleCaps="False"
-                      d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+                      NonActiveWindowTitleBrush="{DynamicResource HighlightBrush}"
+                      d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}" NonActiveBorderBrush="{DynamicResource HighlightBrush}" NonActiveGlowBrush="{DynamicResource AccentColorBrush}">
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
 
