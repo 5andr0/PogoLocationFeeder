@@ -14,7 +14,7 @@
                       xmlns:views1="clr-namespace:PogoLocationFeeder.GUI.Views"
                       TitleCaps="False"
                       NonActiveWindowTitleBrush="{DynamicResource HighlightBrush}"
-                      d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}" NonActiveBorderBrush="{DynamicResource HighlightBrush}" NonActiveGlowBrush="{DynamicResource AccentColorBrush}">
+                      d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}" NonActiveBorderBrush="{DynamicResource HighlightBrush}" NonActiveGlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded">
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
 

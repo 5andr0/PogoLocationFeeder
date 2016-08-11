@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using log4net.Config;
+using MahApps.Metro;
 using MaterialDesignThemes.Wpf;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
@@ -27,6 +28,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
     public class MainWindowViewModel
     {
         private Visibility _colVisibility;
+        private ComboBoxItem _appTheme;
 
         public MainWindowViewModel()
         {
@@ -120,6 +122,33 @@ namespace PogoLocationFeeder.GUI.ViewModels
             set { _colVisibility = value; }
         }
 
+        public ComboBoxItem AppTheme {
+            get { return _appTheme; }
+            set {
+                ChangeTheme(value.Content.ToString());
+                _appTheme = value;
+            }
+        }
+
+        public string AppThemeText { get; set; }
+
+        public void ChangeTheme(string theme) {
+            try {
+                switch (theme.ToLower()) {
+                    case "light":
+                        new PaletteHelper().SetLightDark(false);
+                        break;
+                    case "dark":
+                        new PaletteHelper().SetLightDark(true);
+                        break;
+
+                }
+
+            } catch (Exception) {
+                
+            }
+        }
+
         public void RemovePath()
         {
             Sniper2Exe = "";
@@ -145,6 +174,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             UseSkiplagged = GlobalSettings.VerifyOnSkiplagged;
             RemoveMinutes = GlobalSettings.RemoveAfter.ToString();
             UseFilter = GlobalSettings.UseFilter;
+            AppThemeText = GlobalSettings.AppTheme;
             TransitionerIndex = 1;
 
         }
@@ -167,6 +197,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             GlobalSettings.RemoveAfter = int.Parse(RemoveMinutes);
             GlobalSettings.VerifyOnSkiplagged = UseSkiplagged;
             GlobalSettings.UseFilter = UseFilter;
+            GlobalSettings.AppTheme = AppThemeText;
             GlobalSettings.Save();
 
             GlobalSettings.Output.RemoveListExtras();

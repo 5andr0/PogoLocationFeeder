@@ -25,6 +25,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="16" />
@@ -78,5 +80,11 @@
          <Label Grid.Row="13" Grid.Column="1" VerticalAlignment="Center">Use Filter</Label>
         <ToggleButton Grid.Row="13" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}"></ToggleButton>
         <Button Grid.Row="15" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+        
+        <Label Grid.Row="17" Grid.Column="1" VerticalAlignment="Center">App Theme</Label>
+        <ComboBox Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" SelectedItem="{Binding AppTheme}" Text="{Binding AppThemeText}" IsReadOnly="True">
+            <ComboBoxItem Content="Light"/>
+            <ComboBoxItem Content="Dark"/>
+        </ComboBox>
     </Grid>
 </UserControl>

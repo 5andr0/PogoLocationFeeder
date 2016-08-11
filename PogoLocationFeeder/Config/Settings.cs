@@ -30,6 +30,8 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokezz = true;
         public static bool UsePokemonGoIVClub = true;
         public static bool UseFilter = true;
+        public static string AppTheme = "Dark";
+
 
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
@@ -71,6 +73,7 @@ namespace PogoLocationFeeder.Config
                 ShowLimit = Math.Max(set.ShowLimit, 1);
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
                 UseFilter = set.UseFilter;
+                AppTheme = set.AppTheme;
             }
             else
             {
@@ -92,7 +95,7 @@ namespace PogoLocationFeeder.Config
 
         public static bool IsOneClickSnipeSupported()
         {
-            if (GlobalSettings.PokeSnipers2Exe != null && GlobalSettings.PokeSnipers2Exe.Contains(".exe"))
+            if (PokeSnipers2Exe != null && PokeSnipers2Exe.Contains(".exe"))
             {
                 return true;
             }
@@ -195,6 +198,10 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UseFilter = GlobalSettings.UseFilter;
+
+        [DefaultValue("Dark")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string AppTheme = GlobalSettings.AppTheme;
 
 
     }
