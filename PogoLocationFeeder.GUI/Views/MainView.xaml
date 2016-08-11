@@ -33,6 +33,15 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
+                            <Button Style="{DynamicResource MaterialDesignToolButton}" Height="25" Margin="0,-5" Command="{Binding RemoveMe}">
+                                <materialDesign:PackIcon Kind="Close"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
                                 <Button Height="25" Margin="0, -5"
                                             Command="{Binding copyCoordsCommand}"
                                             Style="{DynamicResource MaterialDesignFlatButton}" ToolTip="Copy Coordinates" Content="CC"/>

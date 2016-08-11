@@ -24,6 +24,7 @@ namespace PogoLocationFeeder.GUI.Models {
         {
             copyCoordsCommand = new ActionCommand(CopyCoords);
             PokeSnipersCommand = new ActionCommand(PokeSnipers);
+            RemoveMe = new ActionCommand(Remove);
             SniperVisibility = GlobalSettings.SniperVisibility;
             Created = DateTime.Now;
         }
@@ -56,8 +57,13 @@ namespace PogoLocationFeeder.GUI.Models {
 
         public ICommand copyCoordsCommand { get; }
         public ICommand PokeSnipersCommand { get; }
+        public ICommand RemoveMe { get; }
 
         public DateTime Created;
+
+        public void Remove() {
+            GlobalVariables.PokemonsInternal.Remove(this);
+        }
 
         public void CopyCoords()
         {
