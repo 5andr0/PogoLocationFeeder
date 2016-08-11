@@ -18,9 +18,7 @@ namespace PogoLocationFeeder.Repository
 
         private const string URL = "ws://188.165.224.208:49001/socket.io/?EIO=3&transport=websocket";
         private const string Channel = "RareSpawns";
-        private WebSocket _client;
-        private ConcurrentQueue<SniperInfo> _snipersInfos = new ConcurrentQueue<SniperInfo>();
-        private bool _started;
+        private const int Timeout = 10000;
 
         public RareSpawnsRarePokemonRepository()
         {
@@ -28,21 +26,66 @@ namespace PogoLocationFeeder.Repository
 
         public List<SniperInfo> FindAll()
         {
-            if (!_started)
+            List<SniperInfo> newSniperInfos = new List<SniperInfo>();
+            try
             {
-                Task.Run(() => StartClient());
-                _started = true;
-                Thread.Sleep(1000);
-            }
-            var newSniperInfos = new List<SniperInfo>();
-            lock (_snipersInfos)
-            {
-                SniperInfo sniperInfo = null;
-                while (_snipersInfos.TryDequeue(out sniperInfo))
-                {
-                    newSniperInfos.Add(sniperInfo);
 
+                using (var client = new WebSocket(URL, "basic", null, 
+                    new List<KeyValuePair<string, string>>() {new KeyValuePair<string, string>("Referer","http://www.rarespawns.be/"), new KeyValuePair<string, string>("Host", "188.165.224.208:49001") }, 
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36", "http://www.rarespawns.be", WebSocketVersion.Rfc6455, null))
+                {
+                    client.MessageReceived += (s, e) =>
+                    {
+                        try
+                        {
+                            var message = e.Message;
+                            if (message == "40")
+                            {
+                                client.Send("40/pokes");
+                            }
+                            var match = Regex.Match(message, @"(1?\d+)+.*\[""helo"",(2?.*)\]");
+                            if (match.Success)
+                            {
+                                if (match.Groups[1].Value == "42")
+                                {
+                                    var sniperInfos = GetJsonList(match.Groups[2].Value);
+                                    if (sniperInfos != null && sniperInfos.Any())
+                                    {
+                                        newSniperInfos.AddRange(sniperInfos);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                match = Regex.Match(message, @"(1?\d+)+.*\[""poke"",(2?.*)\]");
+                                if (match.Success)
+                                {
+                                    if (match.Groups[1].Value == "42")
+                                    {
+                                        var sniperInfo = GetJson(match.Groups[2].Value);
+                                        if (sniperInfo != null)
+                                        {
+                                            newSniperInfos.Add(sniperInfo);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Debug("Error receiving message from RareSpawns", ex);
+                        }
+                    };
+                    client.Open();
+                    Thread.Sleep(Timeout);
+                    client.Close();
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Warn("Received error from Pokezz. More info the logs");
+                Log.Debug("Received error from Pokezz: ", e);
+
             }
             return newSniperInfos;
         }
@@ -53,79 +96,7 @@ namespace PogoLocationFeeder.Repository
             return Channel;
         }
 
-        public async Task StartClient()
-        {
-            try
-            {
-                _client = new WebSocket(URL, "basic", WebSocketVersion.Rfc6455);
-                _client.Closed += Client_Closed;
-                _client.MessageReceived += Client_MessageReceived;
-
-                _client.Open();
-            }
-            catch (Exception e)
-            {
-                Log.Warn("Received error from PokeSpawns. More info the logs");
-                Log.Debug("Received error from PokeSpawns: ", e);
-                CloseClient();
-            }
-        }
-
-        private void Client_Closed(object sender, EventArgs e)
-        {
-            CloseClient();
-        }
-
-        private void Client_MessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            try
-            {
-                var message = e.Message;
-                if (message == "40")
-                {
-                    _client?.Send("40/pokes");
-                }
-                var match = Regex.Match(message, @"(1?\d+)+.*\[""helo"",(2?.*)\]");
-                if (match.Success)
-                {
-                    if (match.Groups[1].Value == "42")
-                    {
-                        var sniperInfos = GetJsonList(match.Groups[2].Value);
-                        if (sniperInfos != null && sniperInfos.Any())
-                        {
-                            lock (_snipersInfos)
-                            {
-                                sniperInfos.ForEach(i => _snipersInfos.Enqueue(i));
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    match = Regex.Match(message, @"(1?\d+)+.*\[""poke"",(2?.*)\]");
-                    if (match.Success)
-                    {
-                        if (match.Groups[1].Value == "42")
-                        {
-                            var sniperInfo = GetJson(match.Groups[2].Value);
-                            if (sniperInfo != null)
-                            {
-                                lock (_snipersInfos)
-                                {
-                                    _snipersInfos.Enqueue(sniperInfo);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Debug("Error receiving message from RareSpawns", ex);
-            }
-        }
-
-        private List<SniperInfo> GetJsonList(string reader)
+        private static List<SniperInfo> GetJsonList(string reader)
         {
             var results = JsonConvert.DeserializeObject<List<PokeSpawnsPokemon>>(reader,
                 new JsonSerializerSettingsCultureInvariant());
@@ -141,14 +112,14 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
-        private SniperInfo GetJson(string reader)
+        private static SniperInfo GetJson(string reader)
         {
             var result = JsonConvert.DeserializeObject<PokeSpawnsPokemon>(reader,
                 new JsonSerializerSettingsCultureInvariant());
             return Map(result);
         }
 
-        private SniperInfo Map(PokeSpawnsPokemon result)
+        private static SniperInfo Map(PokeSpawnsPokemon result)
         {
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParsePokemon(result.name);
@@ -156,34 +127,6 @@ namespace PogoLocationFeeder.Repository
             sniperInfo.Latitude = result.lat;
             sniperInfo.Longitude = result.lon;
             return sniperInfo;
-        }
-
-        private void CloseClient()
-        {
-            lock (_client)
-            {
-                if (_started)
-                {
-                    _started = false;
-                    try
-                    {
-                        try
-                        {
-                            _client?.Close();
-                        }
-                        catch (Exception e)
-                        {
-                            // ignore
-                        }
-                        _client?.Dispose();
-                        _client = null;
-                    }
-                    catch (Exception e)
-                    {
-                        // ignore
-                    }
-                }
-            }
         }
     }
 
