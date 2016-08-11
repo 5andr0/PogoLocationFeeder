@@ -20,7 +20,7 @@ namespace PogoLocationFeederTests.Tests
             Assert.IsNotNull(channelInfo);
             Assert.IsTrue(channelInfo.isValid);
             Assert.AreEqual("PokeMobBot - a Pokémon Go Bot", channelInfo.server);
-            Assert.AreEqual("coordsbots",channelInfo.channel);
+            Assert.AreEqual("sniper",channelInfo.channel);
         }
 
         [TestMethod()]

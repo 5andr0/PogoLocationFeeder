@@ -20,7 +20,7 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
                 42.877637631245, 74.620142194759, PokemonId.Jolteon, 0, DateTime.Now.AddSeconds(239));
             verifyParsing(
                 "Dratini 42.326919, -83.042221 IV91 confirmed",
-                42.326919, -83.042221, PokemonId.Jolteon, 91, DateTime.Now.AddSeconds(239));
+                42.326919, -83.042221, PokemonId.Dratini, 91, DateTime.MinValue);
         }
 
         private void verifyParsing(string text, double latitude, double longitude, PokemonId pokemonId, double iv,
