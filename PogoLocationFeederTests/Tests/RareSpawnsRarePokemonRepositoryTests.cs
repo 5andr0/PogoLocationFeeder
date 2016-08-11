@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using PogoLocationFeeder.Repository;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,12 +11,13 @@ namespace PogoLocationFeeder.Repository.Tests
     {
 
         [TestMethod()]
-        [Ignore]
+        //[Ignore]
         public void TestRareSpawns()
         {
-            var pokeSpawnsRarePokemonRepository  = new RareSpawnsRarePokemonRepository();
+            var pokeSpawnsRarePokemonRepository = new RareSpawnsRarePokemonRepository();
             var pokesnipers = pokeSpawnsRarePokemonRepository.FindAll();
             Assert.IsTrue(pokesnipers.Any());
         }
+
     }
 }

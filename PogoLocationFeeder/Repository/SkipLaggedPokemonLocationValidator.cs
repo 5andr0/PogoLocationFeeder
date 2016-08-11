@@ -4,9 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Caching;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
-using POGOProtos.Enums;
 using PogoLocationFeeder.Config;
 
 namespace PogoLocationFeeder.Repository
@@ -21,10 +21,11 @@ namespace PogoLocationFeeder.Repository
                 return sniperInfos;
             }
             var newSniperInfos = new List<SniperInfo>();
-            foreach (var sniperInfo in sniperInfos)
+            var filteredSniperInfos = SkipLaggedCache.FindUnSentMessages(sniperInfos);
+            foreach (var sniperInfo in filteredSniperInfos)
             {
                 var scanResult = ScanLocation(new GeoCoordinates(sniperInfo.Latitude, sniperInfo.Longitude));
-                if (scanResult.Status == "fail")
+                if (scanResult.Status == "fail" || scanResult.Status == "error")
                 {
                     sniperInfo.Verified = false;
                     newSniperInfos.Add(sniperInfo);
@@ -34,7 +35,7 @@ namespace PogoLocationFeeder.Repository
                     var t = DateTime.Now.ToUniversalTime() - st;
                     var currentTimestamp = t.TotalMilliseconds;
                     var pokemonsToFeed =  PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter);
-                    var filteredPokemon = scanResult.pokemons.Where(q => pokemonsToFeed.Contains(q.pokemon_name));
+                    var filteredPokemon = scanResult.pokemons.Where(q => pokemonsToFeed.Contains(PokemonParser.ParseById(q.pokemon_id)));
                     var notExpiredPokemon = filteredPokemon.Where(q => q.expires < currentTimestamp);
 
                         if (notExpiredPokemon.Any())
@@ -42,11 +43,12 @@ namespace PogoLocationFeeder.Repository
                             foreach (var pokemonLocation in notExpiredPokemon)
                             {
                                 SniperInfo newSniperInfo = new SniperInfo();
-                                if (sniperInfo.Id.Equals(pokemonLocation.pokemon_name))
+                                
+                                if (sniperInfo.Id.Equals(pokemonLocation.Id))
                                 {
                                     newSniperInfo.IV = sniperInfo.IV;
                                 }
-                                newSniperInfo.Id = pokemonLocation.pokemon_name;
+                                newSniperInfo.Id = PokemonParser.ParseById(pokemonLocation.pokemon_id);
                                 newSniperInfo.Latitude = pokemonLocation.latitude;
                                 newSniperInfo.Longitude = pokemonLocation.longitude;
                                 newSniperInfo.Verified = true;
@@ -73,7 +75,7 @@ namespace PogoLocationFeeder.Repository
         {
            var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
-            var offset = 0.001;
+            var offset = 0.003;
             // 0.003 = half a mile; maximum 0.06 is 10 miles
             if (offset < 0.001) offset = 0.003;
             if (offset > 0.06) offset = 0.06;
@@ -90,9 +92,8 @@ namespace PogoLocationFeeder.Repository
             try
             {
                 var request = WebRequest.CreateHttp(uri);
+                request.UserAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)";
                 request.Accept = "application/json";
-                request.UserAgent =
-                    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36\r\n";
                 request.Method = "GET";
                 request.Timeout = 15000;
                 request.ReadWriteTimeout = 32000;
@@ -123,6 +124,35 @@ namespace PogoLocationFeeder.Repository
             return scanResult;
         }
 
+        static class SkipLaggedCache
+        {
+            private const string MessagePrefix = "SkipLaggedCache_";
+            private const int MinutesToAddInCache = 15;
+
+            public static List<SniperInfo> FindUnSentMessages(List<SniperInfo> sniperInfos)
+            {
+                return sniperInfos.Where(sniperInfo => !IsSentAlready(sniperInfo)).ToList();
+            }
+
+            private static bool IsSentAlready(SniperInfo sniperInfo)
+            {
+                var coordinates = GetCoordinatesString(sniperInfo);
+                if (MemoryCache.Default.Contains(coordinates))
+                {
+                    Log.Debug($"Skipping duplicate {sniperInfo}");
+                    return true;
+                }
+                var expirationDate = DateTime.Now.AddMinutes(MinutesToAddInCache);
+                MemoryCache.Default.Add(coordinates, sniperInfo, new DateTimeOffset(expirationDate));
+                return false;
+            }
+
+            private static string GetCoordinatesString(SniperInfo sniperInfo)
+            {
+                return MessagePrefix + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
+            }
+        }
+
         public class ScanResult
         {
             public string Status { get; set; }
@@ -141,8 +171,8 @@ namespace PogoLocationFeeder.Repository
             public double expires { get; set; }
             public double latitude { get; set; }
             public double longitude { get; set; }
-            public int pokemon_id { get; set; }
-            public PokemonId pokemon_name { get; set; }
+            public long pokemon_id { get; set; }
+            public string pokemon_name { get; set; }
 
             public bool Equals(PokemonLocation obj)
             {

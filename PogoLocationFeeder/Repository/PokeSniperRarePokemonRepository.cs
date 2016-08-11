@@ -60,6 +60,8 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
+
+
         private SniperInfo Map(Result result)
         {
             var sniperInfo = new SniperInfo();

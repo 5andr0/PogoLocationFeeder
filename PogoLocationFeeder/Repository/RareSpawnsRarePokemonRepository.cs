@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace PogoLocationFeeder.Repository
 {
     public class RareSpawnsRarePokemonRepository : IRarePokemonRepository
     {
-        private const string URL = "ws://188.165.224.208:49001/socket.io/?EIO=3&transport=websocket";
+        private const string AuthUrl = "http://188.165.224.208:49002/api/v1/auth";
         private const string Channel = "RareSpawns";
         private const int Timeout = 5000;
 
@@ -27,12 +28,21 @@ namespace PogoLocationFeeder.Repository
             List<SniperInfo> newSniperInfos = new List<SniperInfo>();
             try
             {
+                string token = "";
+                using (var client = new HttpClient())
+                {
 
+                    // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
+                    var content = client.GetStringAsync(AuthUrl).Result;
+                    token = GetToken(content)?.token;
+                }
+                string URL = $"ws://188.165.224.208:49001/socket.io/?EIO=3&transport=websocket&token={token}";
                 using (var client = new WebSocket(URL, "basic", null, 
                     new List<KeyValuePair<string, string>>() {new KeyValuePair<string, string>("Referer","http://www.rarespawns.be/"), new KeyValuePair<string, string>("Host", "188.165.224.208:49001") }, 
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36", "http://www.rarespawns.be", WebSocketVersion.Rfc6455, null))
                 {
-                    client.MessageReceived += (s, e) =>
+
+                        client.MessageReceived += (s, e) =>
                     {
                         try
                         {
@@ -88,6 +98,10 @@ namespace PogoLocationFeeder.Repository
             return newSniperInfos;
         }
 
+        private Token GetToken(string reader)
+        {
+            return JsonConvert.DeserializeObject<Token>(reader, new JsonSerializerSettingsCultureInvariant());
+        }
 
         public string GetChannel()
         {
@@ -138,5 +152,11 @@ namespace PogoLocationFeeder.Repository
 
         [JsonProperty("lon")]
         public double lon { get; set; }
+    }
+
+    internal class Token
+    {
+        [JsonProperty("token")]
+        public string token { get; set; }
     }
 }

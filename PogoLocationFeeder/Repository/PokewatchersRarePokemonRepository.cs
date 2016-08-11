@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using CloudFlareUtilities;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
@@ -29,6 +30,10 @@ namespace PogoLocationFeeder.Repository
                 // Create a HttpClient that uses the handler.
                 using (var client = new HttpClient())
                 {
+                    client.DefaultRequestHeaders.Referrer = new Uri("https://pokewatchers.com/");
+                    client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36");
+                        ;
+
                     // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
                     var content = client.GetStringAsync(URL).Result;
                     return GetJsonList(content);
