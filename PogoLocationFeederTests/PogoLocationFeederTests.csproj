@@ -75,7 +75,6 @@
   <ItemGroup>
     <Compile Include="Api\PogoLocationFeederListenerTests.cs" />
     <Compile Include="Tests\PokewatchersRarePokemonRepositoryTests.cs" />
-    <Compile Include="Tests\RareSpawnsRarePokemonRepositoryTests.cs" />
     <Compile Include="Tests\ChannelParserTests.cs" />
     <Compile Include="Tests\GeoCoordinatesParserTest.cs" />
     <Compile Include="Tests\IVParserTests.cs" />

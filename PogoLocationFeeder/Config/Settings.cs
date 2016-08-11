@@ -25,7 +25,6 @@ namespace PogoLocationFeeder.Config
         public static int Port = 16969;
         public static bool UsePokeSnipers = true;
         public static bool UseTrackemon = false;
-        public static bool UseRareSpawns = true;
         public static bool UsePokewatchers = true;
         public static bool UsePokezz = true;
         public static bool UsePokemonGoIVClub = true;
@@ -63,7 +62,6 @@ namespace PogoLocationFeeder.Config
                 settings = new GlobalSettings();
                 Port = set.Port;
                 //UseTrackemon = set.UseTrackemon;
-                UseRareSpawns = set.UseRareSpawns;
                 UsePokeSnipers = set.UsePokeSnipers;
                 UsePokewatchers = set.UsePokewatchers;
                 UsePokezz = set.UsePokezz;
@@ -167,10 +165,6 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokezz = GlobalSettings.UsePokezz;
-
-        [DefaultValue(true)]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public bool UseRareSpawns = GlobalSettings.UseRareSpawns;
 
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
