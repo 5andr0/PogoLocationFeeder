@@ -23,7 +23,7 @@ namespace PogoLocationFeeder.Writers
         {
             Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
             Log.Plain("This software is 100% free and open-source.\n");
-            Log.Plain("Please consider donating to cover server costs for a validated feed.");
+            Log.Plain("Please consider donating to if you like what we are doing!.");
             Log.Plain("You can find payment details on our GitHub page.\n");
 
             Log.Info("Application starting...");
