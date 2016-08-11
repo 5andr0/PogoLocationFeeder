@@ -14,11 +14,9 @@ namespace PogoLocationFeeder.Repository
 {
     public class RareSpawnsRarePokemonRepository : IRarePokemonRepository
     {
-        //private const int timeout = 20000;
-
         private const string URL = "ws://188.165.224.208:49001/socket.io/?EIO=3&transport=websocket";
         private const string Channel = "RareSpawns";
-        private const int Timeout = 10000;
+        private const int Timeout = 5000;
 
         public RareSpawnsRarePokemonRepository()
         {

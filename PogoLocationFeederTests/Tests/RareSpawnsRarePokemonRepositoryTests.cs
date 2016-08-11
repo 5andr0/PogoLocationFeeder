@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +14,8 @@ namespace PogoLocationFeeder.Repository.Tests
         public void TestRareSpawns()
         {
             var pokeSpawnsRarePokemonRepository  = new RareSpawnsRarePokemonRepository();
-            pokeSpawnsRarePokemonRepository.FindAll();
+            var pokesnipers = pokeSpawnsRarePokemonRepository.FindAll();
+            Assert.IsTrue(pokesnipers.Any());
         }
     }
 }
