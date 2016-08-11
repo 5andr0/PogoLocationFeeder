@@ -10,21 +10,21 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="33" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -33,28 +33,34 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="20" />
             <ColumnDefinition />
+            <ColumnDefinition Width="5"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Listen ip</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomIp, Mode=TwoWay}"
-                 IsEnabled="False" />
-        <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Server port</TextBlock>
-        <StackPanel Grid.Row="3" Grid.Column="3" Orientation="Horizontal">
+        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">App Theme</TextBlock>
+        <ComboBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" SelectedItem="{Binding AppTheme}" Text="{Binding AppThemeText}" IsReadOnly="True">
+            <ComboBoxItem Content="Light"/>
+            <ComboBoxItem Content="Dark"/>
+        </ComboBox>
+        <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Listen ip</TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Text="{Binding CustomIp, Mode=TwoWay}"
+                 IsEnabled="False" Width="150" HorizontalAlignment="Left"/>
+        <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Server port</TextBlock>
+        <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal">
             <TextBox  VerticalAlignment="Center" Text="{Binding CustomPort, Mode=TwoWay}" Width="100" PreviewTextInput="NumberValidationTextBox" />
             <TextBlock VerticalAlignment="Center" Margin="10, 0">
             *Restart after changing Port!
             </TextBlock>
         </StackPanel>
-        <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Max Pokemon to display</TextBlock>
-        <TextBox Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" Text="{Binding ShowLimit, Mode=TwoWay}"
-                 PreviewTextInput="NumberValidationTextBox" />
-        <TextBlock Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">PokeSniper2 Folderpath</TextBlock>
-        <StackPanel Grid.Row="7" Grid.Column="3" Orientation="Horizontal">
+        <TextBlock Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Max Pokemon to display</TextBlock>
+        <TextBox Grid.Row="7" Grid.Column="3" VerticalAlignment="Center" Text="{Binding ShowLimit, Mode=TwoWay}"
+                 PreviewTextInput="NumberValidationTextBox" Width="100" HorizontalAlignment="Left" />
+        <TextBlock Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">PokeSniper2 Folderpath</TextBlock>
+        <StackPanel Grid.Row="9" Grid.Column="3" Orientation="Horizontal">
             <TextBox x:Name="path" VerticalAlignment="Center" Text="{Binding Sniper2Exe, Mode=TwoWay}" IsReadOnly="True" MouseDoubleClick="TextBox_MouseDoubleClick" MinWidth="500"/>
             <Button Style="{DynamicResource MaterialDesignFlatButton}" Margin="10,0,0,0" Command="{Binding RemovePathCommand}">Remove</Button>
         </StackPanel>
-        <TextBlock Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Remove Unknown Expiration after</TextBlock>
-        <StackPanel Grid.Row="9" Grid.Column="3"  Orientation="Horizontal">
+        <TextBlock Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Remove Unknown Expiration after</TextBlock>
+        <StackPanel Grid.Row="11" Grid.Column="3"  Orientation="Horizontal">
             <ComboBox Width="100" Text="{Binding RemoveMinutes}">
             <ComboBoxItem Content="1"/>
             <ComboBoxItem Content="2"/>
@@ -74,17 +80,12 @@
         </ComboBox>
             <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">minutes.</TextBlock>
         </StackPanel>
-        <Label Grid.Row="11" Grid.Column="1">Verify on Skiplagged</Label>
-        <ToggleButton Grid.Row="11" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseSkiplagged}"></ToggleButton>
+        <TextBlock Grid.Row="13" Grid.Column="1" VerticalAlignment="Center">Verify on Skiplagged</TextBlock>
+        <ToggleButton Grid.Row="13" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseSkiplagged}" VerticalAlignment="Center"></ToggleButton>
 
-         <Label Grid.Row="13" Grid.Column="1" VerticalAlignment="Center">Use Filter</Label>
-        <ToggleButton Grid.Row="13" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}"></ToggleButton>
-        <Button Grid.Row="15" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+         <TextBlock Grid.Row="15" Grid.Column="1" VerticalAlignment="Center">Use Filter</TextBlock>
+        <ToggleButton Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}" VerticalAlignment="Center"></ToggleButton>
+        <Button Grid.Row="17" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
         
-        <Label Grid.Row="17" Grid.Column="1" VerticalAlignment="Center">App Theme</Label>
-        <ComboBox Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" SelectedItem="{Binding AppTheme}" Text="{Binding AppThemeText}" IsReadOnly="True">
-            <ComboBoxItem Content="Light"/>
-            <ComboBoxItem Content="Dark"/>
-        </ComboBox>
     </Grid>
 </UserControl>
