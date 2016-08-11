@@ -32,6 +32,7 @@ namespace PogoLocationFeeder
             Console.Title = "PogoLocationFeeder";
             XmlConfigurator.Configure(
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.App.config"));
+
             try
             {
                 new Program().Start();
@@ -41,7 +42,6 @@ namespace PogoLocationFeeder
                 Log.Fatal("Error during startup", e);
             }
         }
-
 
         public async Task RelayMessageToClients(string message, ChannelInfo channelInfo)
         {
@@ -149,7 +149,7 @@ namespace PogoLocationFeeder
             while (symbol != -1)
             {
                 symbol = stream.Read();
-                sb.Append((char) symbol);
+                sb.Append((char)symbol);
 
                 if (stream.Peek() != 10) continue;
 
@@ -220,7 +220,7 @@ namespace PogoLocationFeeder
                     var pokeSniperList = rarePokemonRepository.FindAll();
                     Log.Debug($"{rarePokemonRepository.GetChannel()} returned {pokeSniperList?.Count} sniperInfos");
 
-                    var channelInfo = new ChannelInfo {server = rarePokemonRepository.GetChannel()};
+                    var channelInfo = new ChannelInfo { server = rarePokemonRepository.GetChannel() };
 
                     if (pokeSniperList != null)
                     {
@@ -261,6 +261,4 @@ namespace PogoLocationFeeder
     {
         // TODO: Refactor
     }
-
-
 }
