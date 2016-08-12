@@ -92,7 +92,7 @@ namespace PogoLocationFeeder.Repository
             try
             {
                 var request = WebRequest.CreateHttp(uri);
-                request.UserAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)";
+                request.UserAgent = UserAgentHelper.GetRandomUseragent();
                 request.Accept = "application/json";
                 request.Method = "GET";
                 request.Timeout = 15000;
