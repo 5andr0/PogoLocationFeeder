@@ -42,6 +42,11 @@ namespace PogoLocationFeeder.Repository
             var filteredSniperInfos = SkipLaggedCache.FindUnSentMessages(sniperInfos);
             foreach (var sniperInfo in filteredSniperInfos)
             {
+                if (sniperInfo.Verified)
+                {
+                    newSniperInfos.Add(sniperInfo);
+                    continue;
+                }
                 var scanResult = ScanLocation(new GeoCoordinates(sniperInfo.Latitude, sniperInfo.Longitude));
                 if (scanResult.Status == "fail" || scanResult.Status == "error")
                 {

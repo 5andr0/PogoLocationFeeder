@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PogoLocationFeeder.Client;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Writers;
 
@@ -20,7 +21,7 @@ namespace PogoLocationFeeder.Input
         public bool ParseAndSend(string text)
         {
             List<SniperInfo> sniperInfos = MessageParser.ParseMessage(text);
-            sniperInfos.ForEach(s => s.ChannelInfo = new ChannelInfo() { server= FilterFactory.PogoFeeder});
+            sniperInfos.ForEach(s => s.ChannelInfo = new ChannelInfo() { server= Constants.PogoFeeder});
             var unsentInfos = MessageCache.Instance.FindUnSentMessages(sniperInfos);
             if (GlobalSettings.IsManaged)
             {
@@ -33,6 +34,21 @@ namespace PogoLocationFeeder.Input
             {
 
                 Task.Run(() => ClientWriter.Instance.FeedToClients(unsentInfos));
+            }
+            return unsentInfos.Any();
+        }
+
+
+        public bool BotCapture(SniperInfo sniperInfo)
+        {
+            var sniperInfos = new List<SniperInfo>() {sniperInfo};
+            var unsentInfos = MessageCache.Instance.FindUnSentMessages(sniperInfos);
+            if (GlobalSettings.IsManaged)
+            {
+                foreach (var unsent in unsentInfos)
+                {
+                    PogoClient.sniperInfosToSend.Enqueue(unsent);
+                }
             }
             return unsentInfos.Any();
 

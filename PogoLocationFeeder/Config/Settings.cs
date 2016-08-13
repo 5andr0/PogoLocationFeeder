@@ -48,7 +48,7 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokemonGoIVClub = true;
         public static bool UseFilter = true;
         public static string AppTheme = "Dark";
-        public static bool IsServer = true;
+        public static bool IsServer = false;
         public static bool IsManaged = true;
         public static string ServerHost = "";
         public static int ServerPort = 49000;
@@ -56,7 +56,9 @@ namespace PogoLocationFeeder.Config
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
         public static bool VerifyOnSkiplagged = true;
+        public static bool ShareBotCaptures = true;
         public static List<string> PokekomsToFeedFilter;
+        public static List<int> BotWebSocketPorts = new List<int>() { 14251 };
 
         public static bool SniperVisibility => IsOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();
@@ -96,6 +98,8 @@ namespace PogoLocationFeeder.Config
                 IsManaged = set.IsManaged;
                 ServerHost = set.ServerHost;
                 ServerPort = set.ServerPort;
+                ShareBotCaptures = set.ShareBotCaptures;
+                BotWebSocketPorts = set.BotWebSocketPorts;
             }
             else
             {
@@ -232,5 +236,10 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(49000)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int ServerPort = GlobalSettings.ServerPort;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShareBotCaptures = GlobalSettings.ShareBotCaptures;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public List<int> BotWebSocketPorts = GlobalSettings.BotWebSocketPorts;
     }
 }

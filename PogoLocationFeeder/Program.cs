@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using log4net.Config;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Bot;
 using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
@@ -113,12 +114,31 @@ namespace PogoLocationFeeder
                 }
                 ClientWriter.Instance.StartNet(GlobalSettings.Port);
                 Log.Info($"Starting with Port: {GlobalSettings.Port}");
+
+                StartBotListeners();
             }
             WebSourcesManager(settings);
 
             Console.Read();
         }
 
+        private void StartBotListeners()
+        {
+            if (GlobalSettings.ShareBotCaptures)
+            {
+                List<int> ports = new List<int>(GlobalSettings.BotWebSocketPorts);
+                if (ports.Any())
+                {
+                    foreach (int port in ports)
+                    {
+                        Task.Run(() =>
+                        {
+                            new BotListener().Start(port);
+                        });
+                    }
+                }
+            }
+        }
         private void WebSourcesManager(GlobalSettings settings)
         {
             var rarePokemonRepositories = RarePokemonRepositoryFactory.CreateRepositories(settings);
