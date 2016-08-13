@@ -21,19 +21,20 @@ namespace PogoLocationFeeder.Input
         {
             List<SniperInfo> sniperInfos = MessageParser.ParseMessage(text);
             sniperInfos.ForEach(s => s.ChannelInfo = new ChannelInfo() { server= FilterFactory.PogoFeeder});
-
+            var unsentInfos = MessageCache.Instance.FindUnSentMessages(sniperInfos);
             if (GlobalSettings.IsManaged)
             {
-                foreach (var sniperInfo in sniperInfos)
+                foreach (var sniperInfo in unsentInfos)
                 {
                     PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
                 }
             }
             if (!GlobalSettings.IsServer)
             {
-                Task.Run(() => ClientWriter.Instance.FeedToClients(sniperInfos));
+
+                Task.Run(() => ClientWriter.Instance.FeedToClients(unsentInfos));
             }
-            return sniperInfos.Any();
+            return unsentInfos.Any();
 
         }
     }
