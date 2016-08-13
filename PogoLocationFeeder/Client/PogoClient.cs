@@ -19,6 +19,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -47,7 +48,8 @@ namespace PogoLocationFeeder.Client
                 {
                     var cookieMonster = new List<KeyValuePair<string, string>>()
                     {
-                        new KeyValuePair<string, string>("filter", JsonConvert.SerializeObject(FilterFactory.Create(discordChannels)))
+                        new KeyValuePair<string, string>("filter", JsonConvert.SerializeObject(FilterFactory.Create(discordChannels))),
+                        new KeyValuePair<string, string>("version",  Assembly.GetExecutingAssembly().GetName().Version.ToString())
                     };
                     using (
                         var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:49000", "basic", null,

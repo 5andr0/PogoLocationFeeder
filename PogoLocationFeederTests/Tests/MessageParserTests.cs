@@ -27,7 +27,7 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
     {
 
         [TestMethod]
-        public void parseMessageTest()
+        public void ParseMessageTest()
         {
             verifyParsing(
                 "[239 seconds remaining] 52% IV - Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
@@ -38,6 +38,12 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
             verifyParsing(
                 "Dratini 42.326919, -83.042221 IV91 confirmed",
                 42.326919, -83.042221, PokemonId.Dratini, 91, DateTime.MinValue);
+        }
+
+        [TestMethod]
+        public void TestSpaces()
+        {
+            verifyParsing("Dratini  42.12345 -40.123456", 42.12345, -40.123456, PokemonId.Dratini, 0, DateTime.MinValue);
         }
 
         private void verifyParsing(string text, double latitude, double longitude, PokemonId pokemonId, double iv,

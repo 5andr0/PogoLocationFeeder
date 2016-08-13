@@ -61,7 +61,7 @@ namespace PogoLocationFeeder.Helper
             {
                 foreach (var channel in Settings)
                 {
-                    if (Object.Equals(channelId, channel.id))
+                    if (object.Equals(channelId, channel.id))
                     {
                         channelInfo.server = channel.Server;
                         channelInfo.channel = channel.Name;

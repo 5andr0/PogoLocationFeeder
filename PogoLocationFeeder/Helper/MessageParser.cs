@@ -28,6 +28,7 @@ namespace PogoLocationFeeder.Helper
         public static List<SniperInfo> ParseMessage(string message)
         {
             var snipeList = new List<SniperInfo>();
+            //message = Regex.Replace(message, @"\s+", " ");
             var lines = message.Split('\r', '\n');
 
             foreach (var input in lines)
