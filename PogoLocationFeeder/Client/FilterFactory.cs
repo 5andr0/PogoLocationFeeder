@@ -13,6 +13,7 @@ namespace PogoLocationFeeder.Client
 {
     public class FilterFactory
     {
+        public const string PogoFeeder = "PogoFeeder";
         public static Filter Create(List<DiscordChannels> discordChannels )
         {
             List<PokemonId> pokemons = GlobalSettings.UseFilter
@@ -47,7 +48,7 @@ namespace PogoLocationFeeder.Client
             {
                 channelInfos.Add(new Channel() { server = PokezzRarePokemonRepository.Channel });
             }
-            channelInfos.Add(new Channel() {server = "PogoFeeder"});
+            channelInfos.Add(new Channel() {server = PogoFeeder });
             var filter = new Filter();
             filter.channels = channelInfos;
             filter.pokemon = pokemonsBinary;

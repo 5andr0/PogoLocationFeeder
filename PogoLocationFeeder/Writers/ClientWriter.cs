@@ -35,7 +35,8 @@ namespace PogoLocationFeeder.Writers
     {
         private readonly List<TcpClient> _arrSocket = new List<TcpClient>();
         public TcpListener Listener;
-
+        public static readonly ClientWriter Instance = new ClientWriter();
+        private ClientWriter() { }
         public void StartNet(int port)
         {
             Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");

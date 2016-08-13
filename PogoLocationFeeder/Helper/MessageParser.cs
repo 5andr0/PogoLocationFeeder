@@ -24,16 +24,15 @@ namespace PogoLocationFeeder.Helper
 {
     public class MessageParser
     {
-        private SniperInfo sniperInfo;
 
-        public List<SniperInfo> parseMessage(string message)
+        public static List<SniperInfo> ParseMessage(string message)
         {
             var snipeList = new List<SniperInfo>();
             var lines = message.Split('\r', '\n');
 
             foreach (var input in lines)
             {
-                sniperInfo = new SniperInfo();
+                var sniperInfo = new SniperInfo();
                 var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(input);
                 if (geoCoordinates == null)
                 {
@@ -44,9 +43,10 @@ namespace PogoLocationFeeder.Helper
                 sniperInfo.Longitude = geoCoordinates.Longitude;
                 var iv = IVParser.ParseIV(input);
                 sniperInfo.IV = iv;
-                ParseTimestamp(input);
+                var timeStamp = ParseTimestamp(input);
                 var pokemon = PokemonParser.ParsePokemon(input);
                 sniperInfo.Id = pokemon;
+                sniperInfo.ExpirationTimestamp = timeStamp;
                 snipeList.Add(sniperInfo);
             }
 
@@ -54,44 +54,41 @@ namespace PogoLocationFeeder.Helper
         }
 
 
-        private void ParseTimestamp(string input)
+        private static DateTime ParseTimestamp(string input)
         {
             try
             {
                 var match = Regex.Match(input, @"(\d+)\s?sec", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
-                    sniperInfo.ExpirationTimestamp = DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[1].Value));
-                    return;
+                    return DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[1].Value));
                 }
 
                 match = Regex.Match(input, @"(\d+)\s?min", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
-                    sniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value));
-                    return;
+                    return DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value));
                 }
 
                 match = Regex.Match(input, @"(\d+)m\s?(\d+)s", RegexOptions.IgnoreCase);
                     // Aerodactyl | 14m 9s | 34.008105111711,-118.49775510959
                 if (match.Success)
                 {
-                    sniperInfo.ExpirationTimestamp =
-                        DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value))
+                    return DateTime.Now.AddMinutes(Convert.ToDouble(match.Groups[1].Value))
                             .AddSeconds(Convert.ToDouble(match.Groups[2].Value));
-                    return;
                 }
 
                 match = Regex.Match(input, @"(\d+)\s?s\s", RegexOptions.IgnoreCase);
                     // Lickitung | 15s | 40.69465351234,-73.99434315197
                 if (match.Success)
                 {
-                    sniperInfo.ExpirationTimestamp = DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[1].Value));
+                    return DateTime.Now.AddSeconds(Convert.ToDouble(match.Groups[1].Value));
                 }
             }
             catch (ArgumentOutOfRangeException)
             {
             }
+            return default(DateTime);
         }
     }
 }

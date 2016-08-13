@@ -165,6 +165,7 @@
     <Compile Include="Helper\PokemonParser.cs" />
     <Compile Include="Helper\UserAgentHelper.cs" />
     <Compile Include="Helper\VersionCheckState.cs" />
+    <Compile Include="Input\InputService.cs" />
     <Compile Include="Readers\DiscordWebReader.cs" />
     <Compile Include="Config\Settings.cs" />
     <Compile Include="Helper\MessageParser.cs" />

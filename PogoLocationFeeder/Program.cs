@@ -30,6 +30,7 @@ using Newtonsoft.Json;
 using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
+using PogoLocationFeeder.Input;
 using PogoLocationFeeder.Readers;
 using PogoLocationFeeder.Repository;
 using PogoLocationFeeder.Server;
@@ -41,8 +42,6 @@ namespace PogoLocationFeeder
     public class Program
     {
         private readonly ChannelParser _channelParser = new ChannelParser();
-        private readonly ClientWriter _clientWriter = new ClientWriter();
-        private readonly MessageParser _parser = new MessageParser();
         private readonly PogoServer _server = new PogoServer();
         private DiscordWebReader _discordWebReader;
         private readonly MessageCache _messageCache = new MessageCache();
@@ -83,7 +82,7 @@ namespace PogoLocationFeeder
 
         public async Task RelayMessageToClients(string message, ChannelInfo channelInfo)
         {
-            var snipeList = _parser.parseMessage(message);
+            var snipeList = MessageParser.ParseMessage(message);
             snipeList.ForEach(s=>s.ChannelInfo = channelInfo);
             WriteOutListeners(snipeList);
         }
@@ -112,7 +111,7 @@ namespace PogoLocationFeeder
                         _pogoClient.Start(_channelParser.Settings);
                     });
                 }
-                _clientWriter.StartNet(GlobalSettings.Port);
+                ClientWriter.Instance.StartNet(GlobalSettings.Port);
                 Log.Info($"Starting with Port: {GlobalSettings.Port}");
             }
             WebSourcesManager(settings);
@@ -140,10 +139,10 @@ namespace PogoLocationFeeder
             {
                 if (!GlobalSettings.IsServer)
                 {
-                    if (!_clientWriter.Listener.Server.IsBound)
+                    if (!ClientWriter.Instance.Listener.Server.IsBound)
                     {
                         Log.Info("Server has lost connection. Restarting...");
-                        _clientWriter.StartNet(GlobalSettings.Port);
+                        ClientWriter.Instance.StartNet(GlobalSettings.Port);
                     }
                 }
                 if (!GlobalSettings.IsManaged)
@@ -301,7 +300,7 @@ namespace PogoLocationFeeder
                 }
                 else
                 {
-                    await _clientWriter.FeedToClients(sniperInfosToSend);
+                    await ClientWriter.Instance.FeedToClients(sniperInfosToSend);
                 }
             }
         }

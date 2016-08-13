@@ -25,7 +25,6 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
     [TestClass]
     public class MessageParserTests
     {
-        private readonly MessageParser messageParser = new MessageParser();
 
         [TestMethod]
         public void parseMessageTest()
@@ -44,7 +43,7 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
         private void verifyParsing(string text, double latitude, double longitude, PokemonId pokemonId, double iv,
             DateTime expiration)
         {
-            var sniperInfo = messageParser.parseMessage(text);
+            var sniperInfo = MessageParser.ParseMessage(text);
             Assert.IsNotNull(sniperInfo);
             Assert.AreEqual(pokemonId, sniperInfo[0].Id);
             Assert.AreEqual(latitude, sniperInfo[0].Latitude);
