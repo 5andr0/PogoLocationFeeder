@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,7 @@ namespace PogoLocationFeeder.Client
     public class PogoClient
     {
         public event EventHandler<List<SniperInfo>> _receivedViaServer;
+        public static ConcurrentQueue<SniperInfo> sniperInfosToSend = new ConcurrentQueue<SniperInfo>();
 
         public void Start(List<ChannelParser.DiscordChannels> discordChannels )
         {
@@ -50,7 +52,7 @@ namespace PogoLocationFeeder.Client
                             cookieMonster,
                             null, null, WebSocketVersion.Rfc6455))
                     {
-                        long timeStamp = GetEpoch();
+                        long timeStamp = GetEpoch2MinAgo();
 
                         client.Opened += (s, e) =>
                         {
@@ -91,7 +93,15 @@ namespace PogoLocationFeeder.Client
 
                         while (running)
                         {
-                            Thread.Sleep(10000);
+                            for (int i = 0; i < 10; i++)
+                            {
+                                Thread.Sleep(1000);
+                                SniperInfo sniperInfo = null;
+                                while (sniperInfosToSend.TryDequeue(out sniperInfo))
+                                {
+                                    client.Send($"{GetEpochNow()}:Disturb the sound of silence:" + JsonConvert.SerializeObject(sniperInfo));
+                                }
+                            }
                             client.Send($"{timeStamp}:I've come to talk with you again");
                         }
                     }
@@ -99,7 +109,6 @@ namespace PogoLocationFeeder.Client
                     Thread.Sleep(10000);
                 }
             }
-
         }
 
         protected virtual void OnReceivedViaServer(List<SniperInfo> sniperInfos)
@@ -111,9 +120,14 @@ namespace PogoLocationFeeder.Client
             }
         }
 
-        private static long GetEpoch()
+        private static long GetEpoch2MinAgo()
         {
             return (long)DateTime.Now.AddMinutes(-2).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+        }
+
+        private static long GetEpochNow()
+        {
+            return (long)DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
     }

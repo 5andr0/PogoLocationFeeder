@@ -47,6 +47,7 @@ namespace PogoLocationFeeder.Client
             {
                 channelInfos.Add(new Channel() { server = PokezzRarePokemonRepository.Channel });
             }
+            channelInfos.Add(new Channel() {server = "PogoFeeder"});
             var filter = new Filter();
             filter.channels = channelInfos;
             filter.pokemon = pokemonsBinary;
