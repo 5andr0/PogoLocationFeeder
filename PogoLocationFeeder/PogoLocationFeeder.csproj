@@ -149,6 +149,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\Filter.cs" />
+    <Compile Include="Client\FilterFactory.cs" />
     <Compile Include="Client\PogoClient.cs" />
     <Compile Include="Common\Output.cs" />
     <Compile Include="Common\ChannelInfo.cs" />

@@ -155,7 +155,6 @@ namespace PogoLocationFeeder.Config
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
                 return JsonConvert.DeserializeObject<List<string>>(input, jsonSettings).
-                    Where(x => PokemonParser.ParsePokemon(x, true) != PokemonId.Missingno).
                     GroupBy(x => PokemonParser.ParsePokemon(x)).
                     Select(y => y.FirstOrDefault()).ToList();
             } else {

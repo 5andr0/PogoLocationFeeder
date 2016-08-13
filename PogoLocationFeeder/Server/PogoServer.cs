@@ -29,6 +29,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
@@ -88,7 +89,9 @@ namespace PogoLocationFeeder.Server
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
         {
-            var pokemonIds = GetFilters(session);
+            var filter = GetFilter(session);
+            var pokemonIds = PokemonFilterParser.ParseBinary(filter.pokemon);
+            var channels = filter.channels;
             var match = Regex.Match(value, @"^(1?\d+)\:(?:Disturb the sound of silence)\:(2?.*)$");
             var matchRequest = Regex.Match(value, @"^(1?\d+)\:(?:I\'ve come to talk with you again)$");
 
@@ -104,7 +107,10 @@ namespace PogoLocationFeeder.Server
                 foreach (var obj in _memoryCache)
                 {
                     var sniperInfo = (SniperInfo) obj.Value;
-                    if (pokemonIds.Contains(sniperInfo.Id) && ToEpoch(sniperInfo.ExpirationTimestamp) > epoch && ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
+                    if (pokemonIds.Contains(sniperInfo.Id) 
+                        && ToEpoch(sniperInfo.ExpirationTimestamp) > epoch 
+                        && ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived
+                        && MatchesChannel(channels, sniperInfo.ChannelInfo))
                     {
                         sniperInfoToSend.Add(sniperInfo);
                     }
@@ -118,19 +124,34 @@ namespace PogoLocationFeeder.Server
             }
         }
 
+        private bool MatchesChannel(List<Channel> channels, ChannelInfo channelInfo)
+        {
+            foreach (Channel channel in channels)
+            {
+                if((channel == null && channelInfo == null) || 
+                    Object.Equals(channel.server,channelInfo.server)
+                    && Object.Equals(channel.channel,channelInfo.channel))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         private static long ToEpoch(DateTime datetime)
         {
             return (long)datetime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
-        private static List<PokemonId> GetFilters(WebSocketSession session)
+
+        private static Filter GetFilter(WebSocketSession session)
         {
-            object filterBinary = "";
-            if (!session.Items.TryGetValue("filter", out filterBinary))
+            object filterString = "";
+            if (!session.Items.TryGetValue("filter", out filterString))
             {
                 throw new Exception("Needs more pandas");
             }
-            return PokemonFilterParser.ParseBinary(filterBinary.ToString());
+            return JsonConvert.DeserializeObject<Filter>(filterString.ToString());
         }
+
         public void QueueAll(List<SniperInfo> sortedMessages)
         {
             foreach (SniperInfo sniperInfo in sortedMessages)

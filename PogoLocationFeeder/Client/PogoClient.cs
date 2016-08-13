@@ -34,19 +34,16 @@ namespace PogoLocationFeeder.Client
     {
         public event EventHandler<List<SniperInfo>> _receivedViaServer;
 
-        public void Start()
+        public void Start(List<ChannelParser.DiscordChannels> discordChannels )
         {
             while (true)
             {
                 var running = true;
                 while (running)
                 {
-                    List<PokemonId> pokemons = GlobalSettings.UseFilter
-                        ? PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter)
-                        : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
                     var cookieMonster = new List<KeyValuePair<string, string>>()
                     {
-                        new KeyValuePair<string, string>("filter", PokemonFilterToBinary.ToBinary(pokemons))
+                        new KeyValuePair<string, string>("filter", JsonConvert.SerializeObject(FilterFactory.Create(discordChannels)))
                     };
                     using (
                         var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:49000", "basic", null,

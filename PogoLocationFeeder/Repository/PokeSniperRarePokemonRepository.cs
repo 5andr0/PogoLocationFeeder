@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "http://www.pokesnipers.com/api/v1/pokemon.json?referrer=home";
-        private const string Channel = "Pokesnipers";
+        public const string Channel = "Pokesnipers";
 
         public PokeSniperRarePokemonRepository()
         {

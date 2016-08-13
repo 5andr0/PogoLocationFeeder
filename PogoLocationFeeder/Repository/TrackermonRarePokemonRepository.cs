@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Repository
     public class TrackemonRarePokemonRepository : IRarePokemonRepository
     {
         private const int Timeout = 20000;
-        private const string Channel = "Trackemon";
+        public const string Channel = "Trackemon";
         private readonly List<PokemonId> _pokemonIdsToFind;
 
         public TrackemonRarePokemonRepository()

@@ -35,7 +35,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "ws://pokemongoivclub.com:49002/socket.io/?EIO=3&transport=websocket";
-        private const string Channel = "Pokemon Go IV Club";
+        public const string Channel = "Pokemon Go IV Club";
         private const int Timeout = 5000;
 
         public PokemonGoIVClubRarePokemonRepository()

@@ -109,7 +109,7 @@ namespace PogoLocationFeeder
                 {
                     Task.Run(() =>
                     {
-                        _pogoClient.Start();
+                        _pogoClient.Start(_channelParser.Settings);
                     });
                 }
                 _clientWriter.StartNet(GlobalSettings.Port);

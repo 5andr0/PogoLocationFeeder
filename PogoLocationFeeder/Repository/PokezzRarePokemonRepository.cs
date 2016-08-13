@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
     public class PokezzRarePokemonRepository : IRarePokemonRepository
     {
         private const string URL = "ws://pokezz.com/socket.io/?EIO=3&transport=websocket";
-        private const string Channel = "PokeZZ";
+        public const string Channel = "PokeZZ";
         private const int Timeout = 5000;
 
         public PokezzRarePokemonRepository()

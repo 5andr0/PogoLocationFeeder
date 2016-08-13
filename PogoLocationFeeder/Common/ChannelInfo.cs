@@ -16,12 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using Newtonsoft.Json;
+
 namespace PogoLocationFeeder.Helper
 {
     public class ChannelInfo
     {
         public string server { get; set; }
         public string channel { get; set; }
+        [JsonIgnore]
         public bool isValid { get; set; } = false;
 
         public override string ToString()

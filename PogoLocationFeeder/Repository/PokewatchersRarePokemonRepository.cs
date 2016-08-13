@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "https://pokewatchers.com/api.php?act=grab";
-        private const string Channel = "Pokewatchers";
+        public const string Channel = "PokeWatchers";
 
         public PokewatchersRarePokemonRepository()
         {

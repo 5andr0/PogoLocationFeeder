@@ -44,7 +44,7 @@ namespace PogoLocationFeeder.Helper
                 sniperInfo.Longitude = geoCoordinates.Longitude;
                 var iv = IVParser.ParseIV(input);
                 sniperInfo.IV = iv;
-                parseTimestamp(input);
+                ParseTimestamp(input);
                 var pokemon = PokemonParser.ParsePokemon(input);
                 sniperInfo.Id = pokemon;
                 snipeList.Add(sniperInfo);
@@ -54,7 +54,7 @@ namespace PogoLocationFeeder.Helper
         }
 
 
-        private void parseTimestamp(string input)
+        private void ParseTimestamp(string input)
         {
             try
             {
