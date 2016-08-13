@@ -27,10 +27,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using log4net.Config;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Readers;
 using PogoLocationFeeder.Repository;
+using PogoLocationFeeder.Server;
 using PogoLocationFeeder.Writers;
 using PoGoLocationFeeder.Helper;
 
@@ -41,7 +43,10 @@ namespace PogoLocationFeeder
         private readonly ChannelParser _channelParser = new ChannelParser();
         private readonly ClientWriter _clientWriter = new ClientWriter();
         private readonly MessageParser _parser = new MessageParser();
+        private readonly PogoServer _server = new PogoServer();
         private DiscordWebReader _discordWebReader;
+        private readonly MessageCache _messageCache = new MessageCache();
+        private readonly PogoClient _pogoClient = new PogoClient();
 
         private static void Main(string[] args)
         {
@@ -61,10 +66,26 @@ namespace PogoLocationFeeder
             }
         }
 
+        public Program()
+        {
+            _server._receivedViaClients += SniperInfoReceived;
+            _pogoClient._receivedViaServer += SniperInfoReceived;
+        }
+
+        private void SniperInfoReceived(object sender, SniperInfo sniperInfo)
+        {
+            WriteOutListeners(new List<SniperInfo>() { sniperInfo});
+        }
+        private void SniperInfoReceived(object sender, List<SniperInfo> sniperInfo)
+        {
+            WriteOutListeners( sniperInfo);
+        }
+
         public async Task RelayMessageToClients(string message, ChannelInfo channelInfo)
         {
             var snipeList = _parser.parseMessage(message);
-            await _clientWriter.FeedToClients(snipeList, channelInfo);
+            snipeList.ForEach(s=>s.ChannelInfo = channelInfo);
+            WriteOutListeners(snipeList);
         }
 
 
@@ -76,10 +97,17 @@ namespace PogoLocationFeeder
             if (settings == null) return;
 
             VersionCheckState.Execute(new CancellationToken());
-
-            _clientWriter.StartNet(GlobalSettings.Port);
-            Log.Info($"Starting with Port: {GlobalSettings.Port}");
-
+            if (GlobalSettings.IsServer)
+            {
+                _server.Start();
+            } else if (GlobalSettings.IsManaged)
+            {
+                _pogoClient.Start();
+            } else
+            {
+                _clientWriter.StartNet(GlobalSettings.Port);
+                Log.Info($"Starting with Port: {GlobalSettings.Port}");
+            }
             WebSourcesManager(settings);
 
             Console.Read();
@@ -95,10 +123,13 @@ namespace PogoLocationFeeder
 
             while (true)
             {
-                if (!_clientWriter.Listener.Server.IsBound)
+                if (!GlobalSettings.IsServer)
                 {
-                    Log.Info("Server has lost connection. Restarting...");
-                    _clientWriter.StartNet(GlobalSettings.Port);
+                    if (!_clientWriter.Listener.Server.IsBound)
+                    {
+                        Log.Info("Server has lost connection. Restarting...");
+                        _clientWriter.StartNet(GlobalSettings.Port);
+                    }
                 }
                 try
                 {
@@ -227,6 +258,24 @@ namespace PogoLocationFeeder
             }
         }
 
+        private async void WriteOutListeners(List<SniperInfo> sniperInfos)
+        {
+            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfos);
+            var verifiedUnsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
+            var sortedMessages = verifiedUnsentMessages.OrderBy(m => m.ExpirationTimestamp).ToList();
+            sortedMessages = sortedMessages.Where(
+                i => !GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString()) && GlobalSettings.UseFilter)
+                .ToList();
+            if (GlobalSettings.IsServer)
+            {
+                _server.QueueAll(sortedMessages);
+            }
+            else
+            {
+                await _clientWriter.FeedToClients(sortedMessages);
+            }
+        }
+
         private async Task RareRepoThread(IRarePokemonRepository rarePokemonRepository)
         {
             const int delay = 30 * 1000;
@@ -236,19 +285,11 @@ namespace PogoLocationFeeder
                 for (var retrys = 0; retrys <= 3; retrys++)
                 {
                     var pokeSniperList = rarePokemonRepository.FindAll();
-                    Log.Debug($"{rarePokemonRepository.GetChannel()} returned {pokeSniperList?.Count} sniperInfos");
-
-                    var channelInfo = new ChannelInfo { server = rarePokemonRepository.GetChannel() };
-
                     if (pokeSniperList != null)
                     {
                         if (pokeSniperList.Any())
                         {
-                            await _clientWriter.FeedToClients(pokeSniperList, channelInfo);
-                        }
-                        else
-                        {
-                            Log.Debug("No new pokemon on {0}", rarePokemonRepository.GetChannel());
+                            WriteOutListeners(pokeSniperList);
                         }
                         break;
                     }

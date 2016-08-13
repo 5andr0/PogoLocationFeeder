@@ -48,8 +48,9 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokemonGoIVClub = true;
         public static bool UseFilter = true;
         public static string AppTheme = "Dark";
-
-
+        public static bool IsServer = true;
+        public static bool IsManaged = true;
+        public static string ServerHost = "";
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
@@ -90,6 +91,9 @@ namespace PogoLocationFeeder.Config
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
                 UseFilter = set.UseFilter;
                 AppTheme = set.AppTheme;
+                IsServer = set.IsServer;
+                IsManaged = set.IsManaged;
+                ServerHost = set.ServerHost;
             }
             else
             {
@@ -215,6 +219,14 @@ namespace PogoLocationFeeder.Config
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string AppTheme = GlobalSettings.AppTheme;
 
-
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool IsServer = GlobalSettings.IsServer;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool IsManaged = GlobalSettings.IsManaged;
+        [DefaultValue("")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string ServerHost = GlobalSettings.ServerHost;
     }
 }

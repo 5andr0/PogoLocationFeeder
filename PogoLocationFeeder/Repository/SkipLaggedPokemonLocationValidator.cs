@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
 
         public static List<SniperInfo> FilterNonAvailableAndUpdateMissingPokemonId(List<SniperInfo> sniperInfos)
         {
-            if (!GlobalSettings.VerifyOnSkiplagged)
+            if (!GlobalSettings.VerifyOnSkiplagged || GlobalSettings.IsManaged)
             {
                 return sniperInfos;
             }

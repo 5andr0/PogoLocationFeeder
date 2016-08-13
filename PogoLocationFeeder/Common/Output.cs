@@ -22,7 +22,7 @@ namespace PogoLocationFeeder.Common
 {
     public interface IOutput
     {
-        void PrintPokemon(SniperInfo info, ChannelInfo channelInfo);
+        void PrintPokemon(SniperInfo info);
         void SetStatus(string message);
         void RemoveListExtras();
     }

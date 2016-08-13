@@ -33,6 +33,8 @@ namespace PogoLocationFeeder.Helper
         public PokemonMove Move2 { get; set; }
         public double IV { get; set; }
         public bool Verified { get; set; } = false;
+        public ChannelInfo ChannelInfo { get; set; }
+        public DateTime ReceivedTimeStamp { get; set; } = DateTime.Now;
 
         public override string ToString()
         {

@@ -65,11 +65,6 @@ namespace PogoLocationFeeder.Repository
             return list;
         }
 
-        public string GetChannel()
-        {
-            return Channel;
-        }
-
         private static List<SniperInfo> FindSubSetOfPokemon(List<PokemonId> pokemomnIds, TrackemonSession session)
         {
             var pokemonTypeIds = BuildPokemonTypeIds(pokemomnIds);
@@ -117,7 +112,7 @@ namespace PogoLocationFeeder.Repository
 
             sniperInfo.Latitude = result.latitude;
             sniperInfo.Longitude = result.longitude;
-
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
 
             sniperInfo.ExpirationTimestamp = DateTime.Now.AddTicks(result.expiration);
             return sniperInfo;

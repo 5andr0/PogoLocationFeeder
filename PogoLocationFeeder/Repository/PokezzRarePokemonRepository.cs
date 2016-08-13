@@ -78,12 +78,6 @@ namespace PogoLocationFeeder.Repository
             return newSniperInfos;
         }
 
-        public string GetChannel()
-        {
-            return Channel;
-        }
-
-
         private static List<SniperInfo> Parse(string reader)
         {
             var lines = reader.Split('~');
@@ -126,6 +120,7 @@ namespace PogoLocationFeeder.Repository
                     }
                     sniperInfo.ExpirationTimestamp = untilTime;
                 }
+                sniperInfo.ChannelInfo = new ChannelInfo {server = Channel};
                 return sniperInfo;
             }
             return null;

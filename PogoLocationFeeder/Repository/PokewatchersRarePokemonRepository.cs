@@ -64,11 +64,6 @@ namespace PogoLocationFeeder.Repository
             }
         }
 
-        public string GetChannel()
-        {
-            return Channel;
-        }
-
         private List<SniperInfo> GetJsonList(string reader)
         {
             var results = JsonConvert.DeserializeObject<List<PokewatchersResult>>(reader, new JsonSerializerSettingsCultureInvariant());
@@ -99,6 +94,8 @@ namespace PogoLocationFeeder.Repository
 
             var untilTime = DateTime.Now.AddTicks(result.until);
             sniperInfo.ExpirationTimestamp = untilTime;
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
+
             return sniperInfo;
         }
     }

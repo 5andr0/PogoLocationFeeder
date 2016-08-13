@@ -35,7 +35,6 @@ namespace PogoLocationFeeder.Writers
     {
         private readonly List<TcpClient> _arrSocket = new List<TcpClient>();
         public TcpListener Listener;
-        private readonly MessageCache _messageCache = new MessageCache();
 
         public void StartNet(int port)
         {
@@ -110,22 +109,19 @@ namespace PogoLocationFeeder.Writers
             return remoteIpEndPoint?.ToString();
         }
 
-        public async Task FeedToClients(List<SniperInfo> snipeList, ChannelInfo channelInfo)
+        public async Task FeedToClients(List<SniperInfo> sniperInfos)
         {
+
+
             // Remove any clients that have disconnected
             if (GlobalSettings.ThreadPause) return;
             _arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(snipeList);
-            var verifiedUnsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
-            var sortedMessages = verifiedUnsentMessages.OrderBy(m => m.ExpirationTimestamp).ToList();
-            foreach (var target in sortedMessages)
+            foreach (var target in sniperInfos)
             {
-                if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString()) && GlobalSettings.UseFilter) {
-                    Log.Info($"Ignoring {target.Id}, it's not in Filterlist");
-                    continue;
-                }
 
-                foreach (var socket in _arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+
+                foreach (var socket in _arrSocket)
+                    // Repeat for each connected client (socket held in a dynamic array)
                 {
                     try
                     {
@@ -142,10 +138,10 @@ namespace PogoLocationFeeder.Writers
                 }
                 // debug output
                 if (GlobalSettings.Output != null)
-                    GlobalSettings.Output.PrintPokemon(target, channelInfo);
+                    GlobalSettings.Output.PrintPokemon(target);
 
                 const string timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{channelInfo}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                Log.Pokemon($"{target.ChannelInfo}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
                             + " with " + (!target.IV.Equals(default(double)) ? $"{target.IV}% IV" : "unknown IV")
                             +
                             (target.ExpirationTimestamp != default(DateTime)

@@ -137,6 +137,7 @@ namespace PogoLocationFeeder.Repository
             sniperInfo.Id = pokemonId;
             sniperInfo.Latitude = result.lat;
             sniperInfo.Longitude = result.lon;
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
             return sniperInfo;
         }
     }

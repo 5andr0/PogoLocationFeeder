@@ -15,32 +15,34 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder.Repository;
+using POGOProtos.Enums;
+using System.Collections.Generic;
+using PogoLocationFeeder.Helper;
 
-namespace PogoLocationFeeder.Helper.Helper.Repository.Tests
+namespace PogoLocationFeeder.Server
 {
-    [TestClass]
-    public class TrackemonRarePokemonRepositoryTests
+    public class PokemonFilterParser
     {
-        private readonly IRarePokemonRepository trackemonRarePokemonRepository =
-            new TrackemonRarePokemonRepository();
+        private static readonly int pokemonSize = Enum.GetValues(typeof(PokemonId)).Length;
 
-        [TestMethod]
-        [Ignore]
-        public void FindAll()
+        public static List<PokemonId> ParseBinary(string binairy)
         {
-            var sniperInfos = trackemonRarePokemonRepository.FindAll();
-            Assert.IsNotNull(sniperInfos);
-            Assert.IsTrue(sniperInfos.Any());
-            foreach (var sniperInfo in sniperInfos)
+            if (binairy.Length != pokemonSize)
             {
-                Console.WriteLine(sniperInfo);
+                throw new Exception("Needs to be at least 3 times as big");
             }
-        }
+            List<PokemonId> pokemonId = new List<PokemonId>();
+            var bins = binairy.ToCharArray();
 
-   }
+            for (int i = 0; i < pokemonSize; i++)
+            {
+                if (bins[i] =='1')
+                {
+                    pokemonId.Add(PokemonParser.ParseById(i));
+                }
+            }
+            return pokemonId;
+        }
+    }
 }
