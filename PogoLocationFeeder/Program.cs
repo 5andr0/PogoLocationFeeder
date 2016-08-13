@@ -94,6 +94,7 @@ namespace PogoLocationFeeder
             _channelParser.LoadChannelSettings();
 
             if (settings == null) return;
+            GlobalSettings.Output?.SetStatus("Connecting...");
 
             VersionCheckState.Execute(new CancellationToken());
             if (GlobalSettings.IsServer)

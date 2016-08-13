@@ -43,6 +43,7 @@ namespace PogoLocationFeeder.Server
         private readonly MemoryCache _memoryCache;
         private List<PokemonId> pokemonsToFilter;
         public event EventHandler<SniperInfo> _receivedViaClients;
+        private int clientsConnected = 0;
 
         public PogoServer()
         {
@@ -77,14 +78,15 @@ namespace PogoLocationFeeder.Server
                 }
             }
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:" + JsonConvert.SerializeObject(sniperInfoToSend));
-            Log.Info("Session started");
+            clientsConnected++;
+            Log.Info($"[{clientsConnected}] Session started");
 
         }
 
         private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
         {
-           Log.Info("Session closed: " + closeReason);
-
+            clientsConnected--;
+           Log.Info($"[{clientsConnected}] Session closed: " + closeReason);
         }
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
@@ -185,6 +187,10 @@ namespace PogoLocationFeeder.Server
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
         {
+            if (sniperInfo.ExpirationTimestamp == default(DateTime))
+            {
+                sniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(5);
+            }
             EventHandler<SniperInfo> handler = _receivedViaClients;
             if (handler != null)
             {
