@@ -30,7 +30,7 @@ namespace PogoLocationFeederTests.Tests
         [TestMethod]
         public void FindUnSentMessagesTest()
         {
-            var messageCache = new MessageCache();
+            var messageCache = MessageCache.Instance;
             var sniperInfo = new SniperInfo
             {
                 Latitude = 1,

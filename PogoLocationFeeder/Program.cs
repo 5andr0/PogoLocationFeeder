@@ -44,7 +44,6 @@ namespace PogoLocationFeeder
         private readonly ChannelParser _channelParser = new ChannelParser();
         private readonly PogoServer _server = new PogoServer();
         private DiscordWebReader _discordWebReader;
-        private readonly MessageCache _messageCache = new MessageCache();
         private readonly PogoClient _pogoClient = new PogoClient();
 
         private static void Main(string[] args)
@@ -290,7 +289,7 @@ namespace PogoLocationFeeder
             }
             if (!GlobalSettings.IsServer)
             {
-                sniperInfosToSend = _messageCache.FindUnSentMessages(sniperInfosToSend);
+                sniperInfosToSend = MessageCache.Instance.FindUnSentMessages(sniperInfosToSend);
             }
             sniperInfosToSend = sniperInfosToSend.OrderBy(m => m.ExpirationTimestamp).ToList();
             if (sniperInfosToSend.Any())

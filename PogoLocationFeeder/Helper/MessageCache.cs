@@ -27,7 +27,9 @@ namespace PogoLocationFeeder.Helper
     {
         private const string MessagePrefix = "MessageCache_";
         //private const int minutesToAddInCache = 15;
-
+        public static readonly MessageCache Instance = new MessageCache();
+    
+        private MessageCache() {}
         public List<SniperInfo> FindUnSentMessages(List<SniperInfo> sniperInfos)
         {
             return sniperInfos.Where(sniperInfo => !IsSentAlready(sniperInfo)).ToList();

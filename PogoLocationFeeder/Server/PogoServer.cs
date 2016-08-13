@@ -110,7 +110,7 @@ namespace PogoLocationFeeder.Server
                 {
                     var sniperInfo = (SniperInfo) obj.Value;
                     if (pokemonIds.Contains(sniperInfo.Id) 
-                        && ToEpoch(sniperInfo.ExpirationTimestamp) > epoch 
+                        && ( ToEpoch(sniperInfo.ExpirationTimestamp) > epoch || sniperInfo.ExpirationTimestamp == default(DateTime))
                         && ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived
                         && MatchesChannel(channels, sniperInfo.ChannelInfo))
                     {
@@ -187,10 +187,6 @@ namespace PogoLocationFeeder.Server
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
         {
-            if (sniperInfo.ExpirationTimestamp == default(DateTime))
-            {
-                sniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(5);
-            }
             EventHandler<SniperInfo> handler = _receivedViaClients;
             if (handler != null)
             {
