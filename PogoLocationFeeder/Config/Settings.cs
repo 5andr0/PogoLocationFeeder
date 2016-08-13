@@ -51,6 +51,7 @@ namespace PogoLocationFeeder.Config
         public static bool IsServer = true;
         public static bool IsManaged = true;
         public static string ServerHost = "";
+        public static int ServerPort = 49000;
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
@@ -94,6 +95,7 @@ namespace PogoLocationFeeder.Config
                 IsServer = set.IsServer;
                 IsManaged = set.IsManaged;
                 ServerHost = set.ServerHost;
+                ServerPort = set.ServerPort;
             }
             else
             {
@@ -221,11 +223,14 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsServer = GlobalSettings.IsServer;
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsManaged = GlobalSettings.IsManaged;
         [DefaultValue("")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ServerHost = GlobalSettings.ServerHost;
+        [DefaultValue(49000)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int ServerPort = GlobalSettings.ServerPort;
     }
 }

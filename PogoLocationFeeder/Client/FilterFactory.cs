@@ -15,7 +15,7 @@ namespace PogoLocationFeeder.Client
         public static Filter Create(List<DiscordChannels> discordChannels )
         {
             List<PokemonId> pokemons = GlobalSettings.UseFilter
-                ? PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter)
+                ? PokemonParser.ParsePokemons(new List<string>(GlobalSettings.PokekomsToFeedFilter))
                 : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
             var pokemonsBinary = PokemonFilterToBinary.ToBinary(pokemons);
             List<Channel> channelInfos = new List<Channel>();

@@ -46,13 +46,14 @@ namespace PogoLocationFeeder.Client
                 var running = true;
                 while (running)
                 {
+                    var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
                     var cookieMonster = new List<KeyValuePair<string, string>>()
                     {
-                        new KeyValuePair<string, string>("filter", JsonConvert.SerializeObject(FilterFactory.Create(discordChannels))),
+                        new KeyValuePair<string, string>("filter", filter),
                         new KeyValuePair<string, string>("version",  Assembly.GetExecutingAssembly().GetName().Version.ToString())
                     };
                     using (
-                        var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:49000", "basic", null,
+                        var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:{GlobalSettings.ServerPort}", "basic", null,
                             cookieMonster,
                             null, null, WebSocketVersion.Rfc6455))
                     {
@@ -102,6 +103,11 @@ namespace PogoLocationFeeder.Client
                             for (int i = 0; i < 10; i++)
                             {
                                 Thread.Sleep(1000);
+                                if (IsFilterOutDated(filter, discordChannels))
+                                {
+                                    running = false;
+                                    continue;
+                                }
                                 SniperInfo sniperInfo = null;
                                 while (sniperInfosToSend.TryDequeue(out sniperInfo))
                                 {
@@ -126,6 +132,11 @@ namespace PogoLocationFeeder.Client
             }
         }
 
+        private static bool IsFilterOutDated(string filter, List<ChannelParser.DiscordChannels> discordChannels)
+        {
+            var newFilter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
+            return !object.Equals(filter, newFilter);
+        }
         private static long GetEpoch2MinAgo()
         {
             return (long)DateTime.Now.AddMinutes(-2).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
