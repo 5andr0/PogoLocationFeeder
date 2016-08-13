@@ -23,11 +23,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Caching;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using WebSocket4Net;
+using PogoLocationFeeder.Common;
 
 namespace PogoLocationFeeder.Client
 {
@@ -57,11 +59,13 @@ namespace PogoLocationFeeder.Client
                         client.Opened += (s, e) =>
                         {
                             client.Send($"{timeStamp}:I've come to talk with you again");
+                            GlobalSettings.Output.SetStatus($"Connected to server {GlobalSettings.ServerHost}");
                         };
 
                         client.Closed += (s, e) =>
                         {
                             Log.Warn("Connection to server lost");
+                            GlobalSettings.Output.SetStatus($"Connection to server lost {GlobalSettings.ServerHost}");
                             running = false;
                         };
                         client.MessageReceived += (s, e) =>
