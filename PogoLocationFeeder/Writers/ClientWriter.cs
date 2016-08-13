@@ -55,8 +55,6 @@ namespace PogoLocationFeeder.Writers
                 throw e;
             }
 
-            Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
-
             StartAccept();
         }
 

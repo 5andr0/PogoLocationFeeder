@@ -51,8 +51,8 @@ namespace PogoLocationFeeder.GUI.Common
                             new Uri(
                                 $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) sniperInfo.Id}.png",
                                 UriKind.Absolute)),
-                    Server = sniperInfo.ChannelInfo.server,
-                    Channel = sniperInfo.ChannelInfo.channel
+                    Server = sniperInfo.ChannelInfo?.server,
+                    Channel = sniperInfo.ChannelInfo?.channel
                 };
                 info.Icon.Freeze();
                 InsertToList(info);

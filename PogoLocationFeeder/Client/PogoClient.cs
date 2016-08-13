@@ -36,51 +36,71 @@ namespace PogoLocationFeeder.Client
 
         public void Start()
         {
-
-            List<PokemonId> pokemons = GlobalSettings.UseFilter ? PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter) : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
-            var cookieMonster = new List<KeyValuePair<string, string>>()
+            while (true)
             {
-                new KeyValuePair<string, string>("filter", PokemonFilterToBinary.ToBinary(pokemons))
-            };
-            using (var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:49000", "basic", null, cookieMonster, null, null, WebSocketVersion.Rfc6455))
-            {
-                client.Opened += (s, e) =>
+                var running = true;
+                while (running)
                 {
-                    client.Send(@"I've come to talk with you again");
-                };
-
-                long timeStamp = GetEpoch();
-
-                client.MessageReceived += (s, e) =>
-                {
-                    try
+                    List<PokemonId> pokemons = GlobalSettings.UseFilter
+                        ? PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter)
+                        : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
+                    var cookieMonster = new List<KeyValuePair<string, string>>()
                     {
-                        var match = Regex.Match(e.Message, @"^(1?\d+):Hear my words that I might teach you:(.*)$");
-                        if (match.Success)
+                        new KeyValuePair<string, string>("filter", PokemonFilterToBinary.ToBinary(pokemons))
+                    };
+                    using (
+                        var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:49000", "basic", null,
+                            cookieMonster,
+                            null, null, WebSocketVersion.Rfc6455))
+                    {
+                        long timeStamp = GetEpoch();
+
+                        client.Opened += (s, e) =>
                         {
-                            timeStamp = Convert.ToInt64(match.Groups[1].Value);
-                            var sniperInfos = JsonConvert.DeserializeObject<List<SniperInfo>>(match.Groups[2].Value);
-                            OnReceivedViaServer(sniperInfos);
+                            client.Send($"{timeStamp}:I've come to talk with you again");
+                        };
+
+                        client.Closed += (s, e) =>
+                        {
+                            Log.Warn("Connection to server lost");
+                            running = false;
+                        };
+                        client.MessageReceived += (s, e) =>
+                        {
+                            try
+                            {
+                                var match = Regex.Match(e.Message,
+                                    @"^(1?\d+)\:(?:(?:Hear my words that I might teach you)|(?:Hello Darkness my old friend.))\:(2?.*)$");
+                                if (match.Success)
+                                {
+                                    timeStamp = Convert.ToInt64(match.Groups[1].Value);
+                                    var sniperInfos =
+                                        JsonConvert.DeserializeObject<List<SniperInfo>>(match.Groups[2].Value);
+                                    Log.Info($"Received {sniperInfos.Count} pokemon from server");
+                                    OnReceivedViaServer(sniperInfos);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error("Error", ex);
+                            }
+                        };
+                        client.Error += (s, e) =>
+                        {
+                            //Log.Warn($"Client error rec: {e.Exception}");
+
+                        };
+                        client.Open();
+
+                        while (running)
+                        {
+                            Thread.Sleep(10000);
+                            client.Send($"{timeStamp}:I've come to talk with you again");
                         }
                     }
-                    catch (Exception ex)
-                    {
-
-                    }
-                };
-                client.Error += (s, e) =>
-                {
-                    Log.Warn($"Client error rec: {e.Exception}");
-
-                };
-                client.Open();
-
-                while (true)
-                {
-                    client.Send($"{timeStamp}:I've come to talk with you again");
-                    Thread.Sleep(5000);
+                    Log.Info("Reconnecting to stream in 10 seconds");
+                    Thread.Sleep(10000);
                 }
-                client.Close();
             }
 
         }
@@ -96,7 +116,7 @@ namespace PogoLocationFeeder.Client
 
         private static long GetEpoch()
         {
-            return (long)DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+            return (long)DateTime.Now.AddMinutes(-2).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
     }

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -48,13 +49,14 @@ namespace PogoLocationFeeder.Server
             pokemonsToFilter = PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter);
 
         }
-        public async void Start()
+        public void Start()
         {
             var server = new WebSocketServer();
-            server.Setup(GlobalSettings.ServerHost, 49000);
+            server.Setup(49000);
             server.Start();
             server.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
             server.NewSessionConnected += socketServer_NewSessionConnected;
+            server.SessionClosed += socketServer_SessionClosed;
         }
 
         private void socketServer_NewSessionConnected(WebSocketSession session)
@@ -74,14 +76,21 @@ namespace PogoLocationFeeder.Server
                 }
             }
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:" + JsonConvert.SerializeObject(sniperInfoToSend));
+            Log.Info("Session started");
+
+        }
+
+        private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
+        {
+           Log.Info("Session closed: " + closeReason);
 
         }
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
         {
             var pokemonIds = GetFilters(session);
-            var match = Regex.Match(value, @"^(1?\d+):Disturb the sound of silence:(2?.*)$");
-            var matchRequest = Regex.Match(value, @"^(1?\d+):I've come to talk with you again$");
+            var match = Regex.Match(value, @"^(1?\d+)\:(?:Disturb the sound of silence)\:(2?.*)$");
+            var matchRequest = Regex.Match(value, @"^(1?\d+)\:(?:I\'ve come to talk with you again)$");
 
             if (match.Success)
             {
@@ -91,14 +100,16 @@ namespace PogoLocationFeeder.Server
             {
                 List<SniperInfo> sniperInfoToSend = new List<SniperInfo>();
                 var epoch = GetEpoch();
+                var lastReceived = Convert.ToInt64(matchRequest.Groups[1].Value);
                 foreach (var obj in _memoryCache)
                 {
                     var sniperInfo = (SniperInfo) obj.Value;
-                    if (pokemonIds.Contains(sniperInfo.Id) && ToEpoch(sniperInfo.ExpirationTimestamp) > epoch)
+                    if (pokemonIds.Contains(sniperInfo.Id) && ToEpoch(sniperInfo.ExpirationTimestamp) > epoch && ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
                     {
                         sniperInfoToSend.Add(sniperInfo);
                     }
                 }
+
                 session.Send($"{GetEpoch()}:Hear my words that I might teach you:" + JsonConvert.SerializeObject(sniperInfoToSend));
             }
             else
@@ -128,7 +139,16 @@ namespace PogoLocationFeeder.Server
                 if (!_memoryCache.Contains(unqiueString))
                 {
                     _memoryCache.Add(unqiueString, sniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
+                    const string timeFormat = "HH:mm:ss";
+                    Log.Pokemon($"{sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                            + " with " + (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
+                            +
+                            (sniperInfo.ExpirationTimestamp != default(DateTime)
+                                ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
+                                : ""));
                 }
+
+
             }
         }
 

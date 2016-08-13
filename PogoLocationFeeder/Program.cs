@@ -99,12 +99,19 @@ namespace PogoLocationFeeder
             VersionCheckState.Execute(new CancellationToken());
             if (GlobalSettings.IsServer)
             {
-                _server.Start();
-            } else if (GlobalSettings.IsManaged)
+                Task.Run(() =>
+                {
+                   _server.Start();
+                });
+            } else 
             {
-                _pogoClient.Start();
-            } else
-            {
+                if (GlobalSettings.IsManaged)
+                {
+                    Task.Run(() =>
+                    {
+                        _pogoClient.Start();
+                    });
+                }
                 _clientWriter.StartNet(GlobalSettings.Port);
                 Log.Info($"Starting with Port: {GlobalSettings.Port}");
             }
@@ -117,9 +124,17 @@ namespace PogoLocationFeeder
         {
             var rarePokemonRepositories = RarePokemonRepositoryFactory.CreateRepositories(settings);
 
-            var repoTasks = rarePokemonRepositories.Select(rarePokemonRepository => StartPollRarePokemonRepository(settings, rarePokemonRepository)).Cast<Task>().ToList();
-
-            var discordTask = TryStartDiscordReader();
+            List<Task> repoTasks = new List<Task>();
+            Task discordTask = null;
+            if (!GlobalSettings.IsManaged)
+            {
+                discordTask = TryStartDiscordReader();
+                repoTasks =
+                    rarePokemonRepositories.Select(
+                        rarePokemonRepository => StartPollRarePokemonRepository(settings, rarePokemonRepository))
+                        .Cast<Task>()
+                        .ToList();
+            }
 
             while (true)
             {
@@ -131,32 +146,37 @@ namespace PogoLocationFeeder
                         _clientWriter.StartNet(GlobalSettings.Port);
                     }
                 }
-                try
+                if (!GlobalSettings.IsManaged)
                 {
-                    // Manage repo tasks
-                    for (var i = 0; i < repoTasks.Count; ++i)
+                    try
                     {
-                        var t = repoTasks[i];
-                        if (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun && t.Status != TaskStatus.WaitingForActivation)
+                        // Manage repo tasks
+                        for (var i = 0; i < repoTasks.Count; ++i)
                         {
-                            // Replace broken tasks with a new one
-                            repoTasks[i].Dispose();
-                            repoTasks[i] = StartPollRarePokemonRepository(settings, rarePokemonRepositories[i]);
+                            var t = repoTasks[i];
+                            if (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun &&
+                                t.Status != TaskStatus.WaitingForActivation)
+                            {
+                                // Replace broken tasks with a new one
+                                repoTasks[i].Dispose();
+                                repoTasks[i] = StartPollRarePokemonRepository(settings, rarePokemonRepositories[i]);
+                            }
+                        }
+
+                        // Manage Discord task
+                        if (discordTask.Status != TaskStatus.Running && discordTask.Status != TaskStatus.WaitingToRun &&
+                            discordTask.Status != TaskStatus.WaitingForActivation)
+                        {
+                            // Replace broken task with a new one
+                            discordTask.Dispose();
+                            discordTask = TryStartDiscordReader();
                         }
                     }
-
-                    // Manage Discord task
-                    if (discordTask.Status != TaskStatus.Running && discordTask.Status != TaskStatus.WaitingToRun && discordTask.Status != TaskStatus.WaitingForActivation)
+                    catch (Exception e)
                     {
-                        // Replace broken task with a new one
-                        discordTask.Dispose();
-                        discordTask = TryStartDiscordReader();
+                        Log.Error($"Exception in thread manager: {e}");
+                        throw;
                     }
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Exception in thread manager: {e}");
-                    throw;
                 }
                 Thread.Sleep(20 * 1000);
             }
@@ -260,19 +280,29 @@ namespace PogoLocationFeeder
 
         private async void WriteOutListeners(List<SniperInfo> sniperInfos)
         {
-            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfos);
-            var verifiedUnsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
-            var sortedMessages = verifiedUnsentMessages.OrderBy(m => m.ExpirationTimestamp).ToList();
-            sortedMessages = sortedMessages.Where(
-                i => !GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString()) && GlobalSettings.UseFilter)
-                .ToList();
-            if (GlobalSettings.IsServer)
+            List<SniperInfo> sniperInfosToSend = sniperInfos;
+            if (!GlobalSettings.IsManaged)
             {
-                _server.QueueAll(sortedMessages);
+                sniperInfosToSend =
+                    SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
+                sniperInfosToSend = sniperInfosToSend.Where(
+                    i =>!GlobalSettings.UseFilter || GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString())).ToList();
             }
-            else
+            if (!GlobalSettings.IsServer)
             {
-                await _clientWriter.FeedToClients(sortedMessages);
+                sniperInfosToSend = _messageCache.FindUnSentMessages(sniperInfosToSend);
+            }
+            sniperInfosToSend = sniperInfosToSend.OrderBy(m => m.ExpirationTimestamp).ToList();
+            if (sniperInfosToSend.Any())
+            {
+                if (GlobalSettings.IsServer)
+                {
+                    _server.QueueAll(sniperInfosToSend);
+                }
+                else
+                {
+                    await _clientWriter.FeedToClients(sniperInfosToSend);
+                }
             }
         }
 

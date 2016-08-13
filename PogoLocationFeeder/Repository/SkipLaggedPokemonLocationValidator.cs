@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
 
         public static List<SniperInfo> FilterNonAvailableAndUpdateMissingPokemonId(List<SniperInfo> sniperInfos)
         {
-            if (!GlobalSettings.VerifyOnSkiplagged || GlobalSettings.IsManaged)
+            if (!GlobalSettings.VerifyOnSkiplagged)
             {
                 return sniperInfos;
             }
@@ -70,6 +70,7 @@ namespace PogoLocationFeeder.Repository
                                 newSniperInfo.Latitude = pokemonLocation.latitude;
                                 newSniperInfo.Longitude = pokemonLocation.longitude;
                                 newSniperInfo.Verified = true;
+                                newSniperInfo.ChannelInfo = sniperInfo.ChannelInfo;
                                 newSniperInfo.ExpirationTimestamp = FromUnixTime(pokemonLocation.expires);
                                 newSniperInfos.Add(newSniperInfo);
                             }
