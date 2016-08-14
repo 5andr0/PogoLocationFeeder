@@ -111,11 +111,11 @@ namespace PogoLocationFeeder
                     {
                         _pogoClient.Start(_channelParser.Settings);
                     });
+                    StartBotListeners();
                 }
                 ClientWriter.Instance.StartNet(GlobalSettings.Port);
                 Log.Info($"Starting with Port: {GlobalSettings.Port}");
 
-                StartBotListeners();
             }
             WebSourcesManager(settings);
 

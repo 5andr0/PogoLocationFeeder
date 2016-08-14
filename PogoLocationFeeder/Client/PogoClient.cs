@@ -111,6 +111,7 @@ namespace PogoLocationFeeder.Client
                                 SniperInfo sniperInfo = null;
                                 while (sniperInfosToSend.TryDequeue(out sniperInfo))
                                 {
+                                    Log.Info($"Uploading bot pokemon: {sniperInfo}");
                                     client.Send($"{GetEpochNow()}:Disturb the sound of silence:" + JsonConvert.SerializeObject(sniperInfo));
                                 }
                             }
