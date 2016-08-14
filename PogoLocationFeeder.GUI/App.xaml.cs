@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.GUI
         {
             if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
             {
-                MessageBox.Show(AppDomain.CurrentDomain.FriendlyName + " is already running. Application will now close.", "Application running!", MessageBoxButton.OK, MessageBoxImage.Stop);
+                MessageBox.Show(AppDomain.CurrentDomain.FriendlyName + " is already running. \n\nApplication will now close to prevent accidental usage of multiple socket.", "Application running!", MessageBoxButton.OK, MessageBoxImage.Stop);
                 Application.Current.Shutdown();
             }
             else
