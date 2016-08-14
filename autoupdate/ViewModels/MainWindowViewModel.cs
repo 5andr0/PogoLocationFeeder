@@ -59,6 +59,10 @@ namespace autoupdate.ViewModels {
         public void Start(string name, string link) {
             if(!Directory.Exists("temp"))
                 Directory.CreateDirectory("temp");
+
+            if(!Directory.Exists("Config")) {
+                Directory.CreateDirectory("Config");
+            }
             var client = new WebClient();
             var ur = new Uri(link);
             client.DownloadFileCompleted += WebClientDownloadCompleted;
@@ -97,7 +101,7 @@ namespace autoupdate.ViewModels {
                         if (entry.FullName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || entry.Name.EndsWith(".json")) {
                             var file = entry.Name;
                             if (entry.Name.EndsWith(".json")) {
-                                file = $"Config\\default.{entry.Name}";
+                                file = File.Exists($"Config\\{entry.Name}") ? $"Config\\default.{entry.Name}" : $"Config\\{entry.Name}";
                             }
                             if(File.Exists(file))
                                 File.Delete(file);
