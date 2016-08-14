@@ -68,6 +68,7 @@ namespace PogoLocationFeeder.Server
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
         {
             var match = Regex.Match(value, @"^(1?\d+)\:(?:Disturb the sound of silence)\:(2?.*)$");
+            var matchRequest = Regex.Match(value, @"^(1?\d+)\:(?:I\'ve come to talk with you again\:)(2?.*)$");
 
             if (match.Success)
             {
@@ -75,6 +76,7 @@ namespace PogoLocationFeeder.Server
                 OnReceivedViaClients(sniperInfo);
             } else if (matchRequest.Success)
             {
+                Filter filter = JsonConvert.DeserializeObject<Filter>(matchRequest.Groups[2].Value);
                 var pokemonIds = PokemonFilterParser.ParseBinary(filter.pokemon);
                 var channels = filter.channels;
                 var verifiedOnly = filter.verifiedOnly;
