@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Caching;
 
@@ -52,7 +53,6 @@ namespace PogoLocationFeeder.Helper
 
         private static string GetCoordinatesString(SniperInfo sniperInfo)
         {
-            return MessagePrefix + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
         }
     }
 }

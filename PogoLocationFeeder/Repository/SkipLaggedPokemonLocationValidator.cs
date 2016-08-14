@@ -72,8 +72,6 @@ namespace PogoLocationFeeder.Repository
                                     newSniperInfo.IV = sniperInfo.IV;
                                 }
                                 newSniperInfo.Id = PokemonParser.ParseById(pokemonLocation.pokemon_id);
-                                newSniperInfo.Latitude = pokemonLocation.latitude;
-                                newSniperInfo.Longitude = pokemonLocation.longitude;
                                 newSniperInfo.Verified = true;
                                 newSniperInfo.ChannelInfo = sniperInfo.ChannelInfo;
                                 newSniperInfo.ExpirationTimestamp = FromUnixTime(pokemonLocation.expires);
@@ -173,7 +171,6 @@ namespace PogoLocationFeeder.Repository
 
             private static string GetCoordinatesString(SniperInfo sniperInfo)
             {
-                return MessagePrefix + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
             }
         }
 

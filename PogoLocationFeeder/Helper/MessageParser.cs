@@ -28,28 +28,22 @@ namespace PogoLocationFeeder.Helper
         public static List<SniperInfo> ParseMessage(string message)
         {
             var snipeList = new List<SniperInfo>();
-            //message = Regex.Replace(message, @"\s+", " ");
-            var lines = message.Split('\r', '\n');
+            message = Regex.Replace(message, "\n|\r", " ");
 
-            foreach (var input in lines)
+            var sniperInfo = new SniperInfo();
+            var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(message);
+            if (geoCoordinates == null)
             {
-                var sniperInfo = new SniperInfo();
-                var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(input);
-                if (geoCoordinates == null)
-                {
-                    Log.Debug($"Can't get coords from line: {input}");
-                    continue;
-                }
-                sniperInfo.Latitude = geoCoordinates.Latitude;
-                sniperInfo.Longitude = geoCoordinates.Longitude;
-                var iv = IVParser.ParseIV(input);
-                sniperInfo.IV = iv;
-                var timeStamp = ParseTimestamp(input);
-                var pokemon = PokemonParser.ParsePokemon(input);
-                sniperInfo.Id = pokemon;
-                sniperInfo.ExpirationTimestamp = timeStamp;
-                snipeList.Add(sniperInfo);
+                Log.Debug($"Can't get coords from line: {message}");
+                return snipeList;
             }
+            var iv = IVParser.ParseIV(message);
+            sniperInfo.IV = iv;
+            var timeStamp = ParseTimestamp(message);
+            var pokemon = PokemonParser.ParsePokemon(message);
+            sniperInfo.Id = pokemon;
+            sniperInfo.ExpirationTimestamp = timeStamp;
+            snipeList.Add(sniperInfo);
 
             return snipeList;
         }

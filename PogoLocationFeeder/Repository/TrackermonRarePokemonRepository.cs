@@ -110,8 +110,6 @@ namespace PogoLocationFeeder.Repository
             var pokemonId = PokemonParser.ParseById(result.id);
             sniperInfo.Id = pokemonId;
 
-            sniperInfo.Latitude = result.latitude;
-            sniperInfo.Longitude = result.longitude;
             sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
 
             sniperInfo.ExpirationTimestamp = DateTime.Now.AddTicks(result.expiration);

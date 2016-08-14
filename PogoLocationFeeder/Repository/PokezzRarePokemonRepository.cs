@@ -106,8 +106,6 @@ namespace PogoLocationFeeder.Repository
                 var lat = Convert.ToDouble(match.Groups["lat"].Value, CultureInfo.InvariantCulture);
                 var lon = Convert.ToDouble(match.Groups["lon"].Value, CultureInfo.InvariantCulture);
 
-                sniperInfo.Latitude = lat;
-                sniperInfo.Longitude = lon;
 
                 var expires = Convert.ToInt64(match.Groups["expires"].Value);
                 if (expires != default(long))

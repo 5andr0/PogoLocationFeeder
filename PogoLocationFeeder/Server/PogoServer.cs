@@ -164,7 +164,7 @@ namespace PogoLocationFeeder.Server
                 if (!_memoryCache.Contains(unqiueString))
                 {
                     _memoryCache.Add(unqiueString, sniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
-                    Log.Pokemon($"{sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                    Log.Pokemon($"{sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString("N6",CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
                                 + " with " +
                                 (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
                                 +
@@ -175,18 +175,26 @@ namespace PogoLocationFeeder.Server
                 else if (sniperInfo.Verified)
                 {
                     SniperInfo oldSniperInfo = (SniperInfo) _memoryCache.Get(unqiueString);
-                    oldSniperInfo.IV = sniperInfo.IV;
-                    oldSniperInfo.ExpirationTimestamp = sniperInfo.ExpirationTimestamp;
-                    _memoryCache.Remove(unqiueString);
-                    _memoryCache.Add(unqiueString, oldSniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
-                    Log.Pokemon($"Updated: {oldSniperInfo.ChannelInfo}: {oldSniperInfo.Id} at {oldSniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{oldSniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
-                        + " with " +
-                        (!oldSniperInfo.IV.Equals(default(double)) ? $"{oldSniperInfo.IV}% IV" : "unknown IV")
-                        +
-                        (oldSniperInfo.ExpirationTimestamp != default(DateTime)
-                            ? $" until {oldSniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                            : ""));
-                   }
+                    if (!oldSniperInfo.Verified)
+                    {
+                        if(PokemonId.Missingno.Equals(oldSniperInfo.Id))
+                        {
+                            oldSniperInfo.Id = sniperInfo.Id;
+                        }
+                        oldSniperInfo.IV = sniperInfo.IV;
+                        _memoryCache.Remove(unqiueString);
+                        _memoryCache.Add(unqiueString, oldSniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
+                        Log.Pokemon($"Updated: {oldSniperInfo.ChannelInfo}: {oldSniperInfo.Id} at {oldSniperInfo.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{oldSniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
+                                    + " with " +
+                                    (!oldSniperInfo.IV.Equals(default(double))
+                                        ? $"{oldSniperInfo.IV}% IV"
+                                        : "unknown IV")
+                                    +
+                                    (oldSniperInfo.ExpirationTimestamp != default(DateTime)
+                                        ? $" until {oldSniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
+                                        : ""));
+                    }
+                }
             }
         }
 
@@ -197,7 +205,6 @@ namespace PogoLocationFeeder.Server
 
         private static string GetUniqueId(SniperInfo sniperInfo)
         {
-            return sniperInfo.Latitude + ", " + sniperInfo.Longitude;
         }
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)

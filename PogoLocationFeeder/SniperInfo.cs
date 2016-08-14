@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Globalization;
 using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Helper
@@ -39,8 +40,8 @@ namespace PogoLocationFeeder.Helper
         public override string ToString()
         {
             return "SniperInfo: id: " + Id
-                   + ", Latitude: " + Latitude
-                   + ", Longitude: " + Longitude
+                   + ", Latitude: " + Latitude.ToString("N6", CultureInfo.InvariantCulture)
+                   + ", Longitude: " + Longitude.ToString("N6", CultureInfo.InvariantCulture)
                    + (IV != default(double) ? ", IV: " + IV + "%" : "")
                    + (ExpirationTimestamp != default(DateTime) ? ", expiration: " + ExpirationTimestamp : "");
         }

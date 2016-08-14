@@ -140,7 +140,7 @@ namespace PogoLocationFeeder.Writers
                     GlobalSettings.Output.PrintPokemon(target);
 
                 const string timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{target.ChannelInfo}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                Log.Pokemon($"{target.ChannelInfo}: {target.Id} at {target.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{target.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
                             + " with " + (!target.IV.Equals(default(double)) ? $"{target.IV}% IV" : "unknown IV")
                             +
                             (target.ExpirationTimestamp != default(DateTime)
