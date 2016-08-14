@@ -21,16 +21,17 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Caching;
+using PogoLocationFeeder.Server;
 
 namespace PogoLocationFeeder.Helper
 {
     public class MessageCache
     {
-        private const string MessagePrefix = "MessageCache_";
-        //private const int minutesToAddInCache = 15;
         public static readonly MessageCache Instance = new MessageCache();
-    
+        public static readonly SniperInfoRepository _clientRepository = new SniperInfoRepository();
+
         private MessageCache() {}
+
         public List<SniperInfo> FindUnSentMessages(List<SniperInfo> sniperInfos)
         {
             return sniperInfos.Where(sniperInfo => !IsSentAlready(sniperInfo)).ToList();
@@ -38,22 +39,19 @@ namespace PogoLocationFeeder.Helper
 
         private static bool IsSentAlready(SniperInfo sniperInfo)
         {
-            var coordinates = GetCoordinatesString(sniperInfo);
-            if (MemoryCache.Default.Contains(coordinates))
+            var oldSniperInfo = _clientRepository.Find(sniperInfo);
+            if (oldSniperInfo != null)
             {
                 Log.Trace($"Skipping duplicate {sniperInfo}");
                 return true;
             }
-            var expirationDate = sniperInfo.ExpirationTimestamp != default(DateTime)
-                ? sniperInfo.ExpirationTimestamp
-                : DateTime.Now.AddMinutes(15);
-            MemoryCache.Default.Add(coordinates, sniperInfo, new DateTimeOffset(expirationDate));
+            _clientRepository.Increase(sniperInfo);
             return false;
         }
 
-        private static string GetCoordinatesString(SniperInfo sniperInfo)
+        internal void Add(SniperInfo sniperInfo)
         {
-            return MessagePrefix + sniperInfo.Latitude.ToString("N5", CultureInfo.InvariantCulture) + ", " + sniperInfo.Longitude.ToString("N5", CultureInfo.InvariantCulture);
+            _clientRepository.Increase(sniperInfo);
         }
     }
 }

@@ -37,6 +37,15 @@ namespace PogoLocationFeeder.Helper
         public ChannelInfo ChannelInfo { get; set; }
         public DateTime ReceivedTimeStamp { get; set; } = DateTime.Now;
 
+
+        public override int GetHashCode()
+        {
+            var hash = 13;
+            hash = (hash * 7) + Math.Round(Latitude,5).GetHashCode();
+            hash = (hash * 7) + Math.Round(Longitude, 5).GetHashCode();
+            return hash;
+        }
+
         public override string ToString()
         {
             return "SniperInfo: id: " + Id

@@ -74,8 +74,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Api\PogoLocationFeederListenerTests.cs" />
+    <Compile Include="Repository\SkipLaggedPokemonLocationValidatorTests.cs" />
     <Compile Include="Server\ServerTests.cs" />
-    <Compile Include="Tests\PokemobotWebsocket.cs" />
+    <Compile Include="Server\SniperInfoRepositoryTests.cs" />
     <Compile Include="Tests\PokewatchersRarePokemonRepositoryTests.cs" />
     <Compile Include="Tests\ChannelParserTests.cs" />
     <Compile Include="Tests\GeoCoordinatesParserTest.cs" />

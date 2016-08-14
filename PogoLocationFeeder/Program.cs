@@ -46,7 +46,6 @@ namespace PogoLocationFeeder
         private readonly PogoServer _server = new PogoServer();
         private DiscordWebReader _discordWebReader;
         private readonly PogoClient _pogoClient = new PogoClient();
-
         private static void Main(string[] args)
         {
             System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
@@ -303,7 +302,7 @@ namespace PogoLocationFeeder
             if (!GlobalSettings.IsManaged)
             {
                 sniperInfosToSend =
-                    SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
+                    SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
                 sniperInfosToSend = sniperInfosToSend.Where(
                     i =>!GlobalSettings.UseFilter || GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString())).ToList();
             }

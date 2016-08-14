@@ -184,6 +184,7 @@
     <Compile Include="Repository\SkipLaggedPokemonLocationValidator.cs" />
     <Compile Include="Server\PokemonFilterParser.cs" />
     <Compile Include="Server\PogoServer.cs" />
+    <Compile Include="Server\SniperInfoRepository.cs" />
     <Compile Include="SniperInfo.cs" />
     <Compile Include="Writers\ClientWriter.cs" />
   </ItemGroup>

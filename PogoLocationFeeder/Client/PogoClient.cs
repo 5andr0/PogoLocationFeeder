@@ -31,6 +31,7 @@ using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using WebSocket4Net;
 using PogoLocationFeeder.Common;
+using PogoLocationFeeder.Server;
 
 namespace PogoLocationFeeder.Client
 {

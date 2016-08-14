@@ -20,16 +20,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Runtime.Caching;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Client;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
@@ -44,6 +39,8 @@ namespace PogoLocationFeeder.Server
         private List<PokemonId> pokemonsToFilter;
         public event EventHandler<SniperInfo> _receivedViaClients;
         private WebSocketServer webSocketServer;
+        public static readonly SniperInfoRepository _serverRepository = new SniperInfoRepository();
+        const string timeFormat = "HH:mm:ss";
 
         public PogoServer()
         {
@@ -102,21 +99,11 @@ namespace PogoLocationFeeder.Server
                 OnReceivedViaClients(sniperInfo);
             } else if (matchRequest.Success)
             {
-                List<SniperInfo> sniperInfoToSend = new List<SniperInfo>();
-                var epoch = GetEpoch();
                 var lastReceived = Convert.ToInt64(matchRequest.Groups[1].Value);
-                foreach (var obj in _memoryCache)
-                {
-                    var sniperInfo = (SniperInfo) obj.Value;
-                    if (pokemonIds.Contains(sniperInfo.Id) 
-                        && ((verifiedOnly && sniperInfo.Verified) || !verifiedOnly)
-                        && ( ToEpoch(sniperInfo.ExpirationTimestamp) > epoch || sniperInfo.ExpirationTimestamp == default(DateTime))
-                        && ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived
-                        && MatchesChannel(channels, sniperInfo.ChannelInfo))
-                    {
-                        sniperInfoToSend.Add(sniperInfo);
-                    }
-                }
+                var sniperInfos = _serverRepository.FindAllNew(lastReceived);
+                var sniperInfoToSend = sniperInfos.Where(s => pokemonIds.Contains(s.Id) && ((verifiedOnly && s.Verified) || !verifiedOnly)
+                                       && MatchesChannel(channels, s.ChannelInfo)).ToList();
+
 
                 session.Send($"{GetEpoch()}:Hear my words that I might teach you:" + JsonConvert.SerializeObject(sniperInfoToSend));
             }
@@ -139,10 +126,6 @@ namespace PogoLocationFeeder.Server
             }
             return false;
         }
-        private static long ToEpoch(DateTime datetime)
-        {
-            return (long)datetime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-        }
 
         private static Filter GetFilter(WebSocketSession session)
         {
@@ -158,55 +141,45 @@ namespace PogoLocationFeeder.Server
         {
             foreach (SniperInfo sniperInfo in sortedMessages)
             {
-                const string timeFormat = "HH:mm:ss";
+                var oldSniperInfo = _serverRepository.Find(sniperInfo);
 
-                var unqiueString = GetUniqueId(sniperInfo);
-                if (!_memoryCache.Contains(unqiueString))
+                if (oldSniperInfo != null && sniperInfo.Verified && !oldSniperInfo.Verified)
                 {
-                    _memoryCache.Add(unqiueString, sniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
-                    Log.Pokemon($"{sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString("N6",CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
-                                + " with " +
-                                (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
-                                +
-                                (sniperInfo.ExpirationTimestamp != default(DateTime)
-                                    ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                                    : ""));
-                }
-                else if (sniperInfo.Verified)
-                {
-                    SniperInfo oldSniperInfo = (SniperInfo) _memoryCache.Get(unqiueString);
-                    if (!oldSniperInfo.Verified)
+                    if (PokemonId.Missingno.Equals(oldSniperInfo.Id))
                     {
-                        if(PokemonId.Missingno.Equals(oldSniperInfo.Id))
-                        {
-                            oldSniperInfo.Id = sniperInfo.Id;
-                        }
-                        oldSniperInfo.IV = sniperInfo.IV;
-                        _memoryCache.Remove(unqiueString);
-                        _memoryCache.Add(unqiueString, oldSniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
-                        Log.Pokemon($"Updated: {oldSniperInfo.ChannelInfo}: {oldSniperInfo.Id} at {oldSniperInfo.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{oldSniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
-                                    + " with " +
-                                    (!oldSniperInfo.IV.Equals(default(double))
-                                        ? $"{oldSniperInfo.IV}% IV"
-                                        : "unknown IV")
-                                    +
-                                    (oldSniperInfo.ExpirationTimestamp != default(DateTime)
-                                        ? $" until {oldSniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                                        : ""));
+                        oldSniperInfo.Id = sniperInfo.Id;
                     }
+                    oldSniperInfo.IV = sniperInfo.IV;
+                    UpdatePokemon(oldSniperInfo, false);
+                }
+                else
+                {
+                    UpdatePokemon(sniperInfo, oldSniperInfo == null);
                 }
             }
         }
 
+        private void UpdatePokemon(SniperInfo sniperInfo, bool discovered = true)
+        {
+            if (discovered || sniperInfo.ChannelInfo?.server == Constants.Bot)
+            {
+                var captures = _serverRepository.Increase(sniperInfo);
+                Log.Pokemon($"{(discovered ? "Discovered" : "Captured")}: {sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
+                            + " with " +
+                            (!sniperInfo.IV.Equals(default(double))
+                                ? $"{sniperInfo.IV}% IV"
+                                : "unknown IV")
+                            +
+                            (sniperInfo.ExpirationTimestamp != default(DateTime)
+                                ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
+                                : "") + $", Captures {captures}");
+            }
+        }
         private static long GetEpoch()
         {
             return (long) DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
-        private static string GetUniqueId(SniperInfo sniperInfo)
-        {
-            return sniperInfo.Latitude.ToString("N5", CultureInfo.InvariantCulture) + ", " + sniperInfo.Longitude.ToString("N5", CultureInfo.InvariantCulture);
-        }
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
         {

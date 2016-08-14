@@ -16,10 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using PogoLocationFeeder.Helper;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Common;
@@ -58,15 +56,13 @@ namespace PogoLocationFeeder.Input
 
         public bool BotCapture(SniperInfo sniperInfo)
         {
-            var sniperInfos = new List<SniperInfo>() {sniperInfo};
             if (GlobalSettings.IsManaged)
             {
-                foreach (var unsent in sniperInfos)
-                {
-                    PogoClient.sniperInfosToSend.Enqueue(unsent);
-                }
+                MessageCache.Instance.Add(sniperInfo);
+                PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
+                return true;
             }
-            return sniperInfos.Any();
+            return false;
         }
     }
 }
