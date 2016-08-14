@@ -36,7 +36,7 @@ namespace PogoLocationFeeder.Client
                 : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
             var pokemonsBinary = PokemonFilterToBinary.ToBinary(pokemons);
             List<Channel> channelInfos = new List<Channel>();
-            if (discordChannels != null && !discordChannels.Any())
+            if (discordChannels != null && discordChannels.Any())
             {
                 foreach (DiscordChannels discordChannel in discordChannels)
                 {

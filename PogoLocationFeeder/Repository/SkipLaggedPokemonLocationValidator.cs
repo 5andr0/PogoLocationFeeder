@@ -47,9 +47,10 @@ namespace PogoLocationFeeder.Repository
             {
                 return sniperInfos;
             }
-            if (_skipLaggedWorking)
+            if (!_skipLaggedWorking)
             {
                 Log.Debug($"Skiplagged is marked as down, not checking {sniperInfos.Count} sniperInfos");
+                return sniperInfos;
             }
             var newSniperInfos = new List<SniperInfo>();
             var filteredSniperInfos = SkipLaggedCache.FindUnSentMessages(sniperInfos);
@@ -61,7 +62,7 @@ namespace PogoLocationFeeder.Repository
                     continue;
                 }
                 var scanResult = ScanLocation(new GeoCoordinates(sniperInfo.Latitude, sniperInfo.Longitude));
-                if (scanResult.Status == "fail" || scanResult.Status == "error")
+                if (scanResult.Status == "fail" || scanResult.Status == "error" || scanResult.pokemons == null || !scanResult.pokemons.Any())
                 {
                     sniperInfo.Verified = false;
                     newSniperInfos.Add(sniperInfo);
