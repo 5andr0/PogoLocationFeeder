@@ -12,7 +12,7 @@
         BorderBrush="{DynamicResource AccentColorBrush}"
         NonActiveBorderBrush="{DynamicResource HighlightBrush}" NonActiveGlowBrush="{DynamicResource AccentColorBrush}"
         BorderThickness="1"
-        d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+        d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}" NonActiveWindowTitleBrush="{DynamicResource HighlightBrush}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
