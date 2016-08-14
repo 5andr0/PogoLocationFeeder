@@ -43,7 +43,7 @@ namespace PogoLocationFeeder.Server
         private readonly MemoryCache _memoryCache;
         private List<PokemonId> pokemonsToFilter;
         public event EventHandler<SniperInfo> _receivedViaClients;
-        private int clientsConnected = 0;
+        private WebSocketServer webSocketServer;
 
         public PogoServer()
         {
@@ -53,12 +53,12 @@ namespace PogoLocationFeeder.Server
         }
         public void Start()
         {
-            var server = new WebSocketServer();
-            server.Setup(49000);
-            server.Start();
-            server.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
-            server.NewSessionConnected += socketServer_NewSessionConnected;
-            server.SessionClosed += socketServer_SessionClosed;
+            var webSocketServer = new WebSocketServer();
+            webSocketServer.Setup(49000);
+            webSocketServer.Start();
+            webSocketServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
+            webSocketServer.NewSessionConnected += socketServer_NewSessionConnected;
+            webSocketServer.SessionClosed += socketServer_SessionClosed;
         }
 
         private void socketServer_NewSessionConnected(WebSocketSession session)
@@ -78,15 +78,13 @@ namespace PogoLocationFeeder.Server
                 }
             }
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:" + JsonConvert.SerializeObject(sniperInfoToSend));
-            clientsConnected++;
-            Log.Info($"[{clientsConnected}] Session started");
+            Log.Info($"[{webSocketServer.SessionCount}] Session started");
 
         }
 
         private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
         {
-            clientsConnected--;
-           Log.Info($"[{clientsConnected}] Session closed: " + closeReason);
+           Log.Info($"[{webSocketServer.SessionCount}] Session closed: " + closeReason);
         }
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
