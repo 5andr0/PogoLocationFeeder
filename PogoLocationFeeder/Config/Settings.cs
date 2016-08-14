@@ -50,7 +50,7 @@ namespace PogoLocationFeeder.Config
         public static string AppTheme = "Dark";
         public static bool IsServer = false;
         public static bool IsManaged = true;
-        public static string ServerHost = "";
+        public static string ServerHost = "pogofeeder.live";
         public static int ServerPort = 49000;
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
@@ -230,7 +230,7 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsManaged = GlobalSettings.IsManaged;
-        [DefaultValue("")]
+        [DefaultValue("pogofeeder.live")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ServerHost = GlobalSettings.ServerHost;
         [DefaultValue(49000)]
