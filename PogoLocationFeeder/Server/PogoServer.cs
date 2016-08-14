@@ -174,14 +174,17 @@ namespace PogoLocationFeeder.Server
                 }
                 else if (sniperInfo.Verified)
                 {
+                    SniperInfo oldSniperInfo = (SniperInfo) _memoryCache.Get(unqiueString);
+                    oldSniperInfo.IV = sniperInfo.IV;
+                    oldSniperInfo.ExpirationTimestamp = sniperInfo.ExpirationTimestamp;
                     _memoryCache.Remove(unqiueString);
-                    _memoryCache.Add(unqiueString, sniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
-                    Log.Pokemon($"Updated: {sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                    _memoryCache.Add(unqiueString, oldSniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
+                    Log.Pokemon($"Updated: {oldSniperInfo.ChannelInfo}: {oldSniperInfo.Id} at {oldSniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{oldSniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
                         + " with " +
-                        (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
+                        (!oldSniperInfo.IV.Equals(default(double)) ? $"{oldSniperInfo.IV}% IV" : "unknown IV")
                         +
-                        (sniperInfo.ExpirationTimestamp != default(DateTime)
-                            ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
+                        (oldSniperInfo.ExpirationTimestamp != default(DateTime)
+                            ? $" until {oldSniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
                             : ""));
                    }
             }
@@ -194,7 +197,7 @@ namespace PogoLocationFeeder.Server
 
         private static string GetUniqueId(SniperInfo sniperInfo)
         {
-            return sniperInfo.Id + ": " + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
+            return sniperInfo.Latitude + ", " + sniperInfo.Longitude;
         }
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
