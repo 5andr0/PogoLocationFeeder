@@ -37,6 +37,8 @@ namespace PogoLocationFeeder.Helper
                 Log.Debug($"Can't get coords from line: {message}");
                 return snipeList;
             }
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
             var iv = IVParser.ParseIV(message);
             sniperInfo.IV = iv;
             var timeStamp = ParseTimestamp(message);

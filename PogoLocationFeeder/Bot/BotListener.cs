@@ -51,12 +51,12 @@ namespace PogoLocationFeeder.Bot
                     client.AllowUnstrustedCertificate = false;
                     client.Opened += (s, e) =>
                     {
-                        Log.Info($"Connected to bot on {port}");
+                        Log.Debug($"Connected to bot on {port}");
                     };
 
                     client.Closed += (s, e) =>
                     {
-                        Log.Info($"Disconnect from bot on {port}");
+                        Log.Debug($"Disconnect from bot on {port}");
                         running = false;
                     };
                     client.MessageReceived += (s, e) =>
@@ -64,7 +64,10 @@ namespace PogoLocationFeeder.Bot
                         if (e.Message.Contains("PokemonCaptureEvent"))
                         {
                             var pokemonCaptureEvent = JsonConvert.DeserializeObject<PokemonCaptureEvent>(e.Message, new JsonSerializerSettingsCultureInvariant());
-                            InputService.Instance.BotCapture(Map(pokemonCaptureEvent));
+                            if (pokemonCaptureEvent.Attempt == 1)
+                            {
+                                InputService.Instance.BotCapture(Map(pokemonCaptureEvent));
+                            }
                         }
                     };
                     client.Error += (s, e) =>
@@ -76,6 +79,8 @@ namespace PogoLocationFeeder.Bot
                     {
                         Thread.Sleep(10000);
                     }
+                    Log.Debug("Waiting 30 seconds to try to reconnect to the bot");
+                    Thread.Sleep(30*1000);
                 }
             }
         }
@@ -86,8 +91,8 @@ namespace PogoLocationFeeder.Bot
             sniperInfo.ChannelInfo = new ChannelInfo() {server = Constants.Bot};
             sniperInfo.IV = pokemonCaptureEvent.Perfection;
             sniperInfo.Id = pokemonCaptureEvent.Id;
-            sniperInfo.Latitude = pokemonCaptureEvent.Latitude;
-            sniperInfo.Longitude = pokemonCaptureEvent.Longitude;
+            sniperInfo.Latitude = Math.Round(pokemonCaptureEvent.Latitude,7);
+            sniperInfo.Longitude = Math.Round(pokemonCaptureEvent.Longitude,7);
             sniperInfo.Verified = true;
             return sniperInfo;
         }

@@ -90,6 +90,8 @@ namespace PogoLocationFeeder.Repository
             {
                 return null;
             }
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
             sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
             sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };

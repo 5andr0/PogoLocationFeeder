@@ -135,6 +135,8 @@ namespace PogoLocationFeeder.Repository
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParsePokemon(result.name);
             sniperInfo.Id = pokemonId;
+            sniperInfo.Latitude = Math.Round(result.lat, 7);
+            sniperInfo.Longitude = Math.Round(result.lon, 7);
             sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
             return sniperInfo;
         }

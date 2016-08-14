@@ -53,6 +53,7 @@ namespace PogoLocationFeeder.Helper
 
         private static string GetCoordinatesString(SniperInfo sniperInfo)
         {
+            return MessagePrefix + sniperInfo.Latitude.ToString("N5", CultureInfo.InvariantCulture) + ", " + sniperInfo.Longitude.ToString("N5", CultureInfo.InvariantCulture);
         }
     }
 }

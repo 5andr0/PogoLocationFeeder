@@ -89,6 +89,8 @@ namespace PogoLocationFeeder.Repository
             {
                 return null;
             }
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
             var untilTime = DateTime.Now.AddTicks(result.until);
             sniperInfo.ExpirationTimestamp = untilTime;

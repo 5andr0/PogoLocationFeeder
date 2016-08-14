@@ -205,6 +205,7 @@ namespace PogoLocationFeeder.Server
 
         private static string GetUniqueId(SniperInfo sniperInfo)
         {
+            return sniperInfo.Latitude.ToString("N5", CultureInfo.InvariantCulture) + ", " + sniperInfo.Longitude.ToString("N5", CultureInfo.InvariantCulture);
         }
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
