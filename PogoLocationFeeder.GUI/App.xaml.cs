@@ -32,21 +32,21 @@ namespace PogoLocationFeeder.GUI
     {
         private void AppStartup(object sender, StartupEventArgs args)
         {
-            if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
-            {
-                MessageBox.Show(AppDomain.CurrentDomain.FriendlyName + " is already running. Application will now close.", "Application running!", MessageBoxButton.OK, MessageBoxImage.Stop);
-                Application.Current.Shutdown();
-            }
-            else
-            {
-                //Waiting for the settings to be loaded
+           //if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
+           //{
+           //    MessageBox.Show(AppDomain.CurrentDomain.FriendlyName + " is already running. Application will now close.", "Application running!", MessageBoxButton.OK, MessageBoxImage.Stop);
+           //    Application.Current.Shutdown();
+           //}
+           //else
+           //{
+           //    //Waiting for the settings to be loaded
                 Thread.Sleep(1000);
                 var mainWindow = new MainWindow
                 {
                     DataContext = new MainWindowViewModel()
                 };
                 mainWindow.Show();
-            }
+           // }
         }
     }
 }

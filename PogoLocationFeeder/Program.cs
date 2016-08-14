@@ -307,6 +307,10 @@ namespace PogoLocationFeeder
                 sniperInfosToSend = sniperInfosToSend.Where(
                     i =>!GlobalSettings.UseFilter || GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString())).ToList();
             }
+            if (GlobalSettings.VerifiedOnly)
+            {
+                sniperInfosToSend = sniperInfosToSend.Where(s => s.Verified).ToList();
+            }
             if (!GlobalSettings.IsServer)
             {
                 sniperInfosToSend = MessageCache.Instance.FindUnSentMessages(sniperInfosToSend);

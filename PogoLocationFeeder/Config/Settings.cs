@@ -57,6 +57,7 @@ namespace PogoLocationFeeder.Config
         public static int ShowLimit = 30;
         public static bool VerifyOnSkiplagged = true;
         public static bool ShareBotCaptures = true;
+        public static bool VerifiedOnly = true;
         public static List<string> PokekomsToFeedFilter;
         public static List<int> BotWebSocketPorts = new List<int>() { 14251 };
 
@@ -100,6 +101,7 @@ namespace PogoLocationFeeder.Config
                 ServerPort = set.ServerPort;
                 ShareBotCaptures = set.ShareBotCaptures;
                 BotWebSocketPorts = set.BotWebSocketPorts;
+                VerifiedOnly = set.VerifiedOnly;
             }
             else
             {
@@ -215,15 +217,12 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokemonGoIVClub = GlobalSettings.UsePokemonGoIVClub;
-
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UseFilter = GlobalSettings.UseFilter;
-
         [DefaultValue("Dark")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string AppTheme = GlobalSettings.AppTheme;
-
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsServer = GlobalSettings.IsServer;
@@ -241,5 +240,9 @@ namespace PogoLocationFeeder.Config
         public bool ShareBotCaptures = GlobalSettings.ShareBotCaptures;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public List<int> BotWebSocketPorts = GlobalSettings.BotWebSocketPorts;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool VerifiedOnly = GlobalSettings.VerifiedOnly;
+
     }
 }

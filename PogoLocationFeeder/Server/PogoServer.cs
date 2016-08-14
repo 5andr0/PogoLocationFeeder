@@ -53,7 +53,7 @@ namespace PogoLocationFeeder.Server
         }
         public void Start()
         {
-            var webSocketServer = new WebSocketServer();
+            webSocketServer = new WebSocketServer();
             webSocketServer.Setup(49000);
             webSocketServer.Start();
             webSocketServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
@@ -92,6 +92,7 @@ namespace PogoLocationFeeder.Server
             var filter = GetFilter(session);
             var pokemonIds = PokemonFilterParser.ParseBinary(filter.pokemon);
             var channels = filter.channels;
+            var verifiedOnly = filter.verifiedOnly;
             var match = Regex.Match(value, @"^(1?\d+)\:(?:Disturb the sound of silence)\:(2?.*)$");
             var matchRequest = Regex.Match(value, @"^(1?\d+)\:(?:I\'ve come to talk with you again)$");
 
@@ -108,6 +109,7 @@ namespace PogoLocationFeeder.Server
                 {
                     var sniperInfo = (SniperInfo) obj.Value;
                     if (pokemonIds.Contains(sniperInfo.Id) 
+                        && ((verifiedOnly && sniperInfo.Verified) || !verifiedOnly)
                         && ( ToEpoch(sniperInfo.ExpirationTimestamp) > epoch || sniperInfo.ExpirationTimestamp == default(DateTime))
                         && ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived
                         && MatchesChannel(channels, sniperInfo.ChannelInfo))
@@ -156,20 +158,32 @@ namespace PogoLocationFeeder.Server
         {
             foreach (SniperInfo sniperInfo in sortedMessages)
             {
-                var unqiueString = GetCoordinatesString(sniperInfo);
+                const string timeFormat = "HH:mm:ss";
+
+                var unqiueString = GetUniqueId(sniperInfo);
                 if (!_memoryCache.Contains(unqiueString))
                 {
                     _memoryCache.Add(unqiueString, sniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
-                    const string timeFormat = "HH:mm:ss";
                     Log.Pokemon($"{sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
-                            + " with " + (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
-                            +
-                            (sniperInfo.ExpirationTimestamp != default(DateTime)
-                                ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                                : ""));
+                                + " with " +
+                                (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
+                                +
+                                (sniperInfo.ExpirationTimestamp != default(DateTime)
+                                    ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
+                                    : ""));
                 }
-
-
+                else if (sniperInfo.Verified)
+                {
+                    _memoryCache.Remove(unqiueString);
+                    _memoryCache.Add(unqiueString, sniperInfo, new DateTimeOffset(DateTime.Now.AddMinutes(10)));
+                    Log.Pokemon($"Updated: {sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                        + " with " +
+                        (!sniperInfo.IV.Equals(default(double)) ? $"{sniperInfo.IV}% IV" : "unknown IV")
+                        +
+                        (sniperInfo.ExpirationTimestamp != default(DateTime)
+                            ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
+                            : ""));
+                   }
             }
         }
 
@@ -178,9 +192,9 @@ namespace PogoLocationFeeder.Server
             return (long) DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
-        private static string GetCoordinatesString(SniperInfo sniperInfo)
+        private static string GetUniqueId(SniperInfo sniperInfo)
         {
-            return sniperInfo.Latitude + ", " + sniperInfo.Longitude;
+            return sniperInfo.Id + ": " + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
         }
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
