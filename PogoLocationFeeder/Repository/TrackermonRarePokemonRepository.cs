@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Repository
     public class TrackemonRarePokemonRepository : IRarePokemonRepository
     {
         private const int Timeout = 20000;
-        private const string Channel = "Trackemon";
+        public const string Channel = "Trackemon";
         private readonly List<PokemonId> _pokemonIdsToFind;
 
         public TrackemonRarePokemonRepository()
@@ -63,11 +63,6 @@ namespace PogoLocationFeeder.Repository
             }
 
             return list;
-        }
-
-        public string GetChannel()
-        {
-            return Channel;
         }
 
         private static List<SniperInfo> FindSubSetOfPokemon(List<PokemonId> pokemomnIds, TrackemonSession session)
@@ -115,9 +110,9 @@ namespace PogoLocationFeeder.Repository
             var pokemonId = PokemonParser.ParseById(result.id);
             sniperInfo.Id = pokemonId;
 
-            sniperInfo.Latitude = result.latitude;
-            sniperInfo.Longitude = result.longitude;
-
+            sniperInfo.Latitude = Math.Round(result.latitude, 7);
+            sniperInfo.Longitude = Math.Round(result.longitude, 7);
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
 
             sniperInfo.ExpirationTimestamp = DateTime.Now.AddTicks(result.expiration);
             return sniperInfo;

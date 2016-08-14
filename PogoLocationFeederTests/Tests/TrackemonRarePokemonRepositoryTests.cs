@@ -42,10 +42,5 @@ namespace PogoLocationFeeder.Helper.Helper.Repository.Tests
             }
         }
 
-        [TestMethod]
-        public void GetChannel()
-        {
-            Assert.AreEqual("Trackemon", trackemonRarePokemonRepository.GetChannel());
-        }
-    }
+   }
 }

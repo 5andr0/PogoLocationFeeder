@@ -39,7 +39,7 @@ namespace PogoLocationFeeder.GUI.Common
             MainWindowViewModel.Instance.SetStatus(message);
         }
 
-        public void PrintPokemon(SniperInfo sniperInfo, ChannelInfo channelInfo)
+        public void PrintPokemon(SniperInfo sniperInfo)
         {
             Application.Current.Dispatcher.BeginInvoke((Action) delegate
             {
@@ -51,8 +51,8 @@ namespace PogoLocationFeeder.GUI.Common
                             new Uri(
                                 $"pack://application:,,,/PogoLocationFeeder.GUI;component/Assets/icons/{(int) sniperInfo.Id}.png",
                                 UriKind.Absolute)),
-                    Server = channelInfo.server,
-                    Channel = channelInfo.channel
+                    Server = sniperInfo.ChannelInfo?.server,
+                    Channel = sniperInfo.ChannelInfo?.channel
                 };
                 info.Icon.Freeze();
                 InsertToList(info);

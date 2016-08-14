@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -25,10 +26,7 @@ namespace PogoLocationFeeder.Helper
 {
     public class ChannelParser
     {
-        public int Port = 16969;
         public List<DiscordChannels> Settings;
-        public bool usePokeSnipers = false;
-
 
         public static ChannelParser Default => new ChannelParser();
 
@@ -63,7 +61,7 @@ namespace PogoLocationFeeder.Helper
             {
                 foreach (var channel in Settings)
                 {
-                    if (string.Compare(channelId, channel.id) == 0)
+                    if (object.Equals(channelId, channel.id))
                     {
                         channelInfo.server = channel.Server;
                         channelInfo.channel = channel.Name;

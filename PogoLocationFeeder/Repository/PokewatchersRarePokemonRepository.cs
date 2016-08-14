@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "https://pokewatchers.com/api.php?act=grab";
-        private const string Channel = "Pokewatchers";
+        public const string Channel = "PokeWatchers";
 
         public PokewatchersRarePokemonRepository()
         {
@@ -64,11 +64,6 @@ namespace PogoLocationFeeder.Repository
             }
         }
 
-        public string GetChannel()
-        {
-            return Channel;
-        }
-
         private List<SniperInfo> GetJsonList(string reader)
         {
             var results = JsonConvert.DeserializeObject<List<PokewatchersResult>>(reader, new JsonSerializerSettingsCultureInvariant());
@@ -94,11 +89,13 @@ namespace PogoLocationFeeder.Repository
             {
                 return null;
             }
-            sniperInfo.Latitude = geoCoordinates.Latitude;
-            sniperInfo.Longitude = geoCoordinates.Longitude;
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
             var untilTime = DateTime.Now.AddTicks(result.until);
             sniperInfo.ExpirationTimestamp = untilTime;
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
+
             return sniperInfo;
         }
     }

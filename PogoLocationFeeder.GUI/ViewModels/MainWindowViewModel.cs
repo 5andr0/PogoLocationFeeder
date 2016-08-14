@@ -36,6 +36,7 @@ using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Common;
 using PogoLocationFeeder.GUI.Models;
 using PogoLocationFeeder.GUI.Properties;
+using PogoLocationFeeder.Input;
 using PropertyChanged;
 
 //using POGOProtos.Enums;
@@ -64,6 +65,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             FilterCommand = new ActionCommand(ShowFilter);
             SortAlphabeticalCommand = new ActionCommand(SortByAlphabetical);
             SortIdCommand = new ActionCommand(SortById);
+            SendCommand = new ActionCommand(Send);
             Settings.Default.DebugOutput = "";
             //var poke = new SniperInfo {
             //    Id = PokemonId.Missingno,
@@ -107,6 +109,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public ICommand FilterCommand { get; }
         public ICommand SortAlphabeticalCommand { get; }
         public ICommand SortIdCommand { get; }
+        public ICommand SendCommand { get; }
 
         public string CustomIp { get; set; } = "localhost";
 
@@ -149,6 +152,8 @@ namespace PogoLocationFeeder.GUI.ViewModels
         }
 
         public string AppThemeText { get; set; }
+
+        public string SendText { get; set; }
 
         public void ChangeTheme(string theme) {
             try {
@@ -312,6 +317,16 @@ namespace PogoLocationFeeder.GUI.ViewModels
 
             PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.AllPokemonsInternal);
             PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFeedFilterInternal);
+        }
+
+        public void Send() {
+            try {
+                InputService.Instance.ParseAndSend(SendText);
+                SendText = string.Empty;
+
+            } catch (Exception) {
+                //ignore
+            }
         }
     }
 

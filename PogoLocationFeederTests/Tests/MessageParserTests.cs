@@ -25,14 +25,13 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
     [TestClass]
     public class MessageParserTests
     {
-        private readonly MessageParser messageParser = new MessageParser();
 
         [TestMethod]
-        public void parseMessageTest()
+        public void ParseMessageTest()
         {
             verifyParsing(
                 "[239 seconds remaining] 52% IV - Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
-                42.877637631245, 74.620142194759, PokemonId.Jolteon, 52, DateTime.Now.AddSeconds(239));
+                42.877637, 74.620142194759, PokemonId.Jolteon, 52, DateTime.Now.AddSeconds(239));
             verifyParsing(
                 "[239 seconds remaining] Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
                 42.877637631245, 74.620142194759, PokemonId.Jolteon, 0, DateTime.Now.AddSeconds(239));
@@ -41,10 +40,29 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
                 42.326919, -83.042221, PokemonId.Dratini, 91, DateTime.MinValue);
         }
 
+        [TestMethod]
+        public void TestSpaces()
+        {
+            verifyParsing("Dratini  42.12345 -40.123456", 42.12345, -40.123456, PokemonId.Dratini, 0, DateTime.MinValue);
+        }
+
+        [TestMethod]
+        public void TestNewLines()
+        {
+            verifyParsing("Vaporeon\r-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
+                DateTime.MinValue);
+            verifyParsing("Vaporeon\n-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
+    DateTime.MinValue);
+            verifyParsing("Vaporeon\r\n-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
+    DateTime.MinValue);
+            verifyParsing("Vaporeon\n\r-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
+DateTime.MinValue);
+        }
+
         private void verifyParsing(string text, double latitude, double longitude, PokemonId pokemonId, double iv,
             DateTime expiration)
         {
-            var sniperInfo = messageParser.parseMessage(text);
+            var sniperInfo = MessageParser.ParseMessage(text);
             Assert.IsNotNull(sniperInfo);
             Assert.AreEqual(pokemonId, sniperInfo[0].Id);
             Assert.AreEqual(latitude, sniperInfo[0].Latitude);

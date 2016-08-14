@@ -48,8 +48,8 @@ namespace PogoLocationFeeder.Helper
                 return null;
             }
 
-            geoCoordinates.Latitude = latitude;
-            geoCoordinates.Longitude = longitude;
+            geoCoordinates.Latitude = Math.Round(latitude,6);
+            geoCoordinates.Longitude = Math.Round(longitude, 6);
 
             return geoCoordinates;
         }

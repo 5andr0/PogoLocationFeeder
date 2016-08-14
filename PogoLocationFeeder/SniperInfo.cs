@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Globalization;
 using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Helper
@@ -33,12 +34,14 @@ namespace PogoLocationFeeder.Helper
         public PokemonMove Move2 { get; set; }
         public double IV { get; set; }
         public bool Verified { get; set; } = false;
+        public ChannelInfo ChannelInfo { get; set; }
+        public DateTime ReceivedTimeStamp { get; set; } = DateTime.Now;
 
         public override string ToString()
         {
             return "SniperInfo: id: " + Id
-                   + ", Latitude: " + Latitude
-                   + ", Longitude: " + Longitude
+                   + ", Latitude: " + Latitude.ToString("N6", CultureInfo.InvariantCulture)
+                   + ", Longitude: " + Longitude.ToString("N6", CultureInfo.InvariantCulture)
                    + (IV != default(double) ? ", IV: " + IV + "%" : "")
                    + (ExpirationTimestamp != default(DateTime) ? ", expiration: " + ExpirationTimestamp : "");
         }

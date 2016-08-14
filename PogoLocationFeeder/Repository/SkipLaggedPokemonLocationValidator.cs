@@ -42,6 +42,11 @@ namespace PogoLocationFeeder.Repository
             var filteredSniperInfos = SkipLaggedCache.FindUnSentMessages(sniperInfos);
             foreach (var sniperInfo in filteredSniperInfos)
             {
+                if (sniperInfo.Verified)
+                {
+                    newSniperInfos.Add(sniperInfo);
+                    continue;
+                }
                 var scanResult = ScanLocation(new GeoCoordinates(sniperInfo.Latitude, sniperInfo.Longitude));
                 if (scanResult.Status == "fail" || scanResult.Status == "error")
                 {
@@ -67,9 +72,10 @@ namespace PogoLocationFeeder.Repository
                                     newSniperInfo.IV = sniperInfo.IV;
                                 }
                                 newSniperInfo.Id = PokemonParser.ParseById(pokemonLocation.pokemon_id);
-                                newSniperInfo.Latitude = pokemonLocation.latitude;
-                                newSniperInfo.Longitude = pokemonLocation.longitude;
+                                newSniperInfo.Latitude = Math.Round(pokemonLocation.latitude, 7);
+                                newSniperInfo.Longitude = Math.Round(pokemonLocation.longitude, 7);
                                 newSniperInfo.Verified = true;
+                                newSniperInfo.ChannelInfo = sniperInfo.ChannelInfo;
                                 newSniperInfo.ExpirationTimestamp = FromUnixTime(pokemonLocation.expires);
                                 newSniperInfos.Add(newSniperInfo);
                             }
@@ -167,7 +173,7 @@ namespace PogoLocationFeeder.Repository
 
             private static string GetCoordinatesString(SniperInfo sniperInfo)
             {
-                return MessagePrefix + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
+                return MessagePrefix + sniperInfo.Latitude.ToString("N5",CultureInfo.InvariantCulture) + ", " + sniperInfo.Longitude.ToString("N5", CultureInfo.InvariantCulture);
             }
         }
 

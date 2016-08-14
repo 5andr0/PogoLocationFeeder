@@ -40,13 +40,20 @@ namespace PogoLocationFeeder.Helper
         public static List<PokemonId> ParsePokemons(List<string> inputs)
         {
             List<PokemonId> newPokemonIds = new List<PokemonId>();
-            foreach (var input in inputs)
+            if (inputs != null)
             {
-                try
+
+                foreach (var input in inputs)
                 {
-                    newPokemonIds.Add(ParsePokemon(input, false, true));
-                }catch(Exception e) { }
-                
+                    try
+                    {
+                        newPokemonIds.Add(ParsePokemon(input, false, true));
+                    }
+                    catch (Exception e)
+                    {
+                    }
+
+                }
             }
             return newPokemonIds;
         }

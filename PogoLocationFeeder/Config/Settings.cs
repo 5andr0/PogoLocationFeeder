@@ -48,13 +48,18 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokemonGoIVClub = true;
         public static bool UseFilter = true;
         public static string AppTheme = "Dark";
-
-
+        public static bool IsServer = false;
+        public static bool IsManaged = true;
+        public static string ServerHost = "pogofeeder.live";
+        public static int ServerPort = 49000;
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
         public static bool VerifyOnSkiplagged = true;
+        public static bool ShareBotCaptures = true;
+        public static bool VerifiedOnly = true;
         public static List<string> PokekomsToFeedFilter;
+        public static List<int> BotWebSocketPorts = new List<int>() { 14251 };
 
         public static bool SniperVisibility => IsOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();
@@ -90,6 +95,13 @@ namespace PogoLocationFeeder.Config
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
                 UseFilter = set.UseFilter;
                 AppTheme = set.AppTheme;
+                IsServer = set.IsServer;
+                IsManaged = set.IsManaged;
+                ServerHost = set.ServerHost;
+                ServerPort = set.ServerPort;
+                ShareBotCaptures = set.ShareBotCaptures;
+                BotWebSocketPorts = set.BotWebSocketPorts;
+                VerifiedOnly = set.VerifiedOnly;
             }
             else
             {
@@ -151,7 +163,6 @@ namespace PogoLocationFeeder.Config
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
                 return JsonConvert.DeserializeObject<List<string>>(input, jsonSettings).
-                    Where(x => PokemonParser.ParsePokemon(x, true) != PokemonId.Missingno).
                     GroupBy(x => PokemonParser.ParsePokemon(x)).
                     Select(y => y.FirstOrDefault()).ToList();
             } else {
@@ -206,15 +217,32 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UsePokemonGoIVClub = GlobalSettings.UsePokemonGoIVClub;
-
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UseFilter = GlobalSettings.UseFilter;
-
         [DefaultValue("Dark")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string AppTheme = GlobalSettings.AppTheme;
-
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool IsServer = GlobalSettings.IsServer;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool IsManaged = GlobalSettings.IsManaged;
+        [DefaultValue("pogofeeder.live")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string ServerHost = GlobalSettings.ServerHost;
+        [DefaultValue(49000)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int ServerPort = GlobalSettings.ServerPort;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShareBotCaptures = GlobalSettings.ShareBotCaptures;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public List<int> BotWebSocketPorts = GlobalSettings.BotWebSocketPorts;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool VerifiedOnly = GlobalSettings.VerifiedOnly;
 
     }
 }

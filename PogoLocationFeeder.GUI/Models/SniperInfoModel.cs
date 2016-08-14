@@ -87,11 +87,11 @@ namespace PogoLocationFeeder.GUI.Models {
         {
             try {
                 Clipboard.SetText(
-                    $"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                    $"{Info.Latitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")}, {Info.Longitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")}");
 
             } catch (Exception) {
                 Clipboard.SetDataObject(
-                    $"{Info.Latitude.ToString(CultureInfo.InvariantCulture)}, {Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                    $"{Info.Latitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")}, {Info.Longitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace PogoLocationFeeder.GUI.Models {
                 process.StartInfo.FileName = sniperFilePath;
                 process.StartInfo.WorkingDirectory = sniperFileDir;
                 process.StartInfo.Arguments =
-                    $"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}";
+                    $"pokesniper2://{Info.Id}/{Info.Latitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",",".")},{Info.Longitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")}";
                 process.Start();
 
                 KillProcessLater(process);
@@ -126,7 +126,7 @@ namespace PogoLocationFeeder.GUI.Models {
                     StartProcessWithPath();
                 } else {
                     Log.Debug("using url to start pokesniper2 ");
-                    var process = Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString(CultureInfo.InvariantCulture)},{Info.Longitude.ToString(CultureInfo.InvariantCulture)}");
+                    var process = Process.Start($"pokesniper2://{Info.Id}/{Info.Latitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")},{Info.Longitude.ToString("N6", CultureInfo.InvariantCulture).Replace(",", ".")}");
                     KillProcessLater(process);
                 }
             }

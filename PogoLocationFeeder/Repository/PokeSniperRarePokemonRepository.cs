@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Repository
         //private const int timeout = 20000;
 
         private const string URL = "http://www.pokesnipers.com/api/v1/pokemon.json?referrer=home";
-        private const string Channel = "Pokesnipers";
+        public const string Channel = "Pokesnipers";
 
         public PokeSniperRarePokemonRepository()
         {
@@ -90,10 +90,11 @@ namespace PogoLocationFeeder.Repository
             {
                 return null;
             }
-            sniperInfo.Latitude = geoCoordinates.Latitude;
-            sniperInfo.Longitude = geoCoordinates.Longitude;
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
             sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
             return sniperInfo;
         }
     }

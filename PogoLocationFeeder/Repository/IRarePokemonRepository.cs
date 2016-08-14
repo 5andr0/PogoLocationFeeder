@@ -24,6 +24,5 @@ namespace PogoLocationFeeder.Repository
     public interface IRarePokemonRepository
     {
         List<SniperInfo> FindAll();
-        string GetChannel();
     }
 }

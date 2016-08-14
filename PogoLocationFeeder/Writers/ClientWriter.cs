@@ -35,8 +35,8 @@ namespace PogoLocationFeeder.Writers
     {
         private readonly List<TcpClient> _arrSocket = new List<TcpClient>();
         public TcpListener Listener;
-        private readonly MessageCache _messageCache = new MessageCache();
-
+        public static readonly ClientWriter Instance = new ClientWriter();
+        private ClientWriter() { }
         public void StartNet(int port)
         {
             Log.Plain("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder");
@@ -55,8 +55,6 @@ namespace PogoLocationFeeder.Writers
                 Log.Fatal($"Port {port} is already in use!", e);
                 throw e;
             }
-
-            Log.Info("Connecting to feeder service pogo-feed.mmoex.com");
 
             StartAccept();
         }
@@ -110,22 +108,19 @@ namespace PogoLocationFeeder.Writers
             return remoteIpEndPoint?.ToString();
         }
 
-        public async Task FeedToClients(List<SniperInfo> snipeList, ChannelInfo channelInfo)
+        public async Task FeedToClients(List<SniperInfo> sniperInfos)
         {
+
+
             // Remove any clients that have disconnected
             if (GlobalSettings.ThreadPause) return;
             _arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            var verifiedSniperInfos = SkipLaggedPokemonLocationValidator.FilterNonAvailableAndUpdateMissingPokemonId(snipeList);
-            var verifiedUnsentMessages = _messageCache.FindUnSentMessages(verifiedSniperInfos);
-            var sortedMessages = verifiedUnsentMessages.OrderBy(m => m.ExpirationTimestamp).ToList();
-            foreach (var target in sortedMessages)
+            foreach (var target in sniperInfos)
             {
-                if (!GlobalSettings.PokekomsToFeedFilter.Contains(target.Id.ToString()) && GlobalSettings.UseFilter) {
-                    Log.Info($"Ignoring {target.Id}, it's not in Filterlist");
-                    continue;
-                }
 
-                foreach (var socket in _arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+
+                foreach (var socket in _arrSocket)
+                    // Repeat for each connected client (socket held in a dynamic array)
                 {
                     try
                     {
@@ -142,10 +137,10 @@ namespace PogoLocationFeeder.Writers
                 }
                 // debug output
                 if (GlobalSettings.Output != null)
-                    GlobalSettings.Output.PrintPokemon(target, channelInfo);
+                    GlobalSettings.Output.PrintPokemon(target);
 
                 const string timeFormat = "HH:mm:ss";
-                Log.Pokemon($"{channelInfo}: {target.Id} at {target.Latitude.ToString(CultureInfo.InvariantCulture)},{target.Longitude.ToString(CultureInfo.InvariantCulture)}"
+                Log.Pokemon($"{target.ChannelInfo}: {target.Id} at {target.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{target.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
                             + " with " + (!target.IV.Equals(default(double)) ? $"{target.IV}% IV" : "unknown IV")
                             +
                             (target.ExpirationTimestamp != default(DateTime)

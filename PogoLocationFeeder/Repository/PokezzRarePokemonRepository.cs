@@ -34,7 +34,7 @@ namespace PogoLocationFeeder.Repository
     public class PokezzRarePokemonRepository : IRarePokemonRepository
     {
         private const string URL = "ws://pokezz.com/socket.io/?EIO=3&transport=websocket";
-        private const string Channel = "PokeZZ";
+        public const string Channel = "PokeZZ";
         private const int Timeout = 5000;
 
         public PokezzRarePokemonRepository()
@@ -78,12 +78,6 @@ namespace PogoLocationFeeder.Repository
             return newSniperInfos;
         }
 
-        public string GetChannel()
-        {
-            return Channel;
-        }
-
-
         private static List<SniperInfo> Parse(string reader)
         {
             var lines = reader.Split('~');
@@ -112,8 +106,8 @@ namespace PogoLocationFeeder.Repository
                 var lat = Convert.ToDouble(match.Groups["lat"].Value, CultureInfo.InvariantCulture);
                 var lon = Convert.ToDouble(match.Groups["lon"].Value, CultureInfo.InvariantCulture);
 
-                sniperInfo.Latitude = lat;
-                sniperInfo.Longitude = lon;
+                sniperInfo.Latitude = Math.Round(lat, 7);
+                sniperInfo.Longitude = Math.Round(lon, 7);
 
                 var expires = Convert.ToInt64(match.Groups["expires"].Value);
                 if (expires != default(long))
@@ -126,6 +120,7 @@ namespace PogoLocationFeeder.Repository
                     }
                     sniperInfo.ExpirationTimestamp = untilTime;
                 }
+                sniperInfo.ChannelInfo = new ChannelInfo {server = Channel};
                 return sniperInfo;
             }
             return null;

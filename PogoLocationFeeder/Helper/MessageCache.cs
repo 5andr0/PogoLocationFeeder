@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Caching;
 
@@ -27,7 +28,9 @@ namespace PogoLocationFeeder.Helper
     {
         private const string MessagePrefix = "MessageCache_";
         //private const int minutesToAddInCache = 15;
-
+        public static readonly MessageCache Instance = new MessageCache();
+    
+        private MessageCache() {}
         public List<SniperInfo> FindUnSentMessages(List<SniperInfo> sniperInfos)
         {
             return sniperInfos.Where(sniperInfo => !IsSentAlready(sniperInfo)).ToList();
@@ -50,7 +53,7 @@ namespace PogoLocationFeeder.Helper
 
         private static string GetCoordinatesString(SniperInfo sniperInfo)
         {
-            return MessagePrefix + sniperInfo.Latitude + ", " + sniperInfo.Longitude;
+            return MessagePrefix + sniperInfo.Latitude.ToString("N5", CultureInfo.InvariantCulture) + ", " + sniperInfo.Longitude.ToString("N5", CultureInfo.InvariantCulture);
         }
     }
 }

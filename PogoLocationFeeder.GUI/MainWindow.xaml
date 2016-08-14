@@ -34,6 +34,7 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <materialDesign:Transitioner SelectedIndex="{Binding TransitionerIndex}">
             <views1:MainView />
@@ -41,12 +42,20 @@
             <views1:DebugOutputView />
             <views1:FilterView />
         </materialDesign:Transitioner>
-        <TextBlock Grid.Row="1" Margin="16,0,0,0" VerticalAlignment="Center">
+        <Grid Grid.Row="1" Margin="4,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="1" Text="{Binding SendText}" VerticalAlignment="Center" VerticalContentAlignment="Center" materialDesign:HintAssist.Hint="Pokemon Latitude, Longitude" ></TextBox>
+            <Button Grid.Column="0" Command="{Binding SendCommand}" Margin="5,0" VerticalAlignment="Center" Height="25" Style="{DynamicResource MaterialDesignToolButton}">Submit Pokemon</Button>
+        </Grid>
+        <TextBlock Grid.Row="2" Margin="16,0,0,0" VerticalAlignment="Center">
             <Run Text="{Binding ThreadStatus}" />
             <Run Text=" Status: " />
             <Run Text="{Binding Status}" />
         </TextBlock>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Label>Like PogoLocationFeeder? Consider Donating via</Label>
             <Button Height="25" Command="{Binding PayPalCommand}" Padding="16, 2">PayPal</Button>
             <Button Height="25" Command="{Binding BitcoinCommand}" Padding="16, 2" Margin="5,0">Bitcoin</Button>
