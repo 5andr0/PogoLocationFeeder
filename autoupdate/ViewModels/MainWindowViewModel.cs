@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.IO.Packaging;
@@ -29,22 +30,29 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using PropertyChanged;
 
 namespace autoupdate.ViewModels {
     [ImplementPropertyChanged]
     public class MainWindowViewModel {
         public string Status { get; set; } = "Getting latest...";
-        public double Progress { get; set; } = 0;
+        public double Progress { get; set; }
         public string Size { get; set; }
+        public bool Enable { get; set; }
 
         public string Name;
         public string Link;
 
 
         public MainWindowViewModel() {
+            StartGuiCommand = new ActionCommand(StartGui);
+            StartCliCommand = new ActionCommand(StartCli);
             GetLatest();
         }
+
+        public ICommand StartGuiCommand { get; }
+        public ICommand StartCliCommand { get; }
 
         public const string LatestReleaseApi =
             "https://api.github.com/repos/5andr0/pogolocationfeeder/releases/latest";
@@ -91,8 +99,8 @@ namespace autoupdate.ViewModels {
                             if (entry.Name.EndsWith(".json")) {
                                 file = $"Config\\default.{entry.Name}";
                             }
-                            if(File.Exists(entry.Name))
-                                File.Delete(entry.Name);
+                            if(File.Exists(file))
+                                File.Delete(file);
                             Size = $"{entry.Name}";
                             entry.ExtractToFile(Path.Combine(Directory.GetCurrentDirectory(), file));
                         }
@@ -100,9 +108,28 @@ namespace autoupdate.ViewModels {
                 }
                 Status = "Finished";
                 Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "temp"), true);
-                Application.Current.Shutdown();
+                Enable = true;
             } catch(Exception) {
                 //
+            }
+        }
+
+        public void StartGui() {
+            try {
+                Process.Start("PogoLocationFeeder.GUI.exe");
+                Application.Current.Shutdown();
+            } catch (Exception) {
+                
+                throw;
+            }
+        }
+        public void StartCli() {
+            try {
+                Process.Start("PogoLocationFeeder.exe");
+                Application.Current.Shutdown();
+            } catch (Exception) {
+                
+                throw;
             }
         }
     }

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #region using directives
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -60,11 +61,17 @@ namespace PoGoLocationFeeder.Helper
                 Log.Info("Great! You already have the newest version (v{0}, or later master)",
                     RemoteVersion.ToString().Remove(RemoteVersion.ToString().Length - 2));
             }
-            else
-            {
-                Log.Info("An update is available! Get the latest release at {0}", LatestRelease);
-                if (GlobalSettings.Output != null)
-                    GlobalSettings.Output.SetStatus($"Version outdated! {RemoteVersion} is available");
+            else {
+                try {
+                    Process.Start("autoupdate.exe");
+                    var t = Process.GetCurrentProcess();
+                    t.Kill();
+
+                } catch (Exception) {
+                    Log.Info("An update is available! Get the latest release at {0}", LatestRelease);
+                    if (GlobalSettings.Output != null)
+                        GlobalSettings.Output.SetStatus($"Version outdated! {RemoteVersion} is available");
+                }
             }
         }
 
