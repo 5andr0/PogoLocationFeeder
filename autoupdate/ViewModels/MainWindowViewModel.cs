@@ -101,6 +101,10 @@ namespace autoupdate.ViewModels {
                             }
                             if(File.Exists(file))
                                 File.Delete(file);
+
+                            if(File.Exists("autoupdate.exe.old"))
+                                File.Delete("autoupdate.exe.old");
+                            if(file == "autoupdate.exe") File.Move("autoupdate.exe", "autoupdate.exe.old");
                             Size = $"{entry.Name}";
                             entry.ExtractToFile(Path.Combine(Directory.GetCurrentDirectory(), file));
                         }
