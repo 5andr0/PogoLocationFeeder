@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Repository;
@@ -70,6 +71,7 @@ namespace PogoLocationFeeder.Client
             filter.channels = channelInfos;
             filter.pokemon = pokemonsBinary;
             filter.verifiedOnly = GlobalSettings.VerifiedOnly;
+            filter.version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             return filter;
         }
     }

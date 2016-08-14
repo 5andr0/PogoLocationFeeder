@@ -47,22 +47,16 @@ namespace PogoLocationFeeder.Client
                 var running = true;
                 while (running)
                 {
-                    var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
-                    var cookieMonster = new List<KeyValuePair<string, string>>()
-                    {
-                        new KeyValuePair<string, string>("filter", filter),
-                        new KeyValuePair<string, string>("version",  Assembly.GetExecutingAssembly().GetName().Version.ToString())
-                    };
                     using (
-                        var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:{GlobalSettings.ServerPort}", "basic", null,
-                            cookieMonster,
-                            null, null, WebSocketVersion.Rfc6455))
+                        var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:{GlobalSettings.ServerPort}", "basic", WebSocketVersion.Rfc6455))
                     {
                         long timeStamp = GetEpoch2MinAgo();
 
                         client.Opened += (s, e) =>
                         {
-                            client.Send($"{timeStamp}:I've come to talk with you again");
+                            var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
+
+                            client.Send($"{timeStamp}:I've come to talk with you again:{filter}");
                             GlobalSettings.Output.SetStatus($"Connected to server {GlobalSettings.ServerHost}");
                         };
 
@@ -104,11 +98,6 @@ namespace PogoLocationFeeder.Client
                             for (int i = 0; i < 10; i++)
                             {
                                 Thread.Sleep(1000);
-                                if (IsFilterOutDated(filter, discordChannels))
-                                {
-                                    running = false;
-                                    continue;
-                                }
                                 SniperInfo sniperInfo = null;
                                 while (sniperInfosToSend.TryDequeue(out sniperInfo))
                                 {
@@ -116,7 +105,8 @@ namespace PogoLocationFeeder.Client
                                     client.Send($"{GetEpochNow()}:Disturb the sound of silence:" + JsonConvert.SerializeObject(sniperInfo));
                                 }
                             }
-                            client.Send($"{timeStamp}:I've come to talk with you again");
+                            var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
+                            client.Send($"{timeStamp}:I've come to talk with you again:{filter}");
                         }
                     }
                     Log.Info("Reconnecting to stream in 10 seconds");

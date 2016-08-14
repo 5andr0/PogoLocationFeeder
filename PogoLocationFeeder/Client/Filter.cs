@@ -28,6 +28,7 @@ namespace PogoLocationFeeder.Client
         public string pokemon { get; set; }
         public List<Channel> channels;
         public bool verifiedOnly { get; set; }
+        public string version { get; set; }
     }
 
     public class Channel

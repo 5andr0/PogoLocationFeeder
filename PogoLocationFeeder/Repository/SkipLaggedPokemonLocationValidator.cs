@@ -62,7 +62,10 @@ namespace PogoLocationFeeder.Repository
                     continue;
                 }
                 var scanResult = ScanLocation(new GeoCoordinates(sniperInfo.Latitude, sniperInfo.Longitude));
-                if (scanResult.Status == "fail" || scanResult.Status == "error" || scanResult.pokemons == null || !scanResult.pokemons.Any())
+                if (scanResult.Status == "fail" || 
+                    scanResult.Status == "error" || 
+                    scanResult.pokemons == null || 
+                    !scanResult.pokemons.Any())
                 {
                     sniperInfo.Verified = false;
                     newSniperInfos.Add(sniperInfo);
@@ -98,6 +101,8 @@ namespace PogoLocationFeeder.Repository
                     }
                     else
                     {
+                        sniperInfo.Verified = false;
+                        newSniperInfos.Add(sniperInfo);
                         Log.Trace(
                             $"No snipable pokemon found at {sniperInfo.Latitude.ToString(CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString(CultureInfo.InvariantCulture)}");
                     }

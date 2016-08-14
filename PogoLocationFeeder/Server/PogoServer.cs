@@ -35,8 +35,6 @@ namespace PogoLocationFeeder.Server
 {
     public class PogoServer
     {
-        private readonly MemoryCache _memoryCache;
-        private List<PokemonId> pokemonsToFilter;
         public event EventHandler<SniperInfo> _receivedViaClients;
         private WebSocketServer webSocketServer;
         public static readonly SniperInfoRepository _serverRepository = new SniperInfoRepository();
@@ -44,9 +42,6 @@ namespace PogoLocationFeeder.Server
 
         public PogoServer()
         {
-            _memoryCache = new MemoryCache("server", new NameValueCollection());
-            pokemonsToFilter = PokemonParser.ParsePokemons(GlobalSettings.PokekomsToFeedFilter);
-
         }
         public void Start()
         {
@@ -60,21 +55,7 @@ namespace PogoLocationFeeder.Server
 
         private void socketServer_NewSessionConnected(WebSocketSession session)
         {
-            object filterBinary = "";
-            if (!session.Items.TryGetValue("filter", out filterBinary))
-            {
-                throw new Exception("Needs more pandas");
-            }
-            List<SniperInfo> sniperInfoToSend = new List<SniperInfo>();
-            foreach (var value in _memoryCache)
-            {
-                var sniperInfo = (SniperInfo)value.Value;
-                if (pokemonsToFilter.Contains(sniperInfo.Id))
-                {
-                    sniperInfoToSend.Add(sniperInfo);
-                }
-            }
-            session.Send($"{GetEpoch()}:Hello Darkness my old friend.:" + JsonConvert.SerializeObject(sniperInfoToSend));
+            session.Send($"{GetEpoch()}:Hello Darkness my old friend.");
             Log.Info($"[{webSocketServer.SessionCount}] Session started");
 
         }
@@ -86,12 +67,7 @@ namespace PogoLocationFeeder.Server
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
         {
-            var filter = GetFilter(session);
-            var pokemonIds = PokemonFilterParser.ParseBinary(filter.pokemon);
-            var channels = filter.channels;
-            var verifiedOnly = filter.verifiedOnly;
             var match = Regex.Match(value, @"^(1?\d+)\:(?:Disturb the sound of silence)\:(2?.*)$");
-            var matchRequest = Regex.Match(value, @"^(1?\d+)\:(?:I\'ve come to talk with you again)$");
 
             if (match.Success)
             {
@@ -99,6 +75,10 @@ namespace PogoLocationFeeder.Server
                 OnReceivedViaClients(sniperInfo);
             } else if (matchRequest.Success)
             {
+                var pokemonIds = PokemonFilterParser.ParseBinary(filter.pokemon);
+                var channels = filter.channels;
+                var verifiedOnly = filter.verifiedOnly;
+
                 var lastReceived = Convert.ToInt64(matchRequest.Groups[1].Value);
                 var sniperInfos = _serverRepository.FindAllNew(lastReceived);
                 var sniperInfoToSend = sniperInfos.Where(s => pokemonIds.Contains(s.Id) && ((verifiedOnly && s.Verified) || !verifiedOnly)

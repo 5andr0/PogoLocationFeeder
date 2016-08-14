@@ -48,7 +48,9 @@ namespace PogoLocationFeeder.Helper
 
         public override string ToString()
         {
-            return "SniperInfo: id: " + Id
+            return "SniperInfo: " +
+                   "Server: " + ChannelInfo?.server + ", channel: " + ChannelInfo?.channel+
+                    " id: " + Id
                    + ", Latitude: " + Latitude.ToString("N6", CultureInfo.InvariantCulture)
                    + ", Longitude: " + Longitude.ToString("N6", CultureInfo.InvariantCulture)
                    + (IV != default(double) ? ", IV: " + IV + "%" : "")
