@@ -47,10 +47,7 @@ namespace PogoLocationFeeder.Bot
                         if (e.Message.Contains("PokemonCaptureEvent"))
                         {
                             var pokemonCaptureEvent = JsonConvert.DeserializeObject<PokemonCaptureEvent>(e.Message, new JsonSerializerSettingsCultureInvariant());
-                            if (pokemonCaptureEvent.Attempt == 1)
-                            {
-                                InputService.Instance.BotCapture(Map(pokemonCaptureEvent));
-                            }
+                            InputService.Instance.BotCapture(Map(pokemonCaptureEvent));
                         }
                     };
                     client.Error += (s, e) =>
