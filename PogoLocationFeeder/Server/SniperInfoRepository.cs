@@ -26,6 +26,7 @@ namespace PogoLocationFeeder.Server
             {
                 if (IsExpired(sniperInfo))
                 {
+                    Log.Trace("Removing " + sniperInfo);
                     Remove(sniperInfo);
                 }
                 if (SniperInfoEquals(sniperInfo,newSniperInfo))
@@ -43,6 +44,7 @@ namespace PogoLocationFeeder.Server
             {
                 if(IsExpired(sniperInfo))
                 {
+                    Log.Trace("Removing " + sniperInfo);
                     Remove(sniperInfo);
                 } else if (ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
                 {
@@ -82,18 +84,7 @@ namespace PogoLocationFeeder.Server
         public int Remove(SniperInfo toRemove)
         {
             int b = 0;
-            foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
-            {
-                if (IsExpired(sniperInfo))
-                {
-                    int f = 0;
-                    _sniperInfoSet.TryRemove(sniperInfo, out f);
-                }
-                if (SniperInfoEquals(sniperInfo, toRemove))
-                {
-                    _sniperInfoSet.TryRemove(sniperInfo, out b);
-                }
-            }
+            _sniperInfoSet.TryRemove(toRemove, out b);
             return b;
         }
 
@@ -116,7 +107,7 @@ namespace PogoLocationFeeder.Server
         }
         private static bool IsExpired(SniperInfo sniperInfo)
         {
-            var xMinuteAgo = DateTime.Now.AddMinutes(MinutesToKeepInCache);
+            var xMinuteAgo = DateTime.Now.AddMinutes(-1 * MinutesToKeepInCache);
             return (sniperInfo.ExpirationTimestamp == default(DateTime) &&
                     sniperInfo.ReceivedTimeStamp < xMinuteAgo) ||
                    (sniperInfo.ExpirationTimestamp != default(DateTime)
