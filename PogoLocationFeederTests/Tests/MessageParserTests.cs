@@ -49,6 +49,13 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
         }
 
         [TestMethod]
+        public void Test100Pr()
+        {
+           verifyParsing("Poliwag IV: 100.00 % 40.780349, -73.951366", 40.780349, -73.951366, PokemonId.Poliwag, 100, DateTime.MinValue);
+
+        }
+
+        [TestMethod]
         public void TestNewLines()
         {
             verifyParsing("Vaporeon\r-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
