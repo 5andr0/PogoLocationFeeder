@@ -122,7 +122,7 @@ namespace PogoLocationFeeder.Client
                                     }
                                     else
                                     {
-                                        Log.Info($"Not uploading bot capture because {sniperInfo.Id} is not the server uploade filter.");
+                                        Log.Info($"Not uploading bot capture because {sniperInfo.Id} is not the server upload filter.");
                                     }
                                 }
                             }
