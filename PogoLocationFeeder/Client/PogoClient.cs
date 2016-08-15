@@ -42,6 +42,7 @@ namespace PogoLocationFeeder.Client
 
         public void Start(List<ChannelParser.DiscordChannels> discordChannels )
         {
+            ServerUploadFilter serverUploadFilter = null;
             while (true)
             {
                 var running = true;
@@ -71,7 +72,10 @@ namespace PogoLocationFeeder.Client
                             try
                             {
                                 var match = Regex.Match(e.Message,
-                                    @"^(1?\d+)\:(?:(?:Hear my words that I might teach you)|(?:Hello Darkness my old friend.))\:(2?.*)$");
+                                    @"^(1?\d+)\:(?:Hear my words that I might teach you)\:(2?.*)$");
+                                var matchDarkness = Regex.Match(e.Message,
+                                    @"^(1?\d+)\:(?:Hello Darkness my old friend\.)\:(2?.*)$");
+                            
                                 if (match.Success)
                                 {
                                     timeStamp = Convert.ToInt64(match.Groups[1].Value);
@@ -79,6 +83,13 @@ namespace PogoLocationFeeder.Client
                                         JsonConvert.DeserializeObject<List<SniperInfo>>(match.Groups[2].Value);
                                     Log.Info($"Received {sniperInfos.Count} pokemon from server");
                                     OnReceivedViaServer(sniperInfos);
+                                } else if (matchDarkness.Success)
+                                {
+                                    timeStamp = Convert.ToInt64(matchDarkness.Groups[1].Value);
+                                    serverUploadFilter =
+                                        JsonConvert.DeserializeObject<ServerUploadFilter>(matchDarkness.Groups[2].Value);
+
+
                                 }
                             }
                             catch (Exception ex)
@@ -101,8 +112,18 @@ namespace PogoLocationFeeder.Client
                                 SniperInfo sniperInfo = null;
                                 while (sniperInfosToSend.TryDequeue(out sniperInfo))
                                 {
-                                    Log.Info($"Uploading bot pokemon: {sniperInfo}");
-                                    client.Send($"{GetEpochNow()}:Disturb the sound of silence:" + JsonConvert.SerializeObject(sniperInfo));
+                                    var pokemonIds = serverUploadFilter != null ? PokemonFilterParser.ParseBinary(serverUploadFilter.pokemon) : null;
+
+                                    if (pokemonIds == null || pokemonIds.Contains(sniperInfo.Id))
+                                    {
+                                        Log.Info($"Uploading bot pokemon: {sniperInfo}");
+                                        client.Send($"{GetEpochNow()}:Disturb the sound of silence:" +
+                                                    JsonConvert.SerializeObject(sniperInfo));
+                                    }
+                                    else
+                                    {
+                                        Log.Info($"Not uploading bot capture because {sniperInfo.Id} is not the server uploade filter.");
+                                    }
                                 }
                             }
                             var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
@@ -124,11 +145,7 @@ namespace PogoLocationFeeder.Client
             }
         }
 
-        private static bool IsFilterOutDated(string filter, List<ChannelParser.DiscordChannels> discordChannels)
-        {
-            var newFilter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
-            return !object.Equals(filter, newFilter);
-        }
+
         private static long GetEpoch2MinAgo()
         {
             return (long)DateTime.Now.AddMinutes(-2).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
