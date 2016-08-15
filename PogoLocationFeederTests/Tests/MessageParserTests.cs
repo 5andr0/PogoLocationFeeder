@@ -31,13 +31,15 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
         {
             verifyParsing(
                 "[239 seconds remaining] 52% IV - Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
-                42.877637, 74.620142194759, PokemonId.Jolteon, 52, DateTime.Now.AddSeconds(239));
+                42.877638, 74.620142, PokemonId.Jolteon, 52, DateTime.Now.AddSeconds(239));
             verifyParsing(
                 "[239 seconds remaining] Jolteon at 42.877637631245,74.620142194759 [ Moveset: ThunderShockFast/Thunderbolt ]",
-                42.877637631245, 74.620142194759, PokemonId.Jolteon, 0, DateTime.Now.AddSeconds(239));
+                42.877638, 74.620142, PokemonId.Jolteon, 0, DateTime.Now.AddSeconds(239));
             verifyParsing(
                 "Dratini 42.326919, -83.042221 IV91 confirmed",
                 42.326919, -83.042221, PokemonId.Dratini, 91, DateTime.MinValue);
+            verifyParsing("pokesniper2://dragonair/37.598656,140.42916", 37.598656, 140.42916, PokemonId.Dragonair, 0, default(DateTime))
+            ;
         }
 
         [TestMethod]

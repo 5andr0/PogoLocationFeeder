@@ -29,26 +29,26 @@ namespace PogoLocationFeederTests
         {
             testCoordinates(
                 "[192 seconds remaining] 55% IV - Porygon at 48.880245472813,2.3258381797353 [Moveset: TackleFast/Psybeam]",
-                48.880245472813, 2.3258381797353);
+                48.880245, 2.325838);
         }
 
         [TestMethod]
         public void TestCoordinatesRandomPerson1()
         {
             testCoordinates("50.846499257055854,4.421932697296143 Lapras 11min 92IV Frosth Breath Dragon Pulse",
-                50.846499257055854, 4.421932697296143);
+                50.846499, 4.421933);
         }
 
         [TestMethod]
         public void TestCoordinatesRandomPerson2()
         {
-            testCoordinates("34.0392682838917,-118.494653181811, Eevee, 10min", 34.0392682838917, -118.494653181811);
+            testCoordinates("34.0392682838917,-118.494653181811, Eevee, 10min", 34.039268, -118.494653);
         }
 
         [TestMethod]
         public void TestCoordinatesPokeSniper()
         {
-            testCoordinates("-33.8304880738,151.087396206", -33.8304880738, 151.087396206);
+            testCoordinates("-33.8304880738,151.087396206", -33.830488, 151.087396);
         }
 
         [TestMethod]
