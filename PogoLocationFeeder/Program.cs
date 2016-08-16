@@ -304,7 +304,9 @@ namespace PogoLocationFeeder
                 sniperInfosToSend =
                     SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
                 sniperInfosToSend = sniperInfosToSend.Where(
-                    i =>!GlobalSettings.UseFilter || GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString())).ToList();
+                    i => !GlobalSettings.UseFilter || GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString())).ToList();
+                sniperInfosToSend = sniperInfosToSend.Where(
+                    i => !GlobalSettings.UseGeoLocationBoundsFilter || GlobalSettings.GeoLocationBounds.Intersects(i.Latitude, i.Longitude)).ToList();
             }
             if (GlobalSettings.VerifiedOnly)
             {

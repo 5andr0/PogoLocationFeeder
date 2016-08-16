@@ -10,7 +10,7 @@
                       BorderBrush="{DynamicResource AccentColorBrush}"
                       BorderThickness="1"
                       WindowStartupLocation="CenterScreen"
-                      Title="Location Feeder" MinHeight="450" MinWidth="750" Height="450" Width="850"
+                      Title="Location Feeder" MinHeight="450" MinWidth="750" Height="600" Width="850"
                       xmlns:views1="clr-namespace:PogoLocationFeeder.GUI.Views"
                       TitleCaps="False"
                       NonActiveWindowTitleBrush="{DynamicResource HighlightBrush}"

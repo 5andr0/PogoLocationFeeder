@@ -38,6 +38,7 @@ using PogoLocationFeeder.GUI.Models;
 using PogoLocationFeeder.GUI.Properties;
 using PogoLocationFeeder.Input;
 using PropertyChanged;
+using PogoLocationFeeder.Helper;
 
 //using POGOProtos.Enums;
 
@@ -126,6 +127,8 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public string RemoveMinutes { get; set; }
         public bool UseSkiplagged { get; set; }
         public bool UseFilter { get; set; }
+        public bool UseGeoLocationBoundsFilter { get; set; }
+        public LatLngBounds GeoLocationBounds { get; set; }
 
         public PokemonFilterModel SelectedPokemonFilter { get; set; }
         public PokemonFilterModel SelectedPokemonFiltered { get; set; }
@@ -197,6 +200,8 @@ namespace PogoLocationFeeder.GUI.ViewModels
             UseSkiplagged = GlobalSettings.VerifyOnSkiplagged;
             RemoveMinutes = GlobalSettings.RemoveAfter.ToString();
             UseFilter = GlobalSettings.UseFilter;
+            UseGeoLocationBoundsFilter = GlobalSettings.UseGeoLocationBoundsFilter;
+            GeoLocationBounds = GlobalSettings.GeoLocationBounds;
             AppThemeText = GlobalSettings.AppTheme;
             TransitionerIndex = 1;
 
@@ -220,6 +225,8 @@ namespace PogoLocationFeeder.GUI.ViewModels
             GlobalSettings.RemoveAfter = int.Parse(RemoveMinutes);
             GlobalSettings.VerifyOnSkiplagged = UseSkiplagged;
             GlobalSettings.UseFilter = UseFilter;
+            GlobalSettings.UseGeoLocationBoundsFilter = UseGeoLocationBoundsFilter;
+            GlobalSettings.GeoLocationBounds = GeoLocationBounds;
             GlobalSettings.AppTheme = AppThemeText;
             GlobalSettings.Save();
 

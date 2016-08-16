@@ -6,7 +6,7 @@
              xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DesignHeight="500" d:DesignWidth="850"
+             d:DesignHeight="540" d:DesignWidth="850"
              d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <Grid>
         <Grid.RowDefinitions>
@@ -26,6 +26,12 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="10" />
             <RowDefinition Height="33" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="33"/>
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -87,7 +93,31 @@
 
          <TextBlock Grid.Row="15" Grid.Column="1" VerticalAlignment="Center">Use Filter</TextBlock>
         <ToggleButton Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}" VerticalAlignment="Center"></ToggleButton>
-        <Button Grid.Row="17" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
-        
+
+        <TextBlock Grid.Row="17" Grid.Column="1" VerticalAlignment="Center">Use Location Bounds Filter</TextBlock>
+        <ToggleButton Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseGeoLocationBoundsFilter}" VerticalAlignment="Center"></ToggleButton>
+
+        <TextBlock Grid.Row="19" Grid.Column="1" VerticalAlignment="Center">SouthWest Bounds</TextBlock>
+        <StackPanel Grid.Row="19" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
+            <TextBlock VerticalAlignment="Center">Latitude</TextBlock>
+            <TextBox VerticalAlignment="Center" Text="{Binding SouthWest.Latitude, Mode=TwoWay}" Margin="10, 0"
+                 PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
+            <TextBlock VerticalAlignment="Center">Longitude</TextBlock>
+            <TextBox VerticalAlignment="Center" Text="{Binding SouthWest.Longitude, Mode=TwoWay}" Margin="10, 0"
+                 PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="21" Grid.Column="1" VerticalAlignment="Center">NorthEast Bounds</TextBlock>
+        <StackPanel Grid.Row="21" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
+            <TextBlock VerticalAlignment="Center">Latitude</TextBlock>
+            <TextBox VerticalAlignment="Center" Text="{Binding NorthEast.Latitude, Mode=TwoWay}" Margin="10, 0"
+                 PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
+            <TextBlock VerticalAlignment="Center">Longitude</TextBlock>
+            <TextBox VerticalAlignment="Center" Text="{Binding NorthEast.Longitude, Mode=TwoWay}" Margin="10, 0"
+                 PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
+        </StackPanel>
+
+        <Button Grid.Row="23" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+
     </Grid>
 </UserControl>
