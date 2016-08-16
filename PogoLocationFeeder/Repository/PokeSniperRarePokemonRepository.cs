@@ -1,129 +1,126 @@
-﻿using Newtonsoft.Json;
-using PogoLocationFeeder.Helper;
-using POGOProtos.Enums;
+﻿/*
+PogoLocationFeeder gathers pokemon data from various sources and serves it to connected clients
+Copyright (C) 2016  PogoLocationFeeder Development Team <admin@pokefeeder.live>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Runtime.Caching;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using CloudFlareUtilities;
+using Newtonsoft.Json;
+using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.Repository
 {
-
-    public class PokeSniperRarePokemonRepository : RarePokemonRepository
+    public class PokeSniperRarePokemonRepository : IRarePokemonRepository
     {
-        const int timeout = 20000;
+        //private const int timeout = 20000;
 
-        private const string URL = "http://pokesnipers.com/api/v1/pokemon.json";
-        const String channel = "Pokesnipers";
-        List<PokemonId> pokemonIdsToFind;
+        private const string URL = "http://www.pokesnipers.com/api/v1/pokemon.json?referrer=home";
+        public const string Channel = "Pokesnipers";
 
-        public PokeSniperRarePokemonRepository(List<PokemonId> pokemonIdsToFind)
+        public PokeSniperRarePokemonRepository()
         {
-            this.pokemonIdsToFind = pokemonIdsToFind;
         }
 
         public List<SniperInfo> FindAll()
         {
             try
             {
-                
-                var request = WebRequest.CreateHttp(URL);
-                request.Accept = "application/json";
-                request.Method = "GET";
-                request.Timeout = 20000;
+                var handler = new ClearanceHandler();
 
-                using (var response = request.GetResponse())
+                // Create a HttpClient that uses the handler.
+                using (var client = new HttpClient(handler))
                 {
-                    using (var reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        
-                        return getJsonList(reader.ReadToEnd());
-                    }
+
+                    // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
+                    var content = client.GetStringAsync(URL).Result;
+                    return GetJsonList(content);
                 }
             }
             catch (Exception e)
             {
-                try {
-                    var handler = new ClearanceHandler();
-
-                    // Create a HttpClient that uses the handler.
-                    var client = new HttpClient(handler);
-
-                    // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
-                    var content = client.GetStringAsync(URL).Result;
-                    return getJsonList(content);
-                } catch (Exception) {
-                    Log.Debug("Pokesnipers API error: {0}", e.Message);
-                    return null;
-                }
+                Log.Debug("Pokesnipers API error: {0}", e.Message);
+                return null;
             }
         }
-        private List<SniperInfo> getJsonList(string reader) {
-            Wrapper wrapper = JsonConvert.DeserializeObject<Wrapper>(reader);
-            List<SniperInfo> list = new List<SniperInfo>();
-            foreach(Result result in wrapper.results) {
-                SniperInfo sniperInfo = map(result);
-                if(sniperInfo != null) {
+
+        public string GetChannel()
+        {
+            return Channel;
+        }
+
+        private List<SniperInfo> GetJsonList(string reader)
+        {
+            var wrapper = JsonConvert.DeserializeObject<Wrapper>(reader, new JsonSerializerSettingsCultureInvariant());
+            var list = new List<SniperInfo>();
+            foreach (var result in wrapper.results)
+            {
+                var sniperInfo = Map(result);
+                if (sniperInfo != null)
+                {
                     list.Add(sniperInfo);
                 }
             }
             return list;
         }
 
-        private SniperInfo map(Result result)
+
+
+        private SniperInfo Map(Result result)
         {
-            SniperInfo sniperInfo = new SniperInfo();
-            PokemonId pokemonId = PokemonParser.parsePokemon(result.name);
-            if (!pokemonIdsToFind.Contains(pokemonId))
-            {
-                return null;
-            }
+            var sniperInfo = new SniperInfo();
+            var pokemonId = PokemonParser.ParsePokemon(result.name);
             sniperInfo.Id = pokemonId;
-            GeoCoordinates geoCoordinates = GeoCoordinatesParser.parseGeoCoordinates(result.coords);
+            var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(result.coords);
             if (geoCoordinates == null)
             {
                 return null;
             }
-            else
-            {
-                sniperInfo.Latitude = geoCoordinates.latitude;
-                sniperInfo.Longitude = geoCoordinates.longitude;
-            }
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
             sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
+            sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
             return sniperInfo;
-        }
-
-        public string GetChannel()
-        {
-            return channel;
         }
     }
 
 
-    class Result
+    internal class Result
     {
         [JsonProperty("id")]
         public long id { get; set; }
+
         [JsonProperty("name")]
         public string name { get; set; }
+
         [JsonProperty("coords")]
         public string coords { get; set; }
+
         [JsonProperty("until")]
         public string until { get; set; }
+
         [JsonProperty("icon")]
         public string icon { get; set; }
     }
 
-    class Wrapper
+    internal class Wrapper
     {
         [JsonProperty("results")]
         public List<Result> results { get; set; }
     }
 }
-

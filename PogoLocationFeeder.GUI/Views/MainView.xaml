@@ -1,39 +1,70 @@
 ﻿<UserControl
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:PogoLocationFeeder.GUI.Views"
-             xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf" x:Class="PogoLocationFeeder.GUI.Views.MainView"
-             mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+    x:Class="PogoLocationFeeder.GUI.Views.MainView"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <UserControl.Resources>
-        <Converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
-                  Background="Transparent" SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True">
+                  SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True" Background="Transparent">
+            <DataGrid.Resources>
+                <viewmodels:BindingProxy x:Key="proxy" Data="{Binding}"/>
+            </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ToolTip" Value="{Binding VerifiedTooltip}"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Info.Verified}" Value="false">
+                            <Setter Property="Foreground" Value="Gray" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <materialDesign:PopupBox PlacementMode="BottomAndAlignLeftEdges"
-                                                     Margin="0, -5" Background="Gray">
-                                <StackPanel>
-                                    <Button Height="30"
-                                            Command="{Binding copyCoordsCommand}"
-                                            Style="{DynamicResource MaterialDesignFlatButton}" Content="Copy Coords"/>
-                                    <Button Height="30"
-                                            Command="{Binding PokeSnipersCommand}"
-                                            Style="{DynamicResource MaterialDesignFlatButton}" Visibility="{Binding SniperVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" Content="PokeSnipers2"/>
-                                </StackPanel>
-                            </materialDesign:PopupBox>
+                            <Button Style="{DynamicResource MaterialDesignToolButton}" Height="25" Margin="0,-5" Command="{Binding RemoveMe}">
+                                <materialDesign:PackIcon Kind="Close"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                                <Button Height="25" Margin="0, -5"
+                                            Command="{Binding copyCoordsCommand}"
+                                            Style="{DynamicResource MaterialDesignFlatButton}" ToolTip="Copy Coordinates" Content="CC"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Visibility="{Binding Data.ColVisibility, Source={StaticResource proxy}}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Height="30" Command="{Binding PokeSnipersCommand}" Background="Transparent"
+                                    BorderThickness="0" Margin="-5">
+                                <Image Source="/Assets/snipers.png" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <!--<DataGridTemplateColumn >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <materialDesign:PackIcon Kind="{Binding VerifiedIcon}" Margin="0,-5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

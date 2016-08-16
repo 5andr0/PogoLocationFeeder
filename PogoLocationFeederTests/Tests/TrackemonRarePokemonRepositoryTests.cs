@@ -1,36 +1,46 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder.Repository;
-using POGOProtos.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*
+PogoLocationFeeder gathers pokemon data from various sources and serves it to connected clients
+Copyright (C) 2016  PogoLocationFeeder Development Team <admin@pokefeeder.live>
 
-namespace PogoLocationFeeder.Repository.Tests
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PogoLocationFeeder.Repository;
+
+namespace PogoLocationFeeder.Helper.Helper.Repository.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class TrackemonRarePokemonRepositoryTests
     {
-        RarePokemonRepository trackemonRarePokemonRepository = new TrackemonRarePokemonRepository(RarePokemonsFactory.createRarePokemonList());
+        private readonly IRarePokemonRepository trackemonRarePokemonRepository =
+            new TrackemonRarePokemonRepository();
 
-        [TestMethod()]
+        [TestMethod]
         [Ignore]
         public void FindAll()
         {
-            List<SniperInfo> sniperInfos = trackemonRarePokemonRepository.FindAll();
+            var sniperInfos = trackemonRarePokemonRepository.FindAll();
             Assert.IsNotNull(sniperInfos);
             Assert.IsTrue(sniperInfos.Any());
-            foreach(SniperInfo sniperInfo in sniperInfos)
+            foreach (var sniperInfo in sniperInfos)
             {
                 Console.WriteLine(sniperInfo);
             }
         }
 
-        [TestMethod()]
-        public void GetChannel()
-        {
-            Assert.AreEqual("Trackemon", trackemonRarePokemonRepository.GetChannel());
-        }
-    }
+   }
 }

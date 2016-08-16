@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EngineIoClientDotNet, Version=0.9.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EngineIoClientDotNet.0.9.22\lib\net45\EngineIoClientDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -44,7 +48,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\POGOProtos.1.4.0\lib\net45\POGOProtos.dll</HintPath>
     </Reference>
+    <Reference Include="SocketIoClientDotNet, Version=0.9.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SocketIoClientDotNet.0.9.13\lib\net45\SocketIoClientDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -60,11 +74,17 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Api\PogoLocationFeederListenerTests.cs" />
+    <Compile Include="Repository\SkipLaggedPokemonLocationValidatorTests.cs" />
+    <Compile Include="Server\ServerTests.cs" />
+    <Compile Include="Server\SniperInfoRepositoryTests.cs" />
+    <Compile Include="Tests\PokewatchersRarePokemonRepositoryTests.cs" />
+    <Compile Include="Tests\ChannelParserTests.cs" />
     <Compile Include="Tests\GeoCoordinatesParserTest.cs" />
     <Compile Include="Tests\IVParserTests.cs" />
     <Compile Include="Tests\MessageCacheTests.cs" />
     <Compile Include="Tests\MessageParserTests.cs" />
     <Compile Include="Tests\PokemonParserTests.cs" />
+    <Compile Include="Tests\PokezzRarePokemonRepositoryTests .cs" />
     <Compile Include="Tests\PokeSniperRarePokemonRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\TrackemonRarePokemonRepositoryTests.cs" />

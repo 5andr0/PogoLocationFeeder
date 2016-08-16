@@ -1,131 +1,108 @@
 [
-  {
-    "id": "209314780870213633",
-    "Server": "Necrobot.io",
-    "Name": "plus_90_iv"
-  },
-  {
-    "id": "209314800935763977",
-    "Server": "Necrobot.io",
-    "Name": "100_iv"
-  },
-  {
-    "id": "209283402245865472",
-    "Server": "Necrobot.io",
-    "Name": "sniping"
-  },
+    {
+        "id": "209314780870213633",
+        "Server": "Necrobot.io",
+        "Name": "plus_90_iv"
+    },
+    {
+        "id": "209314800935763977",
+        "Server": "Necrobot.io",
+        "Name": "100_iv"
+    },
+    {
+        "id": "209283402245865472",
+        "Server": "Necrobot.io",
+        "Name": "sniping"
+    },
+    {
+        "id": "207998375251935232",
+        "Server": "PokeMobBot - a Pokémon Go Bot",
+        "Name": "sniper"
+    },
+    {
+        "id": "208936978186502145",
+        "Server": "PokeMobBot - a Pokémon Go Bot",
+        "Name": "90_plus_iv"
+    },
+    {
+        "id": "209260366784495616",
+        "Server": "PokéGO- RARE SPOT & Chat!",
+        "Name": "rare_spotting"
+    },
+    {
+        "id": "209680517740756994",
+        "Server": "PokéGO- RARE SPOT & Chat!",
+        "Name": "coordsbot_feed"
+    },
+    {
+        "id": "209171120702619648",
+        "Server": "PokéGO- RARE SPOT & Chat!",
+        "Name": "90plus_ivonly"
+    },
+    {
+        "id": "208856384744194048",
+        "Server": "PokemonGO Rare Hunting",
+        "Name": "coord-bot"
+    },
+    {
+        "id": "207092045683097600",
+        "Server": "PokemonGO Rare Hunting",
+        "Name": "high_iv"
+    },
+    {
+        "id": "207247439004958720",
+        "Server": "PokemonGO Rare Hunting",
+        "Name": "rare_pokemon"
+    },
+    {
+        "id": "206238613040660490",
+        "Server": "PokemonGO Rare Hunting",
+        "Name": "other_pokemon"
+    },
+    {
+        "id": "208752256999227393",
+        "Server": "PokemonGO 100IV CLUB",
+        "Name": "100_iv"
+    },
+    {
+        "id": "208754684414918656",
+        "Server": "PokemonGO 100IV CLUB",
+        "Name": "95_iv_and_up"
+    },
+    {
+        "id": "209077347503046656",
+        "Server": "PokemonGO 100IV CLUB",
+        "Name": "rare_pokemon"
+    },
+    {
+        "id": "209577054839111682",
+        "Server": "PoGoHax",
+        "Name": "coord-bot"
+    },
+    {
+        "id": "207953160302624769",
+        "Server": "PoGoHax",
+        "Name": "rare_pokemon"
+    },
+    {
+        "id": "208281728119209984",
+        "Server": "PoGoHax",
+        "Name": "high_iv_pokemon_90plus"
+    },
+    {
+        "id": "209002390257532938",
+        "Server": "Pokemon Go",
+        "Name": "90plus_iv"
+    },
+    {
+        "id": "208946520874156033",
+        "Server": "Pokemon Go",
+        "Name": "rares_gps_cordinates"
+    },
 
-
-  {
-    "id": "207998375251935232",
-    "Server": "PokeMobBot - a Pokémon Go Bot",
-    "Name": "coordsbots"
-  },
-  {
-    "id": "208936978186502145",
-    "Server": "PokeMobBot - a Pokémon Go Bot",
-    "Name": "90_plus_iv"
-  },
-
-
-  {
-    "id": "209260366784495616",
-    "Server": "PokéGO- RARE SPOT & Chat!",
-    "Name": "rare_spotting"
-  },
-  {
-    "id": "209680517740756994",
-    "Server": "PokéGO- RARE SPOT & Chat!",
-    "Name": "coordsbot_feed"
-  },
-  {
-    "id": "209171120702619648",
-    "Server": "PokéGO- RARE SPOT & Chat!",
-    "Name": "90plus_ivonly"
-  },
-
-
-  {
-    "id": "208856384744194048",
-    "Server": "PokemonGO Rare Hunting",
-    "Name": "coord-bot"
-  },
-  {
-    "id": "207092045683097600",
-    "Server": "PokemonGO Rare Hunting",
-    "Name": "high_iv"
-  },
-  {
-    "id": "207247439004958720",
-    "Server": "PokemonGO Rare Hunting",
-    "Name": "rare_pokemon"
-  },
-  {
-    "id": "206238613040660490",
-    "Server": "PokemonGO Rare Hunting",
-    "Name": "other_pokemon"
-  },
-
-
-  {
-    "id": "208752256999227393",
-    "Server": "PokemonGO 100IV CLUB",
-    "Name": "100-iv "
-  },
-  {
-    "id": "208754684414918656",
-    "Server": "PokemonGO 100IV CLUB",
-    "Name": "95-iv-and-up"
-  },
-  {
-    "id": "208836707057926144",
-    "Server": "PokemonGO 100IV CLUB",
-    "Name": "rare-pokemon "
-  },
-  {
-    "id": "209077347503046656",
-    "Server": "PokemonGO 100IV CLUB",
-    "Name": "rare-coords-bot "
-  },
-
-
-  {
-    "id": "209577054839111682",
-    "Server": "PoGoHax",
-    "Name": "coord-bot"
-  },
-  {
-    "id": "207953160302624769",
-    "Server": "PoGoHax",
-    "Name": "rare_pokemon"
-  },
-  {
-    "id": "208281728119209984",
-    "Server": "PoGoHax",
-    "Name": "high_iv_pokemon_90plus"
-  },
-
-
-  {
-    "id": "205797255301693440",
-    "Server": "Pokémon Go Sniping/Botting",
-    "Name": "pokemon-coords"
-  },
-  {
-    "id": "208660441289719818",
-    "Server": "Pokémon Go Sniping/Botting",
-    "Name": "high-iv-coords"
-  },
-
-
-  {
-    "id": "209002390257532938",
-    "Server": "Pokemon Go",
-    "Name": "90plus_iv"
-  },
-  {
-    "id": "208946520874156033",
-    "Server": "Pokemon Go",
-    "Name": "rares_gps_cordinates"
-  }
+    {
+        "id": "208726673456103425",
+        "Server": "GlitchNation OP",
+        "Name": "manual_coords"
+    }
 ]

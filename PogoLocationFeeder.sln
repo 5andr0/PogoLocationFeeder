@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PogoLocationFeeder.GUI", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PogoLocationFeeder.API", "PogoLocationFeeder.API\PogoLocationFeeder.API.csproj", "{E82FE137-7326-4EFA-A4DD-A8592BF70F36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "autoupdate", "autoupdate\autoupdate.csproj", "{6388D593-FC0A-4E7B-B964-3A46030D9DEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{E82FE137-7326-4EFA-A4DD-A8592BF70F36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E82FE137-7326-4EFA-A4DD-A8592BF70F36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E82FE137-7326-4EFA-A4DD-A8592BF70F36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6388D593-FC0A-4E7B-B964-3A46030D9DEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6388D593-FC0A-4E7B-B964-3A46030D9DEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6388D593-FC0A-4E7B-B964-3A46030D9DEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6388D593-FC0A-4E7B-B964-3A46030D9DEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
