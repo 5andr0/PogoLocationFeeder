@@ -20,20 +20,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PogoLocationFeeder.Common;
+using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.Client
 {
     public class Filter
     {
-        public string pokemon { get; set; }
-        public List<Channel> channels;
-        public bool verifiedOnly { get; set; }
-        public string version { get; set; }
+        public string Pokemon { get; set; }
+        public List<Channel> Channels;
+        public bool VerifiedOnly { get; set; }
+        public string Version { get; set; }
+        public LatLngBounds AreaBounds;
     }
 
     public class Channel
     {
-        public string server { get; set; }
-        public string channel { get; set; }
+        public string Server { get; set; }
+        public string ChannelName { get; set; }
     }
 }

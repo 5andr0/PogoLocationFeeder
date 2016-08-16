@@ -30,7 +30,7 @@ namespace PogoLocationFeeder.Client
 {
     public class FilterFactory
     {
-        public static Filter Create(List<DiscordChannels> discordChannels )
+        public static Filter Create(List<DiscordChannels> discordChannels = null)
         {
             List<PokemonId> pokemons = GlobalSettings.UseFilter
                 ? PokemonParser.ParsePokemons(new List<string>(GlobalSettings.PokekomsToFeedFilter))
@@ -41,37 +41,38 @@ namespace PogoLocationFeeder.Client
             {
                 foreach (DiscordChannels discordChannel in discordChannels)
                 {
-                    channelInfos.Add(new Channel() {server = discordChannel.Server, channel = discordChannel.Name});
+                    channelInfos.Add(new Channel() {Server = discordChannel.Server, ChannelName = discordChannel.Name});
                 }
             }
             if (GlobalSettings.UsePokeSnipers)
             {
-                channelInfos.Add(new Channel() {server = PokeSniperRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = PokeSniperRarePokemonRepository.Channel });
             }
             if (GlobalSettings.UsePokemonGoIVClub)
             {
-                channelInfos.Add(new Channel() { server = PokemonGoIVClubRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = PokemonGoIVClubRarePokemonRepository.Channel });
             }
             if (GlobalSettings.UsePokewatchers)
             {
-                channelInfos.Add(new Channel() { server = PokewatchersRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = PokewatchersRarePokemonRepository.Channel });
             }
             if (GlobalSettings.UseTrackemon)
             {
-                channelInfos.Add(new Channel() { server = TrackemonRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = TrackemonRarePokemonRepository.Channel });
             }
             if (GlobalSettings.UsePokezz)
             {
-                channelInfos.Add(new Channel() { server = PokezzRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = PokezzRarePokemonRepository.Channel });
             }
-            channelInfos.Add(new Channel() {server = Constants.PogoFeeder });
-            channelInfos.Add(new Channel() { server = Constants.Bot });
+            channelInfos.Add(new Channel() { Server = Constants.PogoFeeder });
+            channelInfos.Add(new Channel() { Server = Constants.Bot });
 
             var filter = new Filter();
-            filter.channels = channelInfos;
-            filter.pokemon = pokemonsBinary;
-            filter.verifiedOnly = GlobalSettings.VerifiedOnly;
-            filter.version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            filter.Channels = channelInfos;
+            filter.Pokemon = pokemonsBinary;
+            filter.VerifiedOnly = GlobalSettings.VerifiedOnly;
+            filter.Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            filter.AreaBounds = GlobalSettings.UseGeoLocationBoundsFilter ? GlobalSettings.GeoLocationBounds : null;
             return filter;
         }
     }

@@ -154,6 +154,7 @@
     <Compile Include="Client\FilterFactory.cs" />
     <Compile Include="Client\PogoClient.cs" />
     <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\GeoCoordinates.cs" />
     <Compile Include="Common\Output.cs" />
     <Compile Include="Common\ChannelInfo.cs" />
     <Compile Include="Helper\IVParser.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="Helper\Partitioner.cs" />
     <Compile Include="Helper\PokemonFilterToBinary.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
+    <Compile Include="Helper\SniperInfoFilter.cs" />
     <Compile Include="Helper\UserAgentHelper.cs" />
     <Compile Include="Helper\VersionCheckState.cs" />
     <Compile Include="Input\InputService.cs" />

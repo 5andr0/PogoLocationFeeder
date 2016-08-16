@@ -25,6 +25,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Server;

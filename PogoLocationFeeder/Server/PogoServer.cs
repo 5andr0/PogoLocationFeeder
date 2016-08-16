@@ -87,17 +87,11 @@ namespace PogoLocationFeeder.Server
                 else if (matchRequest.Success)
                 {
                     Filter filter = JsonConvert.DeserializeObject<Filter>(matchRequest.Groups[2].Value);
-                    var pokemonIds = PokemonFilterParser.ParseBinary(filter.pokemon);
-                    var channels = filter.channels;
-                    var verifiedOnly = filter.verifiedOnly;
 
                     var lastReceived = Convert.ToInt64(matchRequest.Groups[1].Value);
                     var sniperInfos = _serverRepository.FindAllNew(lastReceived);
-                    var sniperInfoToSend =
-                        sniperInfos.Where(
-                            s => pokemonIds.Contains(s.Id) && ((verifiedOnly && s.Verified) || !verifiedOnly)
-                                 && MatchesChannel(channels, s.ChannelInfo)).ToList();
 
+                    var sniperInfoToSend = SniperInfoFilter.FilterUnmanaged(sniperInfos, filter);
 
                     session.Send($"{GetEpoch()}:Hear my words that I might teach you:" +
                                  JsonConvert.SerializeObject(sniperInfoToSend));
@@ -114,19 +108,7 @@ namespace PogoLocationFeeder.Server
             }
         }
 
-        private bool MatchesChannel(List<Channel> channels, ChannelInfo channelInfo)
-        {
-            foreach (Channel channel in channels)
-            {
-                if((channel == null && channelInfo == null) || 
-                    Object.Equals(channel.server,channelInfo.server)
-                    && Object.Equals(channel.channel,channelInfo.channel))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+
 
         public void QueueAll(List<SniperInfo> sortedMessages)
         {

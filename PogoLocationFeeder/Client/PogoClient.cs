@@ -112,9 +112,7 @@ namespace PogoLocationFeeder.Client
                                 SniperInfo sniperInfo = null;
                                 while (sniperInfosToSend.TryDequeue(out sniperInfo))
                                 {
-                                    var pokemonIds = serverUploadFilter != null ? PokemonFilterParser.ParseBinary(serverUploadFilter.pokemon) : null;
-
-                                    if (pokemonIds == null || pokemonIds.Contains(sniperInfo.Id))
+                                    if (serverUploadFilter == null || serverUploadFilter.Matches(sniperInfo))
                                     {
                                         Log.Info($"Uploading bot pokemon: {sniperInfo}");
                                         client.Send($"{GetEpochNow()}:Disturb the sound of silence:" +
@@ -122,7 +120,7 @@ namespace PogoLocationFeeder.Client
                                     }
                                     else
                                     {
-                                        Log.Info($"Not uploading bot capture because {sniperInfo.Id} is not the server upload filter.");
+                                        Log.Info($"Not uploading bot capture because {sniperInfo.Id} is not in the server upload filter.");
                                     }
                                 }
                             }

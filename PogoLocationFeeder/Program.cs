@@ -303,14 +303,8 @@ namespace PogoLocationFeeder
             {
                 sniperInfosToSend =
                     SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
-                sniperInfosToSend = sniperInfosToSend.Where(
-                    i => !GlobalSettings.UseFilter || GlobalSettings.PokekomsToFeedFilter.Contains(i.Id.ToString())).ToList();
-                sniperInfosToSend = sniperInfosToSend.Where(
-                    i => !GlobalSettings.UseGeoLocationBoundsFilter || GlobalSettings.GeoLocationBounds.Intersects(i.Latitude, i.Longitude)).ToList();
-            }
-            if (GlobalSettings.VerifiedOnly)
-            {
-                sniperInfosToSend = sniperInfosToSend.Where(s => s.Verified).ToList();
+                var filter = FilterFactory.Create();
+                sniperInfosToSend = SniperInfoFilter.FilterUnmanaged(sniperInfosToSend, filter);
             }
             if (!GlobalSettings.IsServer)
             {
