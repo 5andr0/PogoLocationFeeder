@@ -60,5 +60,11 @@ namespace PogoLocationFeeder.GUI.Views
                 }
             }
         }
+
+        private void DoubleValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            double result;
+            e.Handled = double.TryParse(e.Text, out result);
+        }
     }
 }

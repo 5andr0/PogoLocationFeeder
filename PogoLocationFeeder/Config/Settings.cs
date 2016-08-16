@@ -47,6 +47,8 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokezz = true;
         public static bool UsePokemonGoIVClub = true;
         public static bool UseFilter = true;
+        public static bool UseGeoLocationBoundsFilter = false;
+        public static LatLngBounds GeoLocationBounds = new LatLngBounds(new GeoCoordinates(1.237759, 103.608435), new GeoCoordinates(1.471575, 104.044219));
         public static string AppTheme = "Dark";
         public static bool IsServer = false;
         public static bool IsManaged = true;
@@ -94,6 +96,8 @@ namespace PogoLocationFeeder.Config
                 ShowLimit = Math.Max(set.ShowLimit, 1);
                 PokeSnipers2Exe = set.PokeSnipers2Exe;
                 UseFilter = set.UseFilter;
+                UseGeoLocationBoundsFilter = set.UseGeoLocationBoundsFilter;
+                GeoLocationBounds = set.GeoLocationBounds;
                 AppTheme = set.AppTheme;
                 IsServer = set.IsServer;
                 IsManaged = set.IsManaged;
@@ -220,6 +224,11 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UseFilter = GlobalSettings.UseFilter;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool UseGeoLocationBoundsFilter = GlobalSettings.UseGeoLocationBoundsFilter;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public LatLngBounds GeoLocationBounds = GlobalSettings.GeoLocationBounds;
         [DefaultValue("Dark")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string AppTheme = GlobalSettings.AppTheme;
