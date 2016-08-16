@@ -9,7 +9,7 @@ namespace PogoLocationFeeder.Server
 {
     public class SniperInfoRepository
     {
-        private const int MinutesToKeepInCache = 10;
+        private const int MinutesToKeepInCache = 20;
         private const double CoordinatesOffsetAllowed = 0.000003;
         public SniperInfoRepository()
         {
