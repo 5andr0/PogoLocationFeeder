@@ -29,6 +29,9 @@ namespace PogoLocationFeeder.GUI.Views
         {
             InitializeComponent();
         }
-        
+
+        private void Debug_OnTextChanged(object sender, TextChangedEventArgs e) {
+            Debug.ScrollToEnd();
+        }
     }
 }
