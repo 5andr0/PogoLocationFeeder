@@ -52,7 +52,7 @@ namespace PogoLocationFeeder.Config
         public static string AppTheme = "Dark";
         public static bool IsServer = false;
         public static bool IsManaged = true;
-        public static string ServerHost = "pogofeeder.live";
+        public static string ServerHost = "pokefeeder.live";
         public static int ServerPort = 49000;
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
