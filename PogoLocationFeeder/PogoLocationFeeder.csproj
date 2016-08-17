@@ -178,7 +178,7 @@
     <Compile Include="Repository\PokeSniperRarePokemonRepository.cs" />
     <Compile Include="Repository\PokemonGoIVClubRarePokemonRepository.cs" />
     <Compile Include="Repository\PokezzRarePokemonRepository.cs" />
-    <Compile Include="Repository\PokewatchersRarePokemonRepository.cs" />
+    <Compile Include="Repository\PokeWatchersRarePokemonRepository.cs" />
     <Compile Include="Repository\IRarePokemonRepository.cs" />
     <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
     <Compile Include="Repository\RarePokemonsFactory.cs" />

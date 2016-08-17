@@ -54,7 +54,7 @@ namespace PogoLocationFeeder.Client
             }
             if (GlobalSettings.UsePokewatchers)
             {
-                channelInfos.Add(new Channel() { Server = PokewatchersRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = PokeWatchersRarePokemonRepository.Channel });
             }
             if (GlobalSettings.UseTrackemon)
             {

@@ -186,6 +186,7 @@ namespace PogoLocationFeeder.Repository
                 request.Method = "GET";
                 request.Timeout = 15000;
                 request.ReadWriteTimeout = 32000;
+                request.CookieContainer = new CookieContainer();
 
                 using (var resp = request.GetResponse())
                 {

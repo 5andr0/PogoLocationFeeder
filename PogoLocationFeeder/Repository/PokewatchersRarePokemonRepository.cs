@@ -18,25 +18,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using CloudFlareUtilities;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Helper;
-using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Repository
 {
-    public class PokewatchersRarePokemonRepository : IRarePokemonRepository
+    public class PokeWatchersRarePokemonRepository : IRarePokemonRepository
     {
         //private const int timeout = 20000;
 
-        private const string URL = "https://pokewatchers.com/api.php?act=grab";
+        private const string URL = "https://pokewatchers.com/grab/";
         public const string Channel = "PokeWatchers";
 
-        public PokewatchersRarePokemonRepository()
+        public PokeWatchersRarePokemonRepository()
         {
         }
 
@@ -44,24 +42,108 @@ namespace PogoLocationFeeder.Repository
         {
             try
             {
+                var userAgent = UserAgentHelper.GetRandomUseragent();
+                var content = getContent(userAgent);
+                content = getContent(userAgent);
 
-                // Create a HttpClient that uses the handler.
-                using (var client = new HttpClient())
+                var cookie = CreateCookie(content);
+                if (cookie != null)
                 {
-                    client.DefaultRequestHeaders.Referrer = new Uri("https://pokewatchers.com/");
-                    client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36");
-                        ;
-
-                    // Use the HttpClient as usual. Any JS challenge will be solved automatically for you.
-                    var content = client.GetStringAsync(URL).Result;
+                    content = getContent(userAgent, cookie);
                     return GetJsonList(content);
+                }
+                else
+                {
+                    Log.Debug("Could find a cookie for PokeWatchers");
                 }
             }
             catch (Exception e)
             {
                 Log.Debug("Pokewatchers API error: {0}", e.Message);
-                return null;
             }
+            return null;
+        }
+
+        private string CreateCookie(string content)
+        {
+            var match = Regex.Match(content, @"<script>(1?.*)<\/script>");
+            if (match.Success)
+            {
+                var script = match.Groups[1].Value;
+                var replace = Regex.Replace(script, @"e\(r\)",
+                    @"e(r.replace('document.cookie', 'F' ).replace('location.reload();', '' ))");
+                replace += "WScript.Echo (F);";
+                var tempFileName = Path.GetTempPath() + $"{DateTime.Now.Millisecond}_pokefeeder.js";
+
+                using (StreamWriter sw = new StreamWriter(tempFileName))
+                {
+                    sw.WriteLine(replace);
+                }
+                var cookieText = ExecuteAndRead(tempFileName);
+                return cookieText;
+            }
+            return null;
+        }
+
+        private string getContent(string userAgent, string cookieText = null)
+        {
+            var request = WebRequest.CreateHttp(URL);
+
+            request.UserAgent = userAgent;
+            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            request.Method = "GET";
+            request.Timeout = 15000;
+            request.Host = "pokewatchers.com";
+            request.ReadWriteTimeout = 32000;
+
+            if (cookieText != null)
+            {
+                cookieText = cookieText.Replace("\r", "").Replace("\n", "");
+                var cookieMonster = new CookieContainer();
+                var cookies = cookieText.Split(';');
+                foreach (var cookie in cookies)
+                {
+                    var matcher = Regex.Match(cookie, @"(1?sucuri.*)\s?=\s?(2?.*)");
+                    if (matcher.Success)
+                    {
+                        cookieMonster.Add(new Cookie(matcher.Groups[1].Value,
+                            matcher.Groups[2].Value,
+                            "/",
+                            "pokewatchers.com"));
+                    }
+                }
+                request.CookieContainer = cookieMonster;
+            }
+            using (var resp = request.GetResponse())
+            {
+                using (var reader = new StreamReader(resp.GetResponseStream()))
+                {
+                    var content = reader.ReadToEnd();
+                    return content;
+                }
+            }
+        }
+
+        private string ExecuteAndRead(string filePath)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            Process p = new Process();
+
+            startInfo.CreateNoWindow = true;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardInput = true;
+
+            startInfo.UseShellExecute = false;
+            startInfo.Arguments = $"//NoLogo {filePath}";
+            startInfo.FileName = "Cscript";
+
+            p.StartInfo = startInfo;
+            p.Start();
+
+            p.WaitForExit();
+            var output = p.StandardOutput.ReadToEnd();
+
+            return output;
         }
 
         private List<SniperInfo> GetJsonList(string reader)
