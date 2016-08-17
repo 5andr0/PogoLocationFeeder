@@ -52,7 +52,13 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
         public void Test100Pr()
         {
            verifyParsing("Poliwag IV: 100.00 % 40.780349, -73.951366", 40.780349, -73.951366, PokemonId.Poliwag, 100, DateTime.MinValue);
+        }
 
+        [TestMethod]
+        public void TestUnparsed()
+        {
+            verifyParsing("Dragonite; 42.324363,-71.103955 74 % lvl3 252 / 260cp", 42.324363, -71.103955,
+                PokemonId.Dragonite, 74, DateTime.MinValue);
         }
 
         [TestMethod]
@@ -61,11 +67,11 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
             verifyParsing("Vaporeon\r-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
                 DateTime.MinValue);
             verifyParsing("Vaporeon\n-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
-    DateTime.MinValue);
-            verifyParsing("Vaporeon\r\n-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
-    DateTime.MinValue);
-            verifyParsing("Vaporeon\n\r-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
-DateTime.MinValue);
+            DateTime.MinValue);
+                    verifyParsing("Vaporeon\r\n-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
+            DateTime.MinValue);
+                    verifyParsing("Vaporeon\n\r-33.804627,151.252824", -33.804627, 151.252824, PokemonId.Vaporeon, 0,
+        DateTime.MinValue);
         }
 
         private void verifyParsing(string text, double latitude, double longitude, PokemonId pokemonId, double iv,

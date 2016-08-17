@@ -238,7 +238,7 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsManaged = GlobalSettings.IsManaged;
-        [DefaultValue("pogofeeder.live")]
+        [DefaultValue("pokefeeder.live")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ServerHost = GlobalSettings.ServerHost;
         [DefaultValue(49000)]

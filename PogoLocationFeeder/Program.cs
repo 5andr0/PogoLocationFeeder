@@ -31,7 +31,6 @@ using PogoLocationFeeder.Bot;
 using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
-using PogoLocationFeeder.Input;
 using PogoLocationFeeder.Readers;
 using PogoLocationFeeder.Repository;
 using PogoLocationFeeder.Server;
