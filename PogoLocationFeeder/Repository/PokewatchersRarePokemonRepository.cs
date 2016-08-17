@@ -44,8 +44,6 @@ namespace PogoLocationFeeder.Repository
             {
                 var userAgent = UserAgentHelper.GetRandomUseragent();
                 var content = getContent(userAgent);
-                content = getContent(userAgent);
-
                 var cookie = CreateCookie(content);
                 if (cookie != null)
                 {
