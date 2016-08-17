@@ -95,8 +95,11 @@
         <ToggleButton Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}" VerticalAlignment="Center"></ToggleButton>
 
         <TextBlock Grid.Row="17" Grid.Column="1" VerticalAlignment="Center">Use Location Bounds Filter</TextBlock>
-        <ToggleButton Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseGeoLocationBoundsFilter}" VerticalAlignment="Center"></ToggleButton>
-
+        <StackPanel Grid.Row="17" Grid.Column="3" Orientation="Horizontal">
+            <ToggleButton HorizontalAlignment="Left" IsChecked="{Binding UseGeoLocationBoundsFilter}" VerticalAlignment="Center"></ToggleButton>
+            <Button Command="{Binding LatLngSettingCommand}" Content="Browse" Margin="10, 0" />
+        </StackPanel>
+        
         <TextBlock Grid.Row="19" Grid.Column="1" VerticalAlignment="Center">SouthWest Bounds</TextBlock>
         <StackPanel Grid.Row="19" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
             <TextBlock VerticalAlignment="Center">Latitude</TextBlock>

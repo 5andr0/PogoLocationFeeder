@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>PogoLocationFeeder GUI Google Maps</title>
+    
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map_canvas {
+            height: 100%;
+            border: 1px groove #eee;
+        }
+    </style>
+    
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>
+
+</head>
+<body>
+
+    <div id="map_canvas"></div>
+
+    <script type="text/javascript">
+        //Definition of global variables
+        var map = null,
+            timer = null;
+                
+        //initialize of Google map output
+        function initialize() {
+
+            //variables
+            var canvas, latlng;
+
+            //map element
+            canvas = document.getElementById('map_canvas');
+
+            //default center latlng
+            latlng = new google.maps.LatLng(1.3308656, 103.9086102);
+
+            //Create an instance of the Map class
+            map = new google.maps.Map(canvas, {
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                zoom: 12,
+                disableDefaultUI: false, //true,
+                zoomControl: true
+            });
+            
+            //bind map idle event
+            google.maps.event.addListener(map, 'idle', function () {
+                var latLng = map.getCenter();
+                var latLngBounds = map.getBounds();
+                var lat = latLng.lat();
+                var lng = latLng.lng();
+                var swLat = latLngBounds.getSouthWest().lat();
+                var swLng = latLngBounds.getSouthWest().lng();
+                var neLat = latLngBounds.getNorthEast().lat();
+                var neLng = latLngBounds.getNorthEast().lng();
+                //console.log(lat, lng, swLat, swLng, neLat, neLng);
+                //invoke WPF InteropServices
+                window.external.setMapInfo(lat, lng, swLat, swLng, neLat, neLng);                
+            });
+        }
+        
+        //Initialize on page loaded
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+
+</body>
+</html> 

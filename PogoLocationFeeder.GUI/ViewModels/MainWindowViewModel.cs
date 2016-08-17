@@ -61,6 +61,8 @@ namespace PogoLocationFeeder.GUI.ViewModels
             DebugComand = new ActionCommand(ShowDebug);
             RemovePathCommand = new ActionCommand(RemovePath);
             SaveCommand = new ActionCommand(SaveClick);
+            LatLngSettingCommand = new ActionCommand(ShowLatLngSettings);
+            SaveLatLngSettingCommand = new ActionCommand(SaveLatLngSettingClick);
             PayPalCommand = new ActionCommand(OpenPaypal);
             BitcoinCommand = new ActionCommand(OpenBitcoin);
             FilterCommand = new ActionCommand(ShowFilter);
@@ -105,6 +107,8 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public ICommand StartStopCommand { get; }
         public ICommand RemovePathCommand { get; }
         public ICommand SaveCommand { get; }
+        public ICommand LatLngSettingCommand { get; }
+        public ICommand SaveLatLngSettingCommand { get; } 
         public ICommand PayPalCommand { get; }
         public ICommand BitcoinCommand { get; }
         public ICommand FilterCommand { get; }
@@ -129,12 +133,21 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public bool UseFilter { get; set; }
         public bool UseGeoLocationBoundsFilter { get; set; }
         public LatLngBounds GeoLocationBounds { get; set; }
+        public LatLngBounds LocationBoundsSettingToSave { get; set; }
 
         public PokemonFilterModel SelectedPokemonFilter { get; set; }
         public PokemonFilterModel SelectedPokemonFiltered { get; set; }
         public int IndexPokemonToFilter { get; set; }
         public SolidColorBrush SortAlphaActive { get; set; }
         public SolidColorBrush SortIdActive { get; set; } = new SolidColorBrush(Colors.DimGray);
+
+        public Visibility MapViewVisibility
+        {
+            get
+            {
+                return (TransitionerIndex == 4) ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
 
         public Visibility ColVisibility
         {
@@ -187,7 +200,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
 
         public void ShowSettings()
         {
-            if (TransitionerIndex != 0)
+            if (TransitionerIndex != 0 && TransitionerIndex != 4)
             {
                 TransitionerIndex = 0;
                 return;
@@ -231,6 +244,25 @@ namespace PogoLocationFeeder.GUI.ViewModels
             GlobalSettings.Save();
 
             GlobalSettings.Output.RemoveListExtras();
+        }
+
+        public void ShowLatLngSettings()
+        {
+            if (TransitionerIndex != 1)
+            {
+                TransitionerIndex = 1;
+                return;
+            }            
+            GlobalSettings.Load();
+            LocationBoundsSettingToSave = GlobalSettings.GeoLocationBounds;
+            TransitionerIndex = 4;
+        }
+
+        public void SaveLatLngSettingClick()
+        {
+            GlobalSettings.GeoLocationBounds = LocationBoundsSettingToSave;
+            GlobalSettings.Save();
+            ShowSettings();
         }
 
         public void ShowDebug()

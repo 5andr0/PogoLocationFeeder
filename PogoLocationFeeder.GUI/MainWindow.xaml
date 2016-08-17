@@ -41,6 +41,7 @@
             <views1:SettingsView />
             <views1:DebugOutputView />
             <views1:FilterView />
+            <views1:LatLngSettingView />
         </materialDesign:Transitioner>
         <Grid Grid.Row="1" Margin="4,0">
             <Grid.ColumnDefinitions>

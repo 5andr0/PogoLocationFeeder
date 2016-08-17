@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="PogoLocationFeeder.GUI.Views.LatLngSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="540" d:DesignWidth="850"
+             d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}" >
+    <DockPanel>
+        <Grid DockPanel.Dock="Left">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="16" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="1"  Grid.Column="1" HorizontalAlignment="Center" Content="SouthWest" FontWeight="Bold" FontSize="16"></Label>
+
+            <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center">Latitude</TextBlock>
+            <TextBox Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Text="{Binding LocationBoundsSettingToSave.SouthWest.Latitude, Mode=TwoWay}"
+                 PreviewTextInput="DoublelValidationTextBox" Width="100" HorizontalAlignment="Left" />
+
+            <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center">Longitude</TextBlock>
+            <TextBox Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" Text="{Binding LocationBoundsSettingToSave.SouthWest.Longitude, Mode=TwoWay}"
+                 PreviewTextInput="DoublelValidationTextBox" Width="100" HorizontalAlignment="Left" />
+
+            <Label Grid.Row="7" Grid.Column="1" HorizontalAlignment="Center" Content="NorthEast" FontWeight="Bold" FontSize="16"></Label>
+
+            <TextBlock Grid.Row="9" Grid.Column="1" VerticalAlignment="Center">Latitude</TextBlock>
+            <TextBox Grid.Row="9" Grid.Column="3" VerticalAlignment="Center" Text="{Binding LocationBoundsSettingToSave.NorthEast.Latitude, Mode=TwoWay}"
+                 PreviewTextInput="DoublelValidationTextBox" Width="100" HorizontalAlignment="Left" />
+
+            <TextBlock Grid.Row="11" Grid.Column="1" VerticalAlignment="Center">Longitude</TextBlock>
+            <TextBox Grid.Row="11" Grid.Column="3" VerticalAlignment="Center" Text="{Binding LocationBoundsSettingToSave.NorthEast.Longitude, Mode=TwoWay}"
+                 PreviewTextInput="DoublelValidationTextBox" Width="100" HorizontalAlignment="Left" />
+
+            <StackPanel Grid.Row="13" Grid.Column="3" Orientation="Horizontal"/>
+            <WrapPanel Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="2,4,0,0" Grid.Row="13" VerticalAlignment="Top" Width="223" Grid.ColumnSpan="3">
+                <Button Command="{Binding SaveLatLngSettingCommand}" Content="Save" Width="100" Margin="5,5"/>
+                <Button Command="{Binding SettingsComand}" Content="Back" Width="100" />
+            </WrapPanel>
+
+        </Grid>
+        <WebBrowser DockPanel.Dock="Right" Visibility="{Binding MapViewVisibility}" Loaded="setupObjectForScripting" Name="webBrowser1" MinHeight="360" Width="Auto" Margin="5, 5" />
+    </DockPanel>
+</UserControl>
