@@ -17,7 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json;
 using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Helper
@@ -35,13 +37,15 @@ namespace PogoLocationFeeder.Helper
         public double IV { get; set; }
         public bool Verified { get; set; } = false;
         public ChannelInfo ChannelInfo { get; set; }
+        [JsonIgnore]
+        public List<ChannelInfo> OtherChannelInfos { get; set; } = new List<ChannelInfo>();
         public DateTime ReceivedTimeStamp { get; set; } = DateTime.Now;
 
 
         public override int GetHashCode()
         {
             var hash = 13;
-            hash = (hash * 7) + Math.Round(Latitude,5).GetHashCode();
+            hash = (hash * 7) + Math.Round(Latitude, 5).GetHashCode();
             hash = (hash * 7) + Math.Round(Longitude, 5).GetHashCode();
             return hash;
         }
@@ -55,6 +59,17 @@ namespace PogoLocationFeeder.Helper
                    + ", Longitude: " + Longitude.ToString("N6", CultureInfo.InvariantCulture)
                    + (IV != default(double) ? ", IV: " + IV + "%" : "")
                    + (ExpirationTimestamp != default(DateTime) ? ", expiration: " + ExpirationTimestamp : "");
+        }
+
+        public List<ChannelInfo> GetAllChannelInfos()
+        {
+            var channelInfos = new List<ChannelInfo>();
+            if (ChannelInfo != null)
+            {
+                channelInfos.Add(ChannelInfo);
+            }
+            channelInfos.AddRange(OtherChannelInfos);
+            return channelInfos;
         }
     }
 }

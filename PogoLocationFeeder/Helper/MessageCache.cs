@@ -28,30 +28,29 @@ namespace PogoLocationFeeder.Helper
     public class MessageCache
     {
         public static readonly MessageCache Instance = new MessageCache();
-        public static readonly SniperInfoRepository _clientRepository = new SniperInfoRepository();
+        public readonly SniperInfoRepository _clientRepository;
+        private readonly SniperInfoRepositoryManager _sniperInfoRepositoryManager;
 
-        private MessageCache() {}
+        private MessageCache()
+        {
+            _clientRepository = new SniperInfoRepository();
+            _sniperInfoRepositoryManager = new SniperInfoRepositoryManager(_clientRepository);
+
+        }
 
         public List<SniperInfo> FindUnSentMessages(List<SniperInfo> sniperInfos)
         {
             return sniperInfos.Where(sniperInfo => !IsSentAlready(sniperInfo)).ToList();
         }
 
-        private static bool IsSentAlready(SniperInfo sniperInfo)
+        private bool IsSentAlready(SniperInfo sniperInfo)
         {
-            var oldSniperInfo = _clientRepository.Find(sniperInfo);
-            if (oldSniperInfo != null)
-            {
-                Log.Trace($"Skipping duplicate {sniperInfo}");
-                return true;
-            }
-            _clientRepository.Increase(sniperInfo);
-            return false;
+            return !_sniperInfoRepositoryManager.AddToRepository(sniperInfo);
         }
 
         internal void Add(SniperInfo sniperInfo)
         {
-            _clientRepository.Increase(sniperInfo);
+            _sniperInfoRepositoryManager.AddToRepository(sniperInfo);
         }
     }
 }

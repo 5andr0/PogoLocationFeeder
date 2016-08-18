@@ -29,41 +29,47 @@ namespace PogoLocationFeederTests.Tests
     {
         [TestMethod]
         public void FindUnSentMessagesTest()
-        {
+         {
             var messageCache = MessageCache.Instance;
             var sniperInfo = new SniperInfo
             {
                 Latitude = 1,
                 Longitude = 2,
-                ExpirationTimestamp = DateTime.Now.AddMilliseconds(100)
+                ExpirationTimestamp = DateTime.Now.AddMilliseconds(100),
+                ReceivedTimeStamp = DateTime.Now
             };
-
             var sniperInfo2 = new SniperInfo
             {
                 Latitude = 1,
-                Longitude = 2
+                Longitude = 2,
+                ReceivedTimeStamp = DateTime.Now
             };
 
             var differntSniperInfo = new SniperInfo
             {
                 Latitude = 4,
                 Longitude = 5,
-                ExpirationTimestamp = DateTime.Now.AddMilliseconds(100)
+                ExpirationTimestamp = DateTime.Now.AddMilliseconds(100),
+                ReceivedTimeStamp = DateTime.Now
             };
 
             var unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {sniperInfo});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(1, unsentMessages.Count);
+            Assert.AreEqual(1, MessageCache.Instance._clientRepository.Count());
 
             unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {sniperInfo2});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(0, unsentMessages.Count);
+            Assert.AreEqual(1, MessageCache.Instance._clientRepository.Count());
 
             unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {differntSniperInfo});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(1, unsentMessages.Count);
+            Assert.AreEqual(2, MessageCache.Instance._clientRepository.Count());
 
-            Thread.Sleep(110);
+            Thread.Sleep(200);
+            Assert.AreEqual(0, MessageCache.Instance._clientRepository.Count());
 
             unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {sniperInfo2});
             Assert.IsNotNull(unsentMessages);

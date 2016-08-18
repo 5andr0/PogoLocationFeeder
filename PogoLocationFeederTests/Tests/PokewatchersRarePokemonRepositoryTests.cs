@@ -17,12 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder.Repository;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PogoLocationFeeder.Repository.Tests
 {
@@ -32,7 +29,7 @@ namespace PogoLocationFeeder.Repository.Tests
         [TestMethod()]
         public void FindAllTest()
         {
-            var pokeWatchersRareRepository = new PokewatchersRarePokemonRepository();
+            var pokeWatchersRareRepository = new PokeWatchersRarePokemonRepository();
             var sniperInfos = pokeWatchersRareRepository.FindAll();
 
             Assert.IsNotNull(sniperInfos);

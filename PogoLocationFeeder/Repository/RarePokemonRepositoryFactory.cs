@@ -40,7 +40,7 @@ namespace PogoLocationFeeder.Repository
             }
             if (GlobalSettings.UsePokewatchers)
             {
-                rarePokemonRepositories.Add(new PokewatchersRarePokemonRepository());
+                rarePokemonRepositories.Add(new PokeWatchersRarePokemonRepository());
             }
             if (GlobalSettings.UsePokemonGoIVClub)
             {

@@ -25,6 +25,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
 using WebSocket4Net;
@@ -118,7 +119,8 @@ namespace PogoLocationFeeder.Repository
                     {
                         return null;
                     }
-                    sniperInfo.ExpirationTimestamp = untilTime;
+                    sniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < untilTime ?
+                        DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) : untilTime;
                 }
                 sniperInfo.ChannelInfo = new ChannelInfo {server = Channel};
                 return sniperInfo;

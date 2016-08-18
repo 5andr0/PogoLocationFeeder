@@ -27,6 +27,7 @@ namespace PogoLocationFeeder.Common
     {
         public const string PogoFeeder = "PogoFeeder";
         public const string Bot = "Bot";
+        public const int MaxExpirationInTheFuture = 15;
 
     }
 }

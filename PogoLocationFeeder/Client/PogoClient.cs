@@ -58,13 +58,13 @@ namespace PogoLocationFeeder.Client
                             var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
 
                             client.Send($"{timeStamp}:I've come to talk with you again:{filter}");
-                            GlobalSettings.Output.SetStatus($"Connected to: {GlobalSettings.ServerHost}");
+                            GlobalSettings.Output?.SetStatus($"Connected to: {GlobalSettings.ServerHost}");
                         };
 
                         client.Closed += (s, e) =>
                         {
                             Log.Warn("Connection to server lost");
-                            GlobalSettings.Output.SetStatus($"Connection lost: {GlobalSettings.ServerHost}");
+                            GlobalSettings.Output?.SetStatus($"Connection lost: {GlobalSettings.ServerHost}");
                             running = false;
                         };
                         client.MessageReceived += (s, e) =>

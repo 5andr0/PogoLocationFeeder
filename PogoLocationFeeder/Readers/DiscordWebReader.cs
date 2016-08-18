@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.Readers
@@ -44,6 +45,8 @@ namespace PogoLocationFeeder.Readers
             {
                 var response = request.GetResponse();
                 Log.Info($"Connection established. Waiting for data...");
+                GlobalSettings.Output?.SetStatus($"Connected to discord feed");
+
                 stream = response.GetResponseStream();
             }
             catch (WebException)

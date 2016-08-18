@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Common;
-using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Server;
 using POGOProtos.Enums;
 
@@ -36,7 +33,7 @@ namespace PogoLocationFeeder.Helper
                 Log.Trace($"Skipped {sniperInfo} because verifiedOnly is on, but this isn't verified");
                 return false;
             }
-            if (channels != null && !MatchesChannel(channels, sniperInfo.ChannelInfo))
+            if (channels != null && !MatchesChannel(channels, sniperInfo.GetAllChannelInfos()))
             {
                 Log.Trace($"Skipped {sniperInfo} because the channel doesn't match the channel list");
                 return false;
@@ -48,13 +45,15 @@ namespace PogoLocationFeeder.Helper
             }
             return true;
         }
-        private static bool MatchesChannel(List<Channel> channels, ChannelInfo channelInfo)
+
+        private static bool MatchesChannel(List<Channel> channels, List<ChannelInfo> channelInfos )
         {
             foreach (Channel channel in channels)
             {
-                if ((channel == null && channelInfo == null) ||
-                    Object.Equals(channel.Server, channelInfo.server)
-                    && Object.Equals(channel.ChannelName, channelInfo.channel))
+                if (channelInfos.Any(channelInfo =>
+                    (channel == null && channelInfo == null) ||
+                           Object.Equals(channel.Server, channelInfo.server)
+                           && Object.Equals(channel.ChannelName, channelInfo.channel)))
                 {
                     return true;
                 }

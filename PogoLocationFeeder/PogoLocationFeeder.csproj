@@ -167,6 +167,7 @@
     <Compile Include="Helper\PokemonFilterToBinary.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
     <Compile Include="Helper\SniperInfoFilter.cs" />
+    <Compile Include="Helper\SniperInfoRepositoryManager.cs" />
     <Compile Include="Helper\UserAgentHelper.cs" />
     <Compile Include="Helper\VersionCheckState.cs" />
     <Compile Include="Input\InputService.cs" />
@@ -178,7 +179,7 @@
     <Compile Include="Repository\PokeSniperRarePokemonRepository.cs" />
     <Compile Include="Repository\PokemonGoIVClubRarePokemonRepository.cs" />
     <Compile Include="Repository\PokezzRarePokemonRepository.cs" />
-    <Compile Include="Repository\PokewatchersRarePokemonRepository.cs" />
+    <Compile Include="Repository\PokeWatchersRarePokemonRepository.cs" />
     <Compile Include="Repository\IRarePokemonRepository.cs" />
     <Compile Include="Repository\RarePokemonRepositoryFactory.cs" />
     <Compile Include="Repository\RarePokemonsFactory.cs" />

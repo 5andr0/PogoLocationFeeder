@@ -18,7 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using PogoLocationFeeder.Common;
+using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Helper
 {
@@ -28,28 +31,66 @@ namespace PogoLocationFeeder.Helper
         public static List<SniperInfo> ParseMessage(string message)
         {
             var snipeList = new List<SniperInfo>();
-            message = Regex.Replace(message, "\n|\r", " ");
-
-            var sniperInfo = new SniperInfo();
-            var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(message);
-            if (geoCoordinates == null)
+            var matcher = Regex.Match(message, "\n|\r");
+            if (matcher.Success)
             {
-                Log.Debug($"Can't get coords from line: {message}");
-                return snipeList;
+                var lines = message.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                List<SniperInfo> lineResults = new List<SniperInfo>();
+                foreach (var line in lines)
+                {
+                    var sniperInfo = ParseLine(line);
+                    if (sniperInfo != null)
+                    {
+                        lineResults.Add(sniperInfo);
+                    }
+                }
+                if (!lineResults.Any() || (lineResults.Count == 1 && lineResults[0].Id == PokemonId.Missingno))
+                {
+                    message = Regex.Replace(message, "\n|\r", " ");
+                    var sniperInfo = ParseLine(message);
+                    if (sniperInfo != null)
+                    {
+                        snipeList.Add(sniperInfo);
+                    }
+                }
+                else
+                {
+                    snipeList.AddRange(lineResults);
+                }
             }
-            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
-            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
-            var iv = IVParser.ParseIV(message);
-            sniperInfo.IV = iv;
-            var timeStamp = ParseTimestamp(message);
-            var pokemon = PokemonParser.ParsePokemon(message);
-            sniperInfo.Id = pokemon;
-            sniperInfo.ExpirationTimestamp = timeStamp;
-            snipeList.Add(sniperInfo);
-
+            else
+            {
+                var sniperInfo = ParseLine(message);
+                if (sniperInfo != null)
+                {
+                    snipeList.Add(sniperInfo);
+                }
+            }
             return snipeList;
         }
 
+        private static SniperInfo ParseLine(string line)
+        {
+            var sniperInfo = new SniperInfo();
+            var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(line);
+            if (geoCoordinates == null)
+            {
+                Log.Trace($"Can't get coords from line: {line}");
+                return null;
+            }
+            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
+            var iv = IVParser.ParseIV(line);
+            sniperInfo.IV = iv;
+            var timeStamp = ParseTimestamp(line);
+            var pokemon = PokemonParser.ParsePokemon(line);
+            sniperInfo.Id = pokemon;
+            sniperInfo.ExpirationTimestamp  =  DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < timeStamp ? 
+            DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) :
+            timeStamp;
+
+            return sniperInfo;
+        }
 
         private static DateTime ParseTimestamp(string input)
         {

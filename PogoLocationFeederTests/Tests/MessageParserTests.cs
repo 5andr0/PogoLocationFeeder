@@ -38,14 +38,23 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
             verifyParsing(
                 "Dratini 42.326919, -83.042221 IV91 confirmed",
                 42.326919, -83.042221, PokemonId.Dratini, 91, DateTime.MinValue);
-            verifyParsing("pokesniper2://dragonair/37.598656,140.42916", 37.598656, 140.42916, PokemonId.Dragonair, 0, default(DateTime))
-            ;
+            verifyParsing("pokesniper2://dragonair/37.598656,140.42916", 37.598656, 140.42916, PokemonId.Dragonair, 0,
+                default(DateTime));
         }
 
         [TestMethod]
         public void TestSpaces()
         {
             verifyParsing("Dratini  42.12345 -40.123456", 42.12345, -40.123456, PokemonId.Dratini, 0, DateTime.MinValue);
+        }
+
+        [TestMethod]
+        public void TestLines()
+        {
+            var sniperInfos = MessageParser.ParseMessage(
+                "Nidoqueen (38.923403,-77.033822)\n  Aerodactyl(-33.418821, -70.670706)\n Mr.Mime(40.417886, -3.682013)\n Blastoise(25.775769, -80.131038)");
+            Assert.IsNotNull(sniperInfos);
+            Assert.AreEqual(4, sniperInfos.Count);
         }
 
         [TestMethod]
