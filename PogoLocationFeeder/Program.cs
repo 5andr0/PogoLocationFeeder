@@ -302,7 +302,7 @@ namespace PogoLocationFeeder
             {
                 sniperInfosToSend =
                     SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
-                var filter = FilterFactory.Create();
+                var filter = FilterFactory.Create(_channelParser.Settings);
                 sniperInfosToSend = SniperInfoFilter.FilterUnmanaged(sniperInfosToSend, filter);
             }
             sniperInfosToSend = sniperInfosToSend.OrderBy(m => m.ExpirationTimestamp).ToList();

@@ -75,7 +75,7 @@ namespace PogoLocationFeeder.Helper
             var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(line);
             if (geoCoordinates == null)
             {
-                Log.Debug($"Can't get coords from line: {line}");
+                Log.Trace($"Can't get coords from line: {line}");
                 return null;
             }
             sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
