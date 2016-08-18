@@ -65,7 +65,7 @@ namespace PogoLocationFeeder
 
         public Program()
         {
-            _server._receivedViaClients += SniperInfoReceived;
+            _server.ReceivedViaClients += SniperInfoReceived;
             _pogoClient._receivedViaServer += SniperInfoReceived;
         }
 
@@ -305,11 +305,12 @@ namespace PogoLocationFeeder
                 var filter = FilterFactory.Create();
                 sniperInfosToSend = SniperInfoFilter.FilterUnmanaged(sniperInfosToSend, filter);
             }
+            sniperInfosToSend = sniperInfosToSend.OrderBy(m => m.ExpirationTimestamp).ToList();
+
             if (!GlobalSettings.IsServer)
             {
                 sniperInfosToSend = MessageCache.Instance.FindUnSentMessages(sniperInfosToSend);
             }
-            sniperInfosToSend = sniperInfosToSend.OrderBy(m => m.ExpirationTimestamp).ToList();
             if (sniperInfosToSend.Any())
             {
                 if (GlobalSettings.IsServer)

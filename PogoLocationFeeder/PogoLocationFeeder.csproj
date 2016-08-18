@@ -167,6 +167,7 @@
     <Compile Include="Helper\PokemonFilterToBinary.cs" />
     <Compile Include="Helper\PokemonParser.cs" />
     <Compile Include="Helper\SniperInfoFilter.cs" />
+    <Compile Include="Helper\SniperInfoRepositoryManager.cs" />
     <Compile Include="Helper\UserAgentHelper.cs" />
     <Compile Include="Helper\VersionCheckState.cs" />
     <Compile Include="Input\InputService.cs" />

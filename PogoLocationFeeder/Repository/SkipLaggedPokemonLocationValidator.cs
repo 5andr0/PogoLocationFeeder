@@ -96,7 +96,8 @@ namespace PogoLocationFeeder.Repository
                             newSniperInfo.Longitude = Math.Round(pokemonLocation.longitude, 7);
                             newSniperInfo.Verified = true;
                             newSniperInfo.ChannelInfo = sniperInfo.ChannelInfo;
-                            newSniperInfo.ExpirationTimestamp = FromUnixTime(pokemonLocation.expires);
+                            var timeStamp = FromUnixTime(pokemonLocation.expires);
+                            newSniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < timeStamp ? DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) : timeStamp;
                             newSniperInfos.Add(newSniperInfo);
                         }
                     }
@@ -145,7 +146,7 @@ namespace PogoLocationFeeder.Repository
                         {
                             Log.Info("Skiplagged is working properly.");
                         }
-                        Thread.Sleep(30*1000);
+                        Thread.Sleep(60*1000);
                     }
                 });
             }

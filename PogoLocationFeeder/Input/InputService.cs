@@ -59,6 +59,7 @@ namespace PogoLocationFeeder.Input
             if (GlobalSettings.IsManaged)
             {
                 MessageCache.Instance.Add(sniperInfo);
+
                 PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
                 return true;
             }

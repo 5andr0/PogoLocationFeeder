@@ -17,14 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Client;
-using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
@@ -35,22 +31,33 @@ namespace PogoLocationFeeder.Server
 {
     public class PogoServer
     {
-        public event EventHandler<SniperInfo> _receivedViaClients;
-        private WebSocketServer webSocketServer;
-        public static readonly SniperInfoRepository _serverRepository = new SniperInfoRepository();
-        const string timeFormat = "HH:mm:ss";
+        public event EventHandler<SniperInfo> ReceivedViaClients;
+        private WebSocketServer _webSocketServer;
+        private readonly SniperInfoRepository _serverRepository;
+        private readonly SniperInfoRepositoryManager _sniperInfoRepositoryManager;
         private List<PokemonId> _pokemonIds;
+
         public PogoServer()
         {
+            _serverRepository = new SniperInfoRepository();
+            _sniperInfoRepositoryManager = new SniperInfoRepositoryManager(_serverRepository);
         }
         public void Start()
         {
-            webSocketServer = new WebSocketServer();
-            webSocketServer.Setup(49000);
-            webSocketServer.Start();
-            webSocketServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
-            webSocketServer.NewSessionConnected += socketServer_NewSessionConnected;
-            webSocketServer.SessionClosed += socketServer_SessionClosed;
+            _webSocketServer = new WebSocketServer();
+            SuperSocket.SocketBase.Config.RootConfig rootConfig = new SuperSocket.SocketBase.Config.RootConfig();
+            var serverConfig = new SuperSocket.SocketBase.Config.ServerConfig();
+            serverConfig.Name = "PokeFeeder";
+            serverConfig.ServerTypeName = "WebSocketService";
+            serverConfig.Ip = "Any";
+            serverConfig.Port = 49000;
+            serverConfig.MaxRequestLength = 4096;
+            var socketServerFactory = new SuperSocket.SocketEngine.SocketServerFactory();
+            _webSocketServer.Setup(rootConfig, serverConfig, socketServerFactory);
+            _webSocketServer.Start();
+            _webSocketServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
+            _webSocketServer.NewSessionConnected += socketServer_NewSessionConnected;
+            _webSocketServer.SessionClosed += socketServer_SessionClosed;
             _pokemonIds = GlobalSettings.UseFilter
                 ? PokemonParser.ParsePokemons(new List<string>(GlobalSettings.PokekomsToFeedFilter))
                 : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
@@ -60,13 +67,13 @@ namespace PogoLocationFeeder.Server
         {
             var uploadFilter = JsonConvert.SerializeObject(ServerUploadFilterFactory.Create(_pokemonIds));
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:{uploadFilter}");
-            Log.Info($"[{webSocketServer.SessionCount}] Session started");
+            Log.Info($"[{_webSocketServer.SessionCount}] Session started");
 
         }
 
         private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
         {
-           Log.Info($"[{webSocketServer.SessionCount}] Session closed: " + closeReason);
+           Log.Info($"[{_webSocketServer.SessionCount}] Session closed: " + closeReason);
         }
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
@@ -114,40 +121,10 @@ namespace PogoLocationFeeder.Server
         {
             foreach (SniperInfo sniperInfo in sortedMessages)
             {
-                var oldSniperInfo = _serverRepository.Find(sniperInfo);
-
-                if (oldSniperInfo != null && sniperInfo.Verified && !oldSniperInfo.Verified)
-                {
-                    if (PokemonId.Missingno.Equals(oldSniperInfo.Id))
-                    {
-                        oldSniperInfo.Id = sniperInfo.Id;
-                    }
-                    oldSniperInfo.IV = sniperInfo.IV;
-                    UpdatePokemon(oldSniperInfo, false);
-                }
-                else
-                {
-                    UpdatePokemon(sniperInfo, oldSniperInfo == null);
-                }
+                _sniperInfoRepositoryManager.AddToRepository(sniperInfo);
             }
         }
 
-        private void UpdatePokemon(SniperInfo sniperInfo, bool discovered = true)
-        {
-            if (discovered || sniperInfo.ChannelInfo?.server == Constants.Bot)
-            {
-                var captures = _serverRepository.Increase(sniperInfo);
-                Log.Pokemon($"{(discovered ? "Discovered" : "Captured")}: {sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
-                            + " with " +
-                            (!sniperInfo.IV.Equals(default(double))
-                                ? $"{sniperInfo.IV}% IV"
-                                : "unknown IV")
-                            +
-                            (sniperInfo.ExpirationTimestamp != default(DateTime)
-                                ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                                : "") + $", Captures {captures}");
-            }
-        }
         private static long GetEpoch()
         {
             return (long) DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
@@ -156,11 +133,7 @@ namespace PogoLocationFeeder.Server
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
         {
-            EventHandler<SniperInfo> handler = _receivedViaClients;
-            if (handler != null)
-            {
-                handler(this, sniperInfo);
-            }
+            ReceivedViaClients?.Invoke(this, sniperInfo);
         }
 
     }

@@ -25,6 +25,8 @@
             <RowDefinition Height="10" />
             <RowDefinition Height="30" />
             <RowDefinition Height="10" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="10" />
             <RowDefinition Height="33" />
             <RowDefinition Height="10" />
             <RowDefinition Height="33"/>
@@ -88,17 +90,19 @@
         </ComboBox>
             <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">minutes.</TextBlock>
         </StackPanel>
-        <TextBlock Grid.Row="13" Grid.Column="1" VerticalAlignment="Center">Verify on Skiplagged</TextBlock>
+        <TextBlock Grid.Row="13" Grid.Column="1" VerticalAlignment="Center">Check on Skiplagged</TextBlock>
         <ToggleButton Grid.Row="13" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseSkiplagged}" VerticalAlignment="Center"></ToggleButton>
+        <TextBlock Grid.Row="15" Grid.Column="1" VerticalAlignment="Center">Verified only</TextBlock>
+        <ToggleButton Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding VerifiedOnly}" VerticalAlignment="Center"></ToggleButton>
 
-         <TextBlock Grid.Row="15" Grid.Column="1" VerticalAlignment="Center">Use Filter</TextBlock>
-        <ToggleButton Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}" VerticalAlignment="Center"></ToggleButton>
+        <TextBlock Grid.Row="17" Grid.Column="1" VerticalAlignment="Center">Use Pokemon filter</TextBlock>
+        <ToggleButton Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseFilter}" VerticalAlignment="Center"></ToggleButton>
 
-        <TextBlock Grid.Row="17" Grid.Column="1" VerticalAlignment="Center">Use Location Bounds Filter</TextBlock>
-        <ToggleButton Grid.Row="17" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseGeoLocationBoundsFilter}" VerticalAlignment="Center"></ToggleButton>
+        <TextBlock Grid.Row="19" Grid.Column="1" VerticalAlignment="Center">Use Location Bounds Filter</TextBlock>
+        <ToggleButton Grid.Row="19" Grid.Column="3" HorizontalAlignment="Left" IsChecked="{Binding UseGeoLocationBoundsFilter}" VerticalAlignment="Center"></ToggleButton>
 
-        <TextBlock Grid.Row="19" Grid.Column="1" VerticalAlignment="Center">SouthWest Bounds</TextBlock>
-        <StackPanel Grid.Row="19" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
+        <TextBlock Grid.Row="21" Grid.Column="1" VerticalAlignment="Center">SouthWest Bounds</TextBlock>
+        <StackPanel Grid.Row="21" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
             <TextBlock VerticalAlignment="Center">Latitude</TextBlock>
             <TextBox VerticalAlignment="Center" Text="{Binding SouthWest.Latitude, Mode=TwoWay}" Margin="10, 0"
                  PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
@@ -107,8 +111,8 @@
                  PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
         </StackPanel>
 
-        <TextBlock Grid.Row="21" Grid.Column="1" VerticalAlignment="Center">NorthEast Bounds</TextBlock>
-        <StackPanel Grid.Row="21" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
+        <TextBlock Grid.Row="23" Grid.Column="1" VerticalAlignment="Center">NorthEast Bounds</TextBlock>
+        <StackPanel Grid.Row="23" Grid.Column="3" DataContext="{Binding GeoLocationBounds}" Orientation="Horizontal">
             <TextBlock VerticalAlignment="Center">Latitude</TextBlock>
             <TextBox VerticalAlignment="Center" Text="{Binding NorthEast.Latitude, Mode=TwoWay}" Margin="10, 0"
                  PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
@@ -117,7 +121,7 @@
                  PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
         </StackPanel>
 
-        <Button Grid.Row="23" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+        <Button Grid.Row="25" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
 
     </Grid>
 </UserControl>

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using CloudFlareUtilities;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.Repository
@@ -93,7 +94,10 @@ namespace PogoLocationFeeder.Repository
             sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
             sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
-            sniperInfo.ExpirationTimestamp = Convert.ToDateTime(result.until);
+            var timeStamp = Convert.ToDateTime(result.until);
+            sniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < timeStamp ?
+                DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) : timeStamp;
+
             sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
             return sniperInfo;
         }

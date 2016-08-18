@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
@@ -28,10 +30,24 @@ namespace PogoLocationFeeder.Server
     {
         private const int MinutesToKeepInCache = 20;
         private const double CoordinatesOffsetAllowed = 0.000003;
+
+
         public SniperInfoRepository()
         {
+            StartCleanupThread();
         }
 
+        private void StartCleanupThread()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    RemoveExpired();
+                    Thread.Sleep(100);
+                }
+            }, TaskCreationOptions.LongRunning);
+        }
 
         private readonly ConcurrentDictionary<SniperInfo, int> _sniperInfoSet =
             new ConcurrentDictionary<SniperInfo, int>();
@@ -41,11 +57,6 @@ namespace PogoLocationFeeder.Server
             SniperInfo foundSniperInfo = null;
             foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
             {
-                if (IsExpired(sniperInfo))
-                {
-                    Log.Trace("Removing " + sniperInfo);
-                    Remove(sniperInfo);
-                }
                 if (SniperInfoEquals(sniperInfo,newSniperInfo))
                 {
                     foundSniperInfo = sniperInfo;
@@ -59,16 +70,17 @@ namespace PogoLocationFeeder.Server
             List<SniperInfo> sniperInfos = new List<SniperInfo>();
             foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
             {
-                if(IsExpired(sniperInfo))
-                {
-                    Log.Trace("Removing " + sniperInfo);
-                    Remove(sniperInfo);
-                } else if (ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
+                if (ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
                 {
                     sniperInfos.Add(sniperInfo);
                 }
             }
             return sniperInfos;
+        }
+
+        public int Count()
+        {
+            return _sniperInfoSet.Count;
         }
 
         private static long ToEpoch(DateTime datetime)
@@ -91,9 +103,9 @@ namespace PogoLocationFeeder.Server
             return count;
         }
 
-        public int Set(SniperInfo sniperInfo, int count)
+        public int Update(SniperInfo sniperInfo)
         {
-            Remove(sniperInfo);
+            int count= Remove(sniperInfo);
             _sniperInfoSet.TryAdd(sniperInfo, count);
             return count;
         }
@@ -103,6 +115,19 @@ namespace PogoLocationFeeder.Server
             int b = 0;
             _sniperInfoSet.TryRemove(toRemove, out b);
             return b;
+        }
+
+        public void RemoveExpired()
+        {
+            SniperInfo foundSniperInfo = null;
+            foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
+            {
+                if (IsExpired(sniperInfo))
+                {
+                    Log.Trace("Expired: " + sniperInfo);
+                    Remove(sniperInfo);
+                }
+            }
         }
 
         private static bool SniperInfoEquals(SniperInfo a, SniperInfo b)

@@ -126,6 +126,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
 
         public string RemoveMinutes { get; set; }
         public bool UseSkiplagged { get; set; }
+        public bool VerifiedOnly { get; set; }
         public bool UseFilter { get; set; }
         public bool UseGeoLocationBoundsFilter { get; set; }
         public LatLngBounds GeoLocationBounds { get; set; }
@@ -198,6 +199,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             Sniper2Exe = GlobalSettings.PokeSnipers2Exe;
             ShowLimit = GlobalSettings.ShowLimit;
             UseSkiplagged = GlobalSettings.VerifyOnSkiplagged;
+            VerifiedOnly = GlobalSettings.VerifiedOnly;
             RemoveMinutes = GlobalSettings.RemoveAfter.ToString();
             UseFilter = GlobalSettings.UseFilter;
             UseGeoLocationBoundsFilter = GlobalSettings.UseGeoLocationBoundsFilter;
@@ -224,6 +226,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             GlobalSettings.ShowLimit = ShowLimit;
             GlobalSettings.RemoveAfter = int.Parse(RemoveMinutes);
             GlobalSettings.VerifyOnSkiplagged = UseSkiplagged;
+            GlobalSettings.VerifiedOnly = VerifiedOnly;
             GlobalSettings.UseFilter = UseFilter;
             GlobalSettings.UseGeoLocationBoundsFilter = UseGeoLocationBoundsFilter;
             GlobalSettings.GeoLocationBounds = GeoLocationBounds;
