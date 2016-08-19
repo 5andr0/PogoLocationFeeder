@@ -60,6 +60,6 @@
             </WrapPanel>
 
         </Grid>
-        <WebBrowser DockPanel.Dock="Right" Visibility="{Binding MapViewVisibility}" Loaded="setupObjectForScripting" Name="webBrowser1" MinHeight="360" Width="Auto" Margin="5, 5" />
+        <WebBrowser DockPanel.Dock="Right" Visibility="{Binding MapViewVisibility}" Loaded="SetupObjectForScripting" Name="WebBrowser1" MinHeight="360" Width="Auto" Margin="5, 5" />
     </DockPanel>
 </UserControl>

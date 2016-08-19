@@ -42,7 +42,7 @@
             canvas = document.getElementById('map_canvas');
 
             //default center latlng
-            latlng = new google.maps.LatLng(1.3308656, 103.9086102);
+            latlng = new google.maps.LatLng(window.external.defaultlat, window.external.defaultlng);
 
             //Create an instance of the Map class
             map = new google.maps.Map(canvas, {

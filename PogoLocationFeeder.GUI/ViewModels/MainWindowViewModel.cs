@@ -171,7 +171,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public string AppThemeText { get; set; }
 
         public string SendText { get; set; }
-
+        
         public void ChangeTheme(string theme) {
             try {
                 switch (theme.ToLower()) {
@@ -181,9 +181,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
                     case "dark":
                         new PaletteHelper().SetLightDark(true);
                         break;
-
                 }
-
             } catch (Exception) {
                 
             }

@@ -38,8 +38,6 @@ namespace PogoLocationFeeder.GUI.Views
         public LatLngSettingView()
         {
             InitializeComponent();
-            Uri uri = new Uri(AppDomain.CurrentDomain.BaseDirectory + "static/map.html");
-            webBrowser1.Navigate(uri);
         }
 
         private void DoublelValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -48,15 +46,23 @@ namespace PogoLocationFeeder.GUI.Views
             e.Handled = double.TryParse(e.Text, out result);
         }
 
-        private void setupObjectForScripting(object sender, System.Windows.RoutedEventArgs e)
-        {            
-            webBrowser1.ObjectForScripting = new HtmlInteropInternalClass();
+        private void SetupObjectForScripting(object sender, System.Windows.RoutedEventArgs e)
+        {           
+            try {
+                var curDir = Path.Combine(Directory.GetCurrentDirectory(), "static/map.html");
+                WebBrowser1.Navigate(new Uri(curDir));
+            } catch (Exception) {
+                //hmmm
+            } 
+            WebBrowser1.ObjectForScripting = new HtmlInteropInternalClass();
         }
                 
         // Object used for communication from JS -> WPF
         [System.Runtime.InteropServices.ComVisibleAttribute(true)]
-        public class HtmlInteropInternalClass
-        {
+        public class HtmlInteropInternalClass {
+            public double defaultlat = GlobalSettings.GeoLocationBounds.NorthEast.Latitude;
+            public double defaultlng = GlobalSettings.GeoLocationBounds.SouthWest.Longitude;
+
             public void setMapInfo(double lat, double lng, double swLat, double swLng, double neLat, double neLng)
             {
                 var sw = new GeoCoordinates(swLat, swLng);
