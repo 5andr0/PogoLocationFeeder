@@ -60,14 +60,17 @@ namespace PogoLocationFeeder.GUI.Views
         // Object used for communication from JS -> WPF
         [System.Runtime.InteropServices.ComVisibleAttribute(true)]
         public class HtmlInteropInternalClass {
-            public double defaultlat = GlobalSettings.GeoLocationBounds.NorthEast.Latitude;
-            public double defaultlng = GlobalSettings.GeoLocationBounds.SouthWest.Longitude;
+            public double defaultlat = GlobalSettings.GeoLocationBounds.LatLng.Latitude;
+            public double defaultlng = GlobalSettings.GeoLocationBounds.LatLng.Longitude;
+            public int Zoom = GlobalSettings.GeoLocationBounds.Zoom;
 
-            public void setMapInfo(double lat, double lng, double swLat, double swLng, double neLat, double neLng)
+            public void setMapInfo(double lat, double lng, double swLat, double swLng, double neLat, double neLng, int zoom)
             {
                 var sw = new GeoCoordinates(swLat, swLng);
                 var ne = new GeoCoordinates(neLat, neLng);
-                ViewModels.MainWindowViewModel.Instance.LocationBoundsSettingToSave = new LatLngBounds(sw, ne);
+                var latlng = new GeoCoordinates(lat, lng);
+                var mapzoom = zoom;
+                ViewModels.MainWindowViewModel.Instance.LocationBoundsSettingToSave = new LatLngBounds(sw, ne, latlng, zoom);
             }
         }
     }

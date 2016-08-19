@@ -48,7 +48,7 @@
             map = new google.maps.Map(canvas, {
                 center: latlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
-                zoom: 12,
+                zoom: window.external.Zoom,
                 disableDefaultUI: false, //true,
                 zoomControl: true
             });
@@ -56,6 +56,7 @@
             //bind map idle event
             google.maps.event.addListener(map, 'idle', function () {
                 var latLng = map.getCenter();
+                var zoom = map.zoom;
                 var latLngBounds = map.getBounds();
                 var lat = latLng.lat();
                 var lng = latLng.lng();
@@ -65,7 +66,7 @@
                 var neLng = latLngBounds.getNorthEast().lng();
                 //console.log(lat, lng, swLat, swLng, neLat, neLng);
                 //invoke WPF InteropServices
-                window.external.setMapInfo(lat, lng, swLat, swLng, neLat, neLng);                
+                window.external.setMapInfo(lat, lng, swLat, swLng, neLat, neLng, zoom);                
             });
         }
         

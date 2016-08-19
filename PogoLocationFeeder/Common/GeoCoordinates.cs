@@ -58,15 +58,18 @@ namespace PogoLocationFeeder.Common
             this.NorthEast = new GeoCoordinates();
         }
 
-        public LatLngBounds(GeoCoordinates sw, GeoCoordinates ne)
+        public LatLngBounds(GeoCoordinates sw, GeoCoordinates ne, GeoCoordinates latlng, int zoom)
         {
             this.SouthWest = sw;
             this.NorthEast = ne;
+            this.LatLng = latlng;
+            this.Zoom = zoom;
         }
 
         public GeoCoordinates SouthWest { get; set; }
         public GeoCoordinates NorthEast { get; set; }
-
+        public GeoCoordinates LatLng { get; set; }
+        public int Zoom { get; set; } = 12;
         /// <summary>
         /// Determine if Lat/Lng in Bounds
         /// </summary>
