@@ -61,6 +61,13 @@ namespace PogoLocationFeeder.Server
             _pokemonIds = GlobalSettings.UseFilter
                 ? PokemonParser.ParsePokemons(new List<string>(GlobalSettings.PokekomsToFeedFilter))
                 : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
+            UpdateTitle();
+        }
+
+        private void UpdateTitle()
+        {
+            var sessionCount  = _webSocketServer?.SessionCount ?? 0;
+            Console.Title = $"PogoLocationFeeder Server: Sessions {sessionCount}";
         }
 
         private void socketServer_NewSessionConnected(WebSocketSession session)
@@ -68,12 +75,13 @@ namespace PogoLocationFeeder.Server
             var uploadFilter = JsonConvert.SerializeObject(ServerUploadFilterFactory.Create(_pokemonIds));
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:{uploadFilter}");
             Log.Info($"[{_webSocketServer.SessionCount}] Session started");
-
+            UpdateTitle();
         }
 
         private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
         {
            Log.Info($"[{_webSocketServer.SessionCount}] Session closed: " + closeReason);
+           UpdateTitle();
         }
 
         private void socketServer_NewMessageReceived(WebSocketSession session, string value)
@@ -85,10 +93,16 @@ namespace PogoLocationFeeder.Server
 
                 if (match.Success)
                 {
-                    SniperInfo sniperInfo = JsonConvert.DeserializeObject<SniperInfo>(match.Groups[2].Value);
-                    if (_pokemonIds == null || _pokemonIds.Contains(sniperInfo.Id))
+                    var sniperInfos= JsonConvert.DeserializeObject<List<SniperInfo>>(match.Groups[2].Value);
+                    if (sniperInfos != null && sniperInfos.Any())
                     {
-                        OnReceivedViaClients(sniperInfo);
+                        foreach (SniperInfo sniperInfo in sniperInfos)
+                        {
+                            if (_pokemonIds == null || _pokemonIds.Contains(sniperInfo.Id))
+                            {
+                                OnReceivedViaClients(sniperInfo);
+                            }
+                        }
                     }
                 }
                 else if (matchRequest.Success)

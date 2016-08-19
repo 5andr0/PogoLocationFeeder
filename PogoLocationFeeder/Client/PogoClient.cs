@@ -109,19 +109,25 @@ namespace PogoLocationFeeder.Client
                             for (int i = 0; i < 20; i++)
                             {
                                 Thread.Sleep(1000);
+                                List<SniperInfo> newSniperInfos = new List<SniperInfo>();
                                 SniperInfo sniperInfo = null;
                                 while (sniperInfosToSend.TryDequeue(out sniperInfo))
                                 {
                                     if (serverUploadFilter == null || serverUploadFilter.Matches(sniperInfo))
                                     {
+                                        newSniperInfos.Add(sniperInfo);
                                         Log.Info($"Uploading bot pokemon: {sniperInfo}");
-                                        client.Send($"{GetEpochNow()}:Disturb the sound of silence:" +
-                                                    JsonConvert.SerializeObject(sniperInfo));
                                     }
                                     else
                                     {
                                         Log.Info($"Not uploading bot capture because {sniperInfo.Id} is not in the server upload filter.");
                                     }
+                                }
+                                if (newSniperInfos.Any())
+                                {
+                                    client.Send($"{GetEpochNow()}:Disturb the sound of silence:" +
+                                    JsonConvert.SerializeObject(newSniperInfos));
+
                                 }
                             }
                             var filter = JsonConvert.SerializeObject(FilterFactory.Create(discordChannels));
