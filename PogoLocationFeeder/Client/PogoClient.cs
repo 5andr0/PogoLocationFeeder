@@ -106,7 +106,7 @@ namespace PogoLocationFeeder.Client
 
                         while (running)
                         {
-                            for (int i = 0; i < 10; i++)
+                            for (int i = 0; i < 20; i++)
                             {
                                 Thread.Sleep(1000);
                                 SniperInfo sniperInfo = null;

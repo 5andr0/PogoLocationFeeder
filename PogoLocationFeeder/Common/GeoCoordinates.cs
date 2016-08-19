@@ -92,7 +92,7 @@ namespace PogoLocationFeeder.Common
 
             if (!(inLat && inLong))
             {
-                Log.Info($"SnipeInfo Lat \"{pointLat}\", Lng \"{pointLat}\" not in bounds.");
+                Log.Trace($"SnipeInfo Lat \"{pointLat}\", Lng \"{pointLat}\" not in bounds.");
             }
 
             return (inLat && inLong);
