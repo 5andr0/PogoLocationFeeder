@@ -54,8 +54,7 @@ namespace PogoLocationFeeder.Repository
                 return sniperInfos;
             }
             var newSniperInfos = new List<SniperInfo>();
-            var filteredSniperInfos = SkipLaggedCache.FindUnSentMessages(sniperInfos);
-            foreach (var sniperInfo in filteredSniperInfos)
+            foreach (var sniperInfo in sniperInfos)
             {
                 if (sniperInfo.Verified)
                 {
@@ -213,27 +212,6 @@ namespace PogoLocationFeeder.Repository
                 };
             }
             return scanResult;
-        }
-        static class SkipLaggedCache
-        {
-            private static readonly SniperInfoRepository _skipLaggedSniperInfoRepository = new SniperInfoRepository();
-
-            public static List<SniperInfo> FindUnSentMessages(List<SniperInfo> sniperInfos)
-            {
-                return sniperInfos.Where(sniperInfo => !IsSentAlready(sniperInfo)).ToList();
-            }
-
-            private static bool IsSentAlready(SniperInfo sniperInfo)
-            {
-                var oldSniperInfo = _skipLaggedSniperInfoRepository.Find(sniperInfo);
-                if (oldSniperInfo != null)
-                {
-                    Log.Trace($"Skipping duplicate {sniperInfo}");
-                    return true;
-                }
-                _skipLaggedSniperInfoRepository.Increase(sniperInfo);
-                return false;
-            }
         }
 
         public class ScanResult

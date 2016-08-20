@@ -151,8 +151,8 @@ namespace PogoLocationFeeder.Server
         {
             var xMinuteAgo = DateTime.Now.AddMinutes(-1 * MinutesToKeepInCache);
             return (sniperInfo.ExpirationTimestamp == default(DateTime) &&
-                    sniperInfo.ReceivedTimeStamp < xMinuteAgo) ||
-                   (sniperInfo.ExpirationTimestamp != default(DateTime)
+                     sniperInfo.ReceivedTimeStamp < xMinuteAgo) ||
+                    (sniperInfo.ExpirationTimestamp != default(DateTime)
                     && sniperInfo.ExpirationTimestamp < DateTime.Now);
         }
     }

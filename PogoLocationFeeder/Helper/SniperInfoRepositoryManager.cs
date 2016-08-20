@@ -49,12 +49,12 @@ namespace PogoLocationFeeder.Helper
             {
                 oldSniperInfo.Id = sniperInfo.Id;
             }
-            if(oldSniperInfo.IV != default(double))
+            if(oldSniperInfo.IV == default(double))
                 oldSniperInfo.IV = sniperInfo.IV;
             if(!oldSniperInfo.Verified)
                 oldSniperInfo.Verified = sniperInfo.Verified;
             oldSniperInfo.OtherChannelInfos.Add(sniperInfo.ChannelInfo);
-            var captures = _sniperInfoRepository.Increase(sniperInfo);
+            var captures = _sniperInfoRepository.Increase(oldSniperInfo);
             Log.Pokemon($"Captured existing: {FormatPokemonLog(oldSniperInfo, sniperInfo.ChannelInfo, captures)}");
         }
 
@@ -85,7 +85,7 @@ namespace PogoLocationFeeder.Helper
             }
             if (updated)
             {
-                var captures = _sniperInfoRepository.Update(sniperInfo);
+                var captures = _sniperInfoRepository.Update(oldSniperInfo);
                 Log.Debug($"Discovered (DUP): {FormatPokemonLog(oldSniperInfo, sniperInfo.ChannelInfo, captures)}");
             }
         }

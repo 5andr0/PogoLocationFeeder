@@ -74,13 +74,13 @@ namespace PogoLocationFeeder.Server
         {
             var uploadFilter = JsonConvert.SerializeObject(ServerUploadFilterFactory.Create(_pokemonIds));
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:{uploadFilter}");
-            Log.Info($"[{_webSocketServer.SessionCount}] Session started");
+            Log.Info($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session started");
             UpdateTitle();
         }
 
         private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
         {
-           Log.Info($"[{_webSocketServer.SessionCount}] Session closed: " + closeReason);
+           Log.Info($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session closed: " + closeReason);
            UpdateTitle();
         }
 
@@ -124,7 +124,7 @@ namespace PogoLocationFeeder.Server
             }
             catch (Exception e)
             {
-                Log.Error("Error during message received: ", e);
+                Log.Error($"[Session {session.SessionID}]Error during message received: ", e);
                 session.Send("People talking without speaking");
             }
         }

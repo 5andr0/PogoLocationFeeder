@@ -300,8 +300,7 @@ namespace PogoLocationFeeder
             List<SniperInfo> sniperInfosToSend = sniperInfos;
             if (!GlobalSettings.IsManaged)
             {
-                sniperInfosToSend =
-                    SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
+                sniperInfosToSend = SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
                 var filter = FilterFactory.Create(_channelParser.Settings);
                 sniperInfosToSend = SniperInfoFilter.FilterUnmanaged(sniperInfosToSend, filter);
             }
