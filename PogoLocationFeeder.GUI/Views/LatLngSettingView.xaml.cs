@@ -59,10 +59,42 @@ namespace PogoLocationFeeder.GUI.Views
                 
         // Object used for communication from JS -> WPF
         [System.Runtime.InteropServices.ComVisibleAttribute(true)]
-        public class HtmlInteropInternalClass {
-            public double defaultlat = GlobalSettings.GeoLocationBounds.LatLng.Latitude;
-            public double defaultlng = GlobalSettings.GeoLocationBounds.LatLng.Longitude;
-            public int Zoom = GlobalSettings.GeoLocationBounds.Zoom;
+        public class HtmlInteropInternalClass
+        {
+            public double defaultlat;
+            public double defaultlng;
+            public int Zoom;
+
+            public HtmlInteropInternalClass()
+            {
+                if (GlobalSettings.GeoLocationBounds != null && GlobalSettings.GeoLocationBounds.LatLng != null &&
+                    GlobalSettings.GeoLocationBounds.LatLng.Latitude != default(double))
+                {
+                    defaultlat = GlobalSettings.GeoLocationBounds.LatLng.Latitude;
+                }
+                else
+                {
+                    defaultlat = 40.7728809861351;
+                }
+                if (GlobalSettings.GeoLocationBounds != null && GlobalSettings.GeoLocationBounds.LatLng != null &&
+     GlobalSettings.GeoLocationBounds.LatLng.Longitude != default(double))
+                {
+                    defaultlng = GlobalSettings.GeoLocationBounds.LatLng.Longitude;
+                }
+                else
+                {
+                    defaultlng = -73.96775443698732;
+                }
+                if (GlobalSettings.GeoLocationBounds != null && GlobalSettings.GeoLocationBounds.Zoom != default(double))
+                {
+                    Zoom = GlobalSettings.GeoLocationBounds.Zoom;
+                }
+                else
+                {
+                    Zoom = 13;
+                }
+            }
+
 
             public void setMapInfo(double lat, double lng, double swLat, double swLng, double neLat, double neLng, int zoom)
             {
