@@ -49,8 +49,10 @@ namespace PogoLocationFeeder.Helper
             {
                 oldSniperInfo.Id = sniperInfo.Id;
             }
-            if(oldSniperInfo.IV == default(double))
+            if (oldSniperInfo.IV == 0 && sniperInfo.IV != 0)
+            {
                 oldSniperInfo.IV = sniperInfo.IV;
+            }
             if (!oldSniperInfo.Verified)
             {
                 if (sniperInfo.Verified)
@@ -107,7 +109,7 @@ namespace PogoLocationFeeder.Helper
                 oldSniperInfo.Id = sniperInfo.Id;
                 updated = true;
             }
-            if (oldSniperInfo.IV == default(double) && sniperInfo.IV != default(double))
+            if (oldSniperInfo.IV == 0 && sniperInfo.IV != 0)
             {
                 oldSniperInfo.IV = sniperInfo.IV;
                 updated = true;
