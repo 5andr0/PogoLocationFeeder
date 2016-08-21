@@ -68,7 +68,7 @@ namespace PogoLocationFeeder.Helper
                    + (sniperInfo.Move2 != PokemonMove.MoveUnset && sniperInfo.Move2 != null ? $" Move2: {sniperInfo.Move2.ToString()}" : "")
                    + (sniperInfo.EncounterId != default(ulong) && sniperInfo.EncounterId != null ? $" EncounterId: {sniperInfo.EncounterId.ToString()}" : "")
                    + (sniperInfo.ExpirationTimestamp != default(DateTime)
-                       ? $" until {sniperInfo.ExpirationTimestamp.ToString()}"
+                       ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
                        : "");
         }
 

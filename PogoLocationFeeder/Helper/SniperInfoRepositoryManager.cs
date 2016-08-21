@@ -145,13 +145,13 @@ namespace PogoLocationFeeder.Helper
                    + " with " +
                    (!sniperInfo.IV.Equals(default(double))
                        ? $"{sniperInfo.IV}% IV"
-                       : "unknown IV"
+                       : "unknown IV")
                    + (sniperInfo.Move1 != PokemonMove.MoveUnset ? $" Move1: {sniperInfo.Move1.ToString()}" : "")
                    + (sniperInfo.Move2 != PokemonMove.MoveUnset ? $" Move2: {sniperInfo.Move2.ToString()}" : "")
                    + (sniperInfo.EncounterId != default(ulong) ? $" EncounterId: {sniperInfo.EncounterId.ToString()}" : "")
                    + (sniperInfo.ExpirationTimestamp != default(DateTime)
                        ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                       : "" + $", Captures {captures}"));
+                       : "" + $", Captures {captures}");
         }
     }
 }
