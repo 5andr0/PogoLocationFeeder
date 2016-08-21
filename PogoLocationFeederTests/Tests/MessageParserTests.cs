@@ -83,6 +83,19 @@ namespace PogoLocationFeeder.Helper.Helper.Tests
         DateTime.MinValue);
         }
 
+        [TestMethod]
+        public void TestMultiLine()
+        {
+            var sniperInfo = MessageParser.ParseMessage("Venusaur\n19.391878,-99.161831\nMr.Mime\n48.867716,2.342289");
+            Assert.IsNotNull(sniperInfo);
+            Assert.AreEqual(PokemonId.Venusaur, sniperInfo[0].Id);
+            Assert.AreEqual(19.391878, sniperInfo[0].Latitude);
+            Assert.AreEqual(-99.161831, sniperInfo[0].Longitude);
+            Assert.AreEqual(PokemonId.MrMime, sniperInfo[1].Id);
+            Assert.AreEqual(48.867716, sniperInfo[1].Latitude);
+            Assert.AreEqual(2.342289, sniperInfo[1].Longitude);
+        }
+
         private void verifyParsing(string text, double latitude, double longitude, PokemonId pokemonId, double iv,
             DateTime expiration)
         {

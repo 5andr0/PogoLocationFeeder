@@ -30,68 +30,58 @@ namespace PogoLocationFeeder.Helper
 
         public static List<SniperInfo> ParseMessage(string message)
         {
-            var snipeList = new List<SniperInfo>();
-            var matcher = Regex.Match(message, "\n|\r");
-            if (matcher.Success)
-            {
-                var lines = message.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-                List<SniperInfo> lineResults = new List<SniperInfo>();
-                foreach (var line in lines)
-                {
-                    var sniperInfo = ParseLine(line);
-                    if (sniperInfo != null)
-                    {
-                        lineResults.Add(sniperInfo);
-                    }
-                }
-                if (!lineResults.Any() || (lineResults.Count == 1 && lineResults[0].Id == PokemonId.Missingno))
-                {
-                    message = Regex.Replace(message, "\n|\r", " ");
-                    var sniperInfo = ParseLine(message);
-                    if (sniperInfo != null)
-                    {
-                        snipeList.Add(sniperInfo);
-                    }
-                }
-                else
-                {
-                    snipeList.AddRange(lineResults);
-                }
-            }
-            else
-            {
-                var sniperInfo = ParseLine(message);
-                if (sniperInfo != null)
-                {
-                    snipeList.Add(sniperInfo);
-                }
-            }
-            return snipeList;
+            var lines = message.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            return ParseMultiLine(lines);
         }
 
-        private static SniperInfo ParseLine(string line)
+        private static List<SniperInfo> ParseMultiLine(string[] lines)
         {
-            var sniperInfo = new SniperInfo();
-            var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(line);
-            if (geoCoordinates == null)
+            var sniperInfos = new List<SniperInfo>();
+            SniperInfo current = null;
+            foreach (var line in lines)
             {
-                Log.Trace($"Can't get coords from line: {line}");
-                return null;
-            }
-            sniperInfo.Latitude = Math.Round(geoCoordinates.Latitude, 7);
-            sniperInfo.Longitude = Math.Round(geoCoordinates.Longitude, 7);
-            var iv = IVParser.ParseIV(line);
-            sniperInfo.IV = iv;
-            var timeStamp = ParseTimestamp(line);
-            var pokemon = PokemonParser.ParsePokemon(line);
-            sniperInfo.Id = pokemon;
-            sniperInfo.ExpirationTimestamp  =  DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < timeStamp ? 
-            DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) :
-            timeStamp;
+                var pokemon = PokemonParser.ParsePokemon(line);
+                if (pokemon != PokemonId.Missingno)
+                {
+                    if (IsValid(current))
+                    {
+                        sniperInfos.Add(current);
+                    }
+                    current = new SniperInfo();
+                    current.Id = pokemon;
+                }
+                if (current != null)
+                {
+                    var geoCoordinates = GeoCoordinatesParser.ParseGeoCoordinates(line);
+                    if (geoCoordinates != null)
+                    {
+                        current.Latitude = Math.Round(geoCoordinates.Latitude, 7);
+                        current.Longitude = Math.Round(geoCoordinates.Longitude, 7);
 
-            return sniperInfo;
+                    }
+                    var iv = IVParser.ParseIV(line);
+                    current.IV = iv;
+                    var timeStamp = ParseTimestamp(line);
+                    if (timeStamp != default(DateTime))
+                    {
+                        current.ExpirationTimestamp = DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < timeStamp ?
+                        DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) :
+                        timeStamp;
+                    }
+                }
+            }
+            if (IsValid(current))
+            {
+                sniperInfos.Add(current);
+            }
+            return sniperInfos;
         }
 
+        private static bool IsValid(SniperInfo current)
+        {
+            return current != null && current.Id != PokemonId.Missingno && current.Longitude != default(double)
+                   && current.Latitude != default(double);
+        }
         private static DateTime ParseTimestamp(string input)
         {
             try
