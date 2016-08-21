@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -63,16 +64,13 @@ namespace PogoLocationFeeder.Readers
 
         public class AuthorStruct
         {
-            public string avatar;
-            public string discriminator;
             public string id;
-            public string username;
         }
 
         public class DiscordMessage
         {
             public string channel_id = "";
-            //public List<AuthorStruct> author;
+            public AuthorStruct author;
             public string content = "";
             public string id = "";
             public string timestamp = "";
