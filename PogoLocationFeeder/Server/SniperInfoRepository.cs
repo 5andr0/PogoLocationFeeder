@@ -98,10 +98,7 @@ namespace PogoLocationFeeder.Server
         public int Increase(SniperInfo sniperInfo)
         {
             int count = Remove(sniperInfo);
-            if (sniperInfo.ChannelInfo?.server == Constants.Bot)
-            {
-                count++;
-            }
+            count++;
             _sniperInfoSet.TryAdd(sniperInfo, count);
             return count;
         }

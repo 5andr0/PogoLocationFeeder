@@ -133,7 +133,7 @@ namespace PogoLocationFeeder.Helper
 
         private void AddNew(SniperInfo sniperInfo)
         {
-            var captures = _sniperInfoRepository.Increase(sniperInfo);
+            var captures = _sniperInfoRepository.Update(sniperInfo);
             Log.Pokemon($"Discovered: {FormatPokemonLog(sniperInfo,  sniperInfo.ChannelInfo, captures)}");
             if (GlobalSettings.Output != null)
                 GlobalSettings.Output.PrintPokemon(sniperInfo);
