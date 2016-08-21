@@ -151,7 +151,7 @@ namespace PogoLocationFeeder.Helper
                    + (sniperInfo.EncounterId != default(ulong) ? $" EncounterId: {sniperInfo.EncounterId.ToString()}" : "")
                    + (sniperInfo.ExpirationTimestamp != default(DateTime)
                        ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                       : "" + $", Captures {captures}");
+                       : "") + $", Captures {captures}";
         }
     }
 }
