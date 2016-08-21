@@ -116,7 +116,7 @@ namespace PogoLocationFeeder.Client
                                     if (serverUploadFilter == null || serverUploadFilter.Matches(sniperInfo))
                                     {
                                         newSniperInfos.Add(sniperInfo);
-                                        Log.Info($"Uploading bot pokemon: {sniperInfo}");
+                                        Log.Info($"Uploading bot pokemon: {sniperInfo.ToString()}");
                                     }
                                     else
                                     {

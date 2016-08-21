@@ -59,6 +59,41 @@ namespace PogoLocationFeeder.Helper
                     oldSniperInfo.VerifiedOn = DateTime.Now;
                 }
             }
+            if (oldSniperInfo.ExpirationTimestamp == default(DateTime))
+            {
+                if (sniperInfo.ExpirationTimestamp != default(DateTime))
+                {
+                    oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
+                }
+            }
+            if (oldSniperInfo.EncounterId == default(ulong))
+            {
+                if (sniperInfo.EncounterId != default(ulong))
+                {
+                    oldSniperInfo.EncounterId = sniperInfo.EncounterId;
+                }
+            }
+            if (oldSniperInfo.Move1 == PokemonMove.MoveUnset)
+            {
+                if (sniperInfo.Move1 != PokemonMove.MoveUnset)
+                {
+                    oldSniperInfo.Move1 = sniperInfo.Move1;
+                }
+            }
+            if (oldSniperInfo.Move2== PokemonMove.MoveUnset)
+            {
+                if (sniperInfo.Move2 != PokemonMove.MoveUnset)
+                {
+                    oldSniperInfo.Move2 = sniperInfo.Move2;
+                }
+            }
+            if (oldSniperInfo.SpawnPointId == default(string))
+            {
+                if (sniperInfo.SpawnPointId != default(string))
+                {
+                    oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
+                }
+            }
             oldSniperInfo.OtherChannelInfos.Add(sniperInfo.ChannelInfo);
             var captures = _sniperInfoRepository.Increase(oldSniperInfo);
             Log.Pokemon($"Captured existing: {FormatPokemonLog(oldSniperInfo, sniperInfo.ChannelInfo, captures)}");
@@ -110,11 +145,13 @@ namespace PogoLocationFeeder.Helper
                    + " with " +
                    (!sniperInfo.IV.Equals(default(double))
                        ? $"{sniperInfo.IV}% IV"
-                       : "unknown IV")
-                   +
-                   (sniperInfo.ExpirationTimestamp != default(DateTime)
+                       : "unknown IV"
+                   + (sniperInfo.Move1 != PokemonMove.MoveUnset ? $" Move1: {sniperInfo.Move1.ToString()}" : "")
+                   + (sniperInfo.Move2 != PokemonMove.MoveUnset ? $" Move2: {sniperInfo.Move2.ToString()}" : "")
+                   + (sniperInfo.EncounterId != default(ulong) ? $" EncounterId: {sniperInfo.EncounterId.ToString()}" : "")
+                   + (sniperInfo.ExpirationTimestamp != default(DateTime)
                        ? $" until {sniperInfo.ExpirationTimestamp.ToString(timeFormat)}"
-                       : "" + $", Captures {captures}");
+                       : "" + $", Captures {captures}"));
         }
     }
 }

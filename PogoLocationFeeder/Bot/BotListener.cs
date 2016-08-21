@@ -63,11 +63,21 @@ namespace PogoLocationFeeder.Bot
                     {
                         if (e.Message.Contains("PokemonCaptureEvent"))
                         {
-                            var pokemonCaptureEvent = JsonConvert.DeserializeObject<PokemonCaptureEvent>(e.Message, new JsonSerializerSettingsCultureInvariant());
-                            if (pokemonCaptureEvent.Attempt == 1)
+                            PokemonCaptureEvent pokemonCaptureEvent = null;
+                            try
+                            {
+                                pokemonCaptureEvent = JsonConvert.DeserializeObject<NewPokemonCaptureEvent>(e.Message,
+                                    new JsonSerializerSettingsCultureInvariant());
+                            }
+                            catch (Exception exception)
+                            {
+                                pokemonCaptureEvent = JsonConvert.DeserializeObject<PokemonCaptureEvent>(e.Message, new JsonSerializerSettingsCultureInvariant());
+                            }
+                            if (pokemonCaptureEvent != null)
                             {
                                 InputService.Instance.BotCapture(Map(pokemonCaptureEvent));
                             }
+
                         }
                     };
                     client.Error += (s, e) =>
@@ -95,11 +105,29 @@ namespace PogoLocationFeeder.Bot
             sniperInfo.Longitude = Math.Round(pokemonCaptureEvent.Longitude,7);
             sniperInfo.Verified = true;
             sniperInfo.VerifiedOn = DateTime.Now;
+            if (pokemonCaptureEvent is NewPokemonCaptureEvent)
+            {
+                var newPokemonCaptureEvent = (NewPokemonCaptureEvent) pokemonCaptureEvent;
+                sniperInfo.ExpirationTimestamp = FromUnixTime(newPokemonCaptureEvent.Expires);
+                sniperInfo.SpawnPointId = newPokemonCaptureEvent.SpawnPointId;
+                sniperInfo.Move1 = newPokemonCaptureEvent.Move1;
+                sniperInfo.Move2 = newPokemonCaptureEvent.Move2;
+                sniperInfo.EncounterId = newPokemonCaptureEvent.EncounterId;
+                if (newPokemonCaptureEvent.CatchTypeText != "normal")
+                {
+                    Log.Trace("Skipping pokemon because it was not a wild pokemon");
+                }
+            }
             return sniperInfo;
         }
+        private static DateTime FromUnixTime(double unixTime)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddMilliseconds(unixTime).ToLocalTime();
+        }
+
         public class PokemonCaptureEvent
         {
-
             public int Attempt;
             public int BallAmount;
             public string CatchType;
@@ -117,6 +145,16 @@ namespace PogoLocationFeeder.Bot
             public CatchPokemonResponse.Types.CatchStatus Status;
             public double Latitude;
             public double Longitude;
+        }
+
+        public class NewPokemonCaptureEvent : PokemonCaptureEvent
+        {
+            public string SpawnPointId;
+            public ulong EncounterId;
+            public PokemonMove Move1;
+            public PokemonMove Move2;
+            public long Expires;
+            public string CatchTypeText;
         }
     }
 

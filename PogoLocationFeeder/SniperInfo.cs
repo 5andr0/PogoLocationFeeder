@@ -53,13 +53,23 @@ namespace PogoLocationFeeder.Helper
 
         public override string ToString()
         {
-            return "SniperInfo: " +
-                   "Server: " + ChannelInfo?.server + ", channel: " + ChannelInfo?.channel+
-                    " id: " + Id
-                   + ", Latitude: " + Latitude.ToString("N6", CultureInfo.InvariantCulture)
-                   + ", Longitude: " + Longitude.ToString("N6", CultureInfo.InvariantCulture)
-                   + (IV != default(double) ? ", IV: " + IV + "%" : "")
-                   + (ExpirationTimestamp != default(DateTime) ? ", expiration: " + ExpirationTimestamp : "");
+            return FormatPokemonLog(this);
+        }
+
+        private static string FormatPokemonLog(SniperInfo sniperInfo)
+        {
+            const string timeFormat = "HH:mm:ss";
+            return $"{sniperInfo.ChannelInfo}: {sniperInfo.Id} at {sniperInfo.Latitude.ToString("N6", CultureInfo.InvariantCulture)},{sniperInfo.Longitude.ToString("N6", CultureInfo.InvariantCulture)}"
+                   + " with " +
+                   (!sniperInfo.IV.Equals(default(double))
+                       ? $"{sniperInfo.IV}% IV"
+                       : "unknown IV")
+                   + (sniperInfo.Move1 != PokemonMove.MoveUnset && sniperInfo.Move1 != null ? $" Move1: {sniperInfo.Move1.ToString()}" : "")
+                   + (sniperInfo.Move2 != PokemonMove.MoveUnset && sniperInfo.Move2 != null ? $" Move2: {sniperInfo.Move2.ToString()}" : "")
+                   + (sniperInfo.EncounterId != default(ulong) && sniperInfo.EncounterId != null ? $" EncounterId: {sniperInfo.EncounterId.ToString()}" : "")
+                   + (sniperInfo.ExpirationTimestamp != default(DateTime)
+                       ? $" until {sniperInfo.ExpirationTimestamp.ToString()}"
+                       : "");
         }
 
         public List<ChannelInfo> GetAllChannelInfos()
@@ -72,5 +82,7 @@ namespace PogoLocationFeeder.Helper
             channelInfos.AddRange(OtherChannelInfos);
             return channelInfos;
         }
+
+
     }
 }
