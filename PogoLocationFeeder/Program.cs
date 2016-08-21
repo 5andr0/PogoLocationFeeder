@@ -111,6 +111,10 @@ namespace PogoLocationFeeder
                     });
                     StartBotListeners();
                 }
+                else if(GlobalSettings.VerifyOnSkiplagged)
+                {
+                    SkipLaggedPokemonLocationValidator.Instance.StartVerifierThread();
+                }
                 ClientWriter.Instance.StartNet(GlobalSettings.Port);
                 Log.Info($"Starting with Port: {GlobalSettings.Port}");
 

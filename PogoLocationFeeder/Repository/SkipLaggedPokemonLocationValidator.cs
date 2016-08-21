@@ -39,7 +39,6 @@ namespace PogoLocationFeeder.Repository
 
         private SkipLaggedPokemonLocationValidator()
         {
-            StartVerifierThread();
         }
 
         public List<SniperInfo> FilterNonAvailableAndUpdateMissingPokemonId(List<SniperInfo> sniperInfos)
@@ -121,7 +120,7 @@ namespace PogoLocationFeeder.Repository
                    scanResult.pokemons != null && scanResult.pokemons.Any();
         }
 
-        private void StartVerifierThread()
+        public void StartVerifierThread()
         {
             if (GlobalSettings.VerifyOnSkiplagged)
             {
