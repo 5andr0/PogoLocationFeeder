@@ -329,7 +329,7 @@ namespace PogoLocationFeeder
             while (true)
             {
                 Thread.Sleep(delay);
-                for (var retrys = 0; retrys <= 3; retrys++)
+                for (var retrys = 0; retrys <= 2; retrys++)
                 {
                     var pokeSniperList = rarePokemonRepository.FindAll();
                     if (pokeSniperList != null)

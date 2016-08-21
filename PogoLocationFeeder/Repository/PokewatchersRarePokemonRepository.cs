@@ -44,17 +44,8 @@ namespace PogoLocationFeeder.Repository
             try
             {
                 var userAgent = UserAgentHelper.GetRandomUseragent();
-                var content = getContent(userAgent);
-                var cookie = CreateCookie(content);
-                if (cookie != null)
-                {
-                    content = getContent(userAgent, cookie);
-                    return GetJsonList(content);
-                }
-                else
-                {
-                    Log.Debug("Could find a cookie for PokeWatchers");
-                }
+                var  content = getContent(userAgent);
+                return GetJsonList(content);
             }
             catch (Exception e)
             {
@@ -62,6 +53,31 @@ namespace PogoLocationFeeder.Repository
             }
             return null;
         }
+
+
+       // public List<SniperInfo> FallbackFindAll()
+       // {
+       //     try
+       //     {
+       //         var userAgent = UserAgentHelper.GetRandomUseragent();
+       //         var content = getContent(userAgent);
+       //         var cookie = CreateCookie(content);
+       //         if (cookie != null)
+       //         {
+       //             content = getContent(userAgent, cookie);
+       //             return GetJsonList(content);
+       //         }
+       //         else
+       //         {
+       //             Log.Debug("Could find a cookie for PokeWatchers");
+       //         }
+       //     }
+       //     catch (Exception e)
+       //     {
+       //         Log.Debug("Pokewatchers API error: {0}", e.Message);
+       //     }
+       //     return null;
+       // }
 
         private string CreateCookie(string content)
         {
