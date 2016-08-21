@@ -133,6 +133,7 @@ namespace PogoLocationFeeder.Writers
                     catch (Exception e)
                     {
                         Log.Error($"Caught exception", e);
+                        _arrSocket.Remove(socket);
                     }
                 }
             }

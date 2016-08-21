@@ -50,7 +50,7 @@ namespace PogoLocationFeeder.Server
             serverConfig.Name = "PokeFeeder";
             serverConfig.ServerTypeName = "WebSocketService";
             serverConfig.Ip = "Any";
-            serverConfig.Port = 49000;
+            serverConfig.Port = GlobalSettings.OutgoingServerPort;
             serverConfig.MaxRequestLength = 4096;
             var socketServerFactory = new SuperSocket.SocketEngine.SocketServerFactory();
             _webSocketServer.Setup(rootConfig, serverConfig, socketServerFactory);

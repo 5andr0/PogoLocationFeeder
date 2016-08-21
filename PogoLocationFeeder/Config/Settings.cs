@@ -54,6 +54,7 @@ namespace PogoLocationFeeder.Config
         public static bool IsManaged = true;
         public static string ServerHost = "pokefeeder.live";
         public static int ServerPort = 49000;
+        public static int OutgoingServerPort = 49000;
         public static string PokeSnipers2Exe = "";
         public static int RemoveAfter = 15;
         public static int ShowLimit = 30;
@@ -103,6 +104,7 @@ namespace PogoLocationFeeder.Config
                 IsManaged = set.IsManaged;
                 ServerHost = set.ServerHost;
                 ServerPort = set.ServerPort;
+                OutgoingServerPort = set.OutgoingServerPort;
                 ShareBotCaptures = set.ShareBotCaptures;
                 BotWebSocketPorts = set.BotWebSocketPorts;
                 VerifiedOnly = set.VerifiedOnly;
@@ -248,18 +250,17 @@ namespace PogoLocationFeeder.Config
         [DefaultValue("pokefeeder.live")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ServerHost = GlobalSettings.ServerHost;
-
         [DefaultValue(49000)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int ServerPort = GlobalSettings.ServerPort;
-
+        [DefaultValue(49000)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int OutgoingServerPort = GlobalSettings.OutgoingServerPort;
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ShareBotCaptures = GlobalSettings.ShareBotCaptures;
-
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public List<int> BotWebSocketPorts = GlobalSettings.BotWebSocketPorts;
-
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool VerifiedOnly = GlobalSettings.VerifiedOnly;
