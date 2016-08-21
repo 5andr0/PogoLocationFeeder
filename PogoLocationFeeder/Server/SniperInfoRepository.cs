@@ -65,12 +65,15 @@ namespace PogoLocationFeeder.Server
             return foundSniperInfo;
         }
 
-        public List<SniperInfo> FindAllNew(long lastReceived)
+        public List<SniperInfo> FindAllNew(long lastReceived, bool findNewVerified = false)
         {
             List<SniperInfo> sniperInfos = new List<SniperInfo>();
             foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
             {
                 if (ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
+                {
+                    sniperInfos.Add(sniperInfo);
+                } else if(findNewVerified && ToEpoch(sniperInfo.VerifiedOn) > lastReceived)
                 {
                     sniperInfos.Add(sniperInfo);
                 }

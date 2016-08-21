@@ -110,7 +110,7 @@ namespace PogoLocationFeeder.Server
                     Filter filter = JsonConvert.DeserializeObject<Filter>(matchRequest.Groups[2].Value);
 
                     var lastReceived = Convert.ToInt64(matchRequest.Groups[1].Value);
-                    var sniperInfos = _serverRepository.FindAllNew(lastReceived);
+                    var sniperInfos = _serverRepository.FindAllNew(lastReceived, filter.VerifiedOnly);
 
                     var sniperInfoToSend = SniperInfoFilter.FilterUnmanaged(sniperInfos, filter);
 

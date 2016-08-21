@@ -94,6 +94,7 @@ namespace PogoLocationFeeder.Bot
             sniperInfo.Latitude = Math.Round(pokemonCaptureEvent.Latitude,7);
             sniperInfo.Longitude = Math.Round(pokemonCaptureEvent.Longitude,7);
             sniperInfo.Verified = true;
+            sniperInfo.VerifiedOn = DateTime.Now;
             return sniperInfo;
         }
         public class PokemonCaptureEvent

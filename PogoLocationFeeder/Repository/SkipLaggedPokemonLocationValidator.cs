@@ -94,6 +94,7 @@ namespace PogoLocationFeeder.Repository
                             newSniperInfo.Latitude = Math.Round(pokemonLocation.latitude, 7);
                             newSniperInfo.Longitude = Math.Round(pokemonLocation.longitude, 7);
                             newSniperInfo.Verified = true;
+                            newSniperInfo.VerifiedOn = DateTime.Now;
                             newSniperInfo.ChannelInfo = sniperInfo.ChannelInfo;
                             var timeStamp = FromUnixTime(pokemonLocation.expires);
                             newSniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < timeStamp ? DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) : timeStamp;

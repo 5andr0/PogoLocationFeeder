@@ -51,8 +51,14 @@ namespace PogoLocationFeeder.Helper
             }
             if(oldSniperInfo.IV == default(double))
                 oldSniperInfo.IV = sniperInfo.IV;
-            if(!oldSniperInfo.Verified)
-                oldSniperInfo.Verified = sniperInfo.Verified;
+            if (!oldSniperInfo.Verified)
+            {
+                if (sniperInfo.Verified)
+                {
+                    oldSniperInfo.Verified = sniperInfo.Verified;
+                    oldSniperInfo.VerifiedOn = DateTime.Now;
+                }
+            }
             oldSniperInfo.OtherChannelInfos.Add(sniperInfo.ChannelInfo);
             var captures = _sniperInfoRepository.Increase(oldSniperInfo);
             Log.Pokemon($"Captured existing: {FormatPokemonLog(oldSniperInfo, sniperInfo.ChannelInfo, captures)}");
