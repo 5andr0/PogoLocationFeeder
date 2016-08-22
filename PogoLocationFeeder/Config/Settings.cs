@@ -48,7 +48,7 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokemonGoIVClub = true;
         public static bool UseFilter = true;
         public static bool UseGeoLocationBoundsFilter = false;
-        public static LatLngBounds GeoLocationBounds = new LatLngBounds(new GeoCoordinates(1.237759, 103.608435), new GeoCoordinates(1.471575, 104.044219), new GeoCoordinates(1.237759, 104.044219), 12);
+        public static LatLngBounds GeoLocationBounds = new LatLngBounds(new GeoCoordinates(40.71461026176555, -74.033173578125), new GeoCoordinates(40.750381950874413, -73.981846826416017));
         public static string AppTheme = "Dark";
         public static bool IsServer = false;
         public static bool IsManaged = true;

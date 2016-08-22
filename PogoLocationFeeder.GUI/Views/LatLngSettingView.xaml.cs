@@ -17,16 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
-using PogoLocationFeeder.GUI.Properties;
 using UserControl = System.Windows.Controls.UserControl;
-using PogoLocationFeeder.Helper;
-using System.Security.Permissions;
 
 namespace PogoLocationFeeder.GUI.Views
 {
@@ -46,63 +42,51 @@ namespace PogoLocationFeeder.GUI.Views
             e.Handled = double.TryParse(e.Text, out result);
         }
 
-        private void SetupObjectForScripting(object sender, System.Windows.RoutedEventArgs e)
-        {           
-            try {
-                var curDir = Path.Combine(Directory.GetCurrentDirectory(), "static/map.html");
-                WebBrowser1.Navigate(new Uri(curDir));
-            } catch (Exception) {
-                //hmmm
-            } 
-            WebBrowser1.ObjectForScripting = new HtmlInteropInternalClass();
+        private void SetupObjectForScripting(object sender, EventArgs e)
+        {
+
         }
-                
+
+        private void OnShow(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            try
+            {
+                WebBrowser1.NavigateToString(Properties.Resources.map);
+            }
+            catch (Exception)
+            {
+                //hmmm
+            }
+
+            WebBrowser1.ObjectForScripting = new HtmlInteropInternalClass();
+
+        }
+
         // Object used for communication from JS -> WPF
         [System.Runtime.InteropServices.ComVisibleAttribute(true)]
         public class HtmlInteropInternalClass
         {
             public double defaultlat;
             public double defaultlng;
-            public int Zoom;
+            public double swLat;
+            public double swLng;
+            public double neLat;
+            public double neLng;
 
             public HtmlInteropInternalClass()
             {
-                if (GlobalSettings.GeoLocationBounds != null && GlobalSettings.GeoLocationBounds.LatLng != null &&
-                    GlobalSettings.GeoLocationBounds.LatLng.Latitude != default(double))
-                {
-                    defaultlat = GlobalSettings.GeoLocationBounds.LatLng.Latitude;
-                }
-                else
-                {
-                    defaultlat = 40.7728809861351;
-                }
-                if (GlobalSettings.GeoLocationBounds != null && GlobalSettings.GeoLocationBounds.LatLng != null &&
-     GlobalSettings.GeoLocationBounds.LatLng.Longitude != default(double))
-                {
-                    defaultlng = GlobalSettings.GeoLocationBounds.LatLng.Longitude;
-                }
-                else
-                {
-                    defaultlng = -73.96775443698732;
-                }
-                if (GlobalSettings.GeoLocationBounds != null && GlobalSettings.GeoLocationBounds.Zoom != default(double))
-                {
-                    Zoom = GlobalSettings.GeoLocationBounds.Zoom;
-                }
-                else
-                {
-                    Zoom = 13;
-                }
+                swLat = GlobalSettings.GeoLocationBounds?.SouthWest?.Latitude ?? 40.71461026176555;
+                swLng = GlobalSettings.GeoLocationBounds?.SouthWest?.Longitude ?? -74.033173578125;
+                neLat = GlobalSettings.GeoLocationBounds?.NorthEast?.Latitude ?? 40.750381950874413;
+                neLng = GlobalSettings.GeoLocationBounds?.NorthEast?.Longitude ?? -73.981846826416017;
             }
 
 
-            public void setMapInfo(double lat, double lng, double swLat, double swLng, double neLat, double neLng, int zoom)
+            public void setMapInfo(double swLat, double swLng, double neLat, double neLng)
             {
                 var sw = new GeoCoordinates(swLat, swLng);
                 var ne = new GeoCoordinates(neLat, neLng);
-                var latlng = new GeoCoordinates(lat, lng);
-                var mapzoom = zoom;
-                ViewModels.MainWindowViewModel.Instance.LocationBoundsSettingToSave = new LatLngBounds(sw, ne, latlng, zoom);
+                ViewModels.MainWindowViewModel.Instance.LocationBoundsSettingToSave = new LatLngBounds(sw, ne);
             }
         }
     }
