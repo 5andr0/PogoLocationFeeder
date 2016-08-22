@@ -103,22 +103,20 @@ namespace PogoLocationFeeder
                 });
             } else 
             {
-                if (GlobalSettings.IsManaged)
-                {
-                    Task.Run(() =>
-                    {
-                        _pogoClient.Start(_channelParser.Settings);
-                    });
-                    StartBotListeners();
-                }
-                else if(GlobalSettings.VerifyOnSkiplagged)
-                {
-                    SkipLaggedPokemonLocationValidator.Instance.StartVerifierThread();
-                }
                 ClientWriter.Instance.StartNet(GlobalSettings.Port);
                 Log.Info($"Starting with Port: {GlobalSettings.Port}");
-
             }
+            if (GlobalSettings.IsManaged)
+            {
+				Task.Run(() =>
+				{
+					_pogoClient.Start(_channelParser.Settings);
+				});
+				StartBotListeners();
+            } else if(GlobalSettings.VerifyOnSkiplagged)
+			{
+				SkipLaggedPokemonLocationValidator.Instance.StartVerifierThread();
+			}
             WebSourcesManager(settings);
 
             Console.Read();
