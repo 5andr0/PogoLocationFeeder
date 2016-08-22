@@ -46,7 +46,7 @@ namespace PogoLocationFeeder.Client
             }
             if (GlobalSettings.UsePokeSnipers)
             {
-                channelInfos.Add(new Channel() { Server = PokeSniperRarePokemonRepository.Channel });
+                channelInfos.Add(new Channel() { Server = PokeSnipersRarePokemonRepository.Channel });
             }
             if (GlobalSettings.UsePokemonGoIVClub)
             {
@@ -63,6 +63,10 @@ namespace PogoLocationFeeder.Client
             if (GlobalSettings.UsePokezz)
             {
                 channelInfos.Add(new Channel() { Server = PokezzRarePokemonRepository.Channel });
+            }
+            if (GlobalSettings.UsePokeSnipe)
+            {
+                channelInfos.Add(new Channel() { Server = PokeSnipeRarePokemonRepository.Channel });
             }
             channelInfos.Add(new Channel() { Server = Constants.PogoFeeder });
             channelInfos.Add(new Channel() { Server = Constants.Bot });

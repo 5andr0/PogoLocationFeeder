@@ -33,7 +33,11 @@ namespace PogoLocationFeederTests.Tests
         public void ReadAllTest()
         {
             var rarePokemonRepository = new PokezzRarePokemonRepository();
-            rarePokemonRepository.FindAll();
+            var sniperInfos = rarePokemonRepository.FindAll();
+
+            Assert.IsNotNull(sniperInfos);
+            Assert.IsTrue(sniperInfos.Any());
+            sniperInfos.ForEach(sniperInfo => Console.WriteLine(sniperInfo.ToString()));
         }
     }
 }

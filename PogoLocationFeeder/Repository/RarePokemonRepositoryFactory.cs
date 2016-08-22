@@ -28,7 +28,7 @@ namespace PogoLocationFeeder.Repository
             var rarePokemonRepositories = new List<IRarePokemonRepository>();
             if (GlobalSettings.UsePokeSnipers)
             {
-                rarePokemonRepositories.Add(new PokeSniperRarePokemonRepository());
+                rarePokemonRepositories.Add(new PokeSnipersRarePokemonRepository());
             }
             if (GlobalSettings.UseTrackemon)
             {
@@ -45,6 +45,10 @@ namespace PogoLocationFeeder.Repository
             if (GlobalSettings.UsePokemonGoIVClub)
             {
                 rarePokemonRepositories.Add(new PokemonGoIVClubRarePokemonRepository());
+            }
+            if (GlobalSettings.UsePokeSnipe)
+            {
+                rarePokemonRepositories.Add(new PokeSnipeRarePokemonRepository());
             }
             return rarePokemonRepositories;
         }

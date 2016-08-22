@@ -31,7 +31,7 @@ namespace PogoLocationFeederTests.Tests
         //This still can be used to test if the pokesnipers api works
         public void ReadAllTest()
         {
-            var rarePokemonRepository = new PokeSniperRarePokemonRepository();
+            var rarePokemonRepository = new PokeSnipersRarePokemonRepository();
             var sniperInfos = rarePokemonRepository.FindAll();
             Assert.IsNotNull(sniperInfos);
             Assert.IsTrue(sniperInfos.Any());

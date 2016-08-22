@@ -26,14 +26,13 @@ using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.Repository
 {
-    public class PokeSniperRarePokemonRepository : IRarePokemonRepository
+    public class PokeSnipersRarePokemonRepository : IRarePokemonRepository
     {
         //private const int timeout = 20000;
 
         private const string URL = "http://www.pokesnipers.com/api/v1/pokemon.json?referrer=home";
-        public const string Channel = "Pokesnipers";
 
-        public PokeSniperRarePokemonRepository()
+        public PokeSnipersRarePokemonRepository()
         {
         }
 
