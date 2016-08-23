@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Client;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using POGOProtos.Enums;
@@ -147,6 +148,14 @@ namespace PogoLocationFeeder.Server
 
         protected virtual void OnReceivedViaClients(SniperInfo sniperInfo)
         {
+            if (GlobalSettings.IsManaged && GlobalSettings.ShareBotCaptures)
+            {
+                if(Constants.Bot == sniperInfo.ChannelInfo?.server ||
+                        Constants.PogoFeeder == sniperInfo.ChannelInfo?.server)
+                {
+                    PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
+                }
+            }
             ReceivedViaClients?.Invoke(this, sniperInfo);
         }
 

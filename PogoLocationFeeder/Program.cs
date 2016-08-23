@@ -29,6 +29,7 @@ using log4net.Config;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Bot;
 using PogoLocationFeeder.Client;
+using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Readers;
@@ -124,7 +125,7 @@ namespace PogoLocationFeeder
 
         private void StartBotListeners()
         {
-            if (GlobalSettings.ShareBotCaptures)
+            if (GlobalSettings.ShareBotCaptures && !GlobalSettings.IsServer)
             {
                 List<int> ports = new List<int>(GlobalSettings.BotWebSocketPorts);
                 if (ports.Any())
