@@ -59,43 +59,44 @@ namespace PogoLocationFeeder.Helper
                 {
                     oldSniperInfo.Verified = sniperInfo.Verified;
                     oldSniperInfo.VerifiedOn = DateTime.Now;
+                    if (oldSniperInfo.ExpirationTimestamp == default(DateTime))
+                    {
+                        if (sniperInfo.ExpirationTimestamp != default(DateTime))
+                        {
+                            oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
+                        }
+                    }
+                    if (oldSniperInfo.EncounterId == default(ulong))
+                    {
+                        if (sniperInfo.EncounterId != default(ulong))
+                        {
+                            oldSniperInfo.EncounterId = sniperInfo.EncounterId;
+                        }
+                    }
+                    if (oldSniperInfo.Move1 == PokemonMove.MoveUnset)
+                    {
+                        if (sniperInfo.Move1 != PokemonMove.MoveUnset)
+                        {
+                            oldSniperInfo.Move1 = sniperInfo.Move1;
+                        }
+                    }
+                    if (oldSniperInfo.Move2 == PokemonMove.MoveUnset)
+                    {
+                        if (sniperInfo.Move2 != PokemonMove.MoveUnset)
+                        {
+                            oldSniperInfo.Move2 = sniperInfo.Move2;
+                        }
+                    }
+                    if (oldSniperInfo.SpawnPointId == default(string))
+                    {
+                        if (sniperInfo.SpawnPointId != default(string))
+                        {
+                            oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
+                        }
+                    }
                 }
             }
-            if (oldSniperInfo.ExpirationTimestamp == default(DateTime))
-            {
-                if (sniperInfo.ExpirationTimestamp != default(DateTime))
-                {
-                    oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
-                }
-            }
-            if (oldSniperInfo.EncounterId == default(ulong))
-            {
-                if (sniperInfo.EncounterId != default(ulong))
-                {
-                    oldSniperInfo.EncounterId = sniperInfo.EncounterId;
-                }
-            }
-            if (oldSniperInfo.Move1 == PokemonMove.MoveUnset)
-            {
-                if (sniperInfo.Move1 != PokemonMove.MoveUnset)
-                {
-                    oldSniperInfo.Move1 = sniperInfo.Move1;
-                }
-            }
-            if (oldSniperInfo.Move2== PokemonMove.MoveUnset)
-            {
-                if (sniperInfo.Move2 != PokemonMove.MoveUnset)
-                {
-                    oldSniperInfo.Move2 = sniperInfo.Move2;
-                }
-            }
-            if (oldSniperInfo.SpawnPointId == default(string))
-            {
-                if (sniperInfo.SpawnPointId != default(string))
-                {
-                    oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
-                }
-            }
+
             oldSniperInfo.OtherChannelInfos.Add(sniperInfo.ChannelInfo);
             var captures = _sniperInfoRepository.Increase(oldSniperInfo);
             Log.Pokemon($"Captured existing: {FormatPokemonLog(oldSniperInfo, sniperInfo.ChannelInfo, captures)}");
@@ -107,17 +108,6 @@ namespace PogoLocationFeeder.Helper
             if (PokemonId.Missingno.Equals(oldSniperInfo.Id) && !PokemonId.Missingno.Equals(sniperInfo.Id))
             {
                 oldSniperInfo.Id = sniperInfo.Id;
-                updated = true;
-            }
-            if (oldSniperInfo.IV == 0 && sniperInfo.IV != 0)
-            {
-                oldSniperInfo.IV = sniperInfo.IV;
-                updated = true;
-            }
-            if (oldSniperInfo.ExpirationTimestamp == default(DateTime) &&
-                sniperInfo.ExpirationTimestamp != default(DateTime))
-            {
-                oldSniperInfo.ExpirationTimestamp = sniperInfo.ExpirationTimestamp;
                 updated = true;
             }
             if (sniperInfo.ChannelInfo !=null && !oldSniperInfo.GetAllChannelInfos().Any(ci => object.Equals(ci.server, sniperInfo.ChannelInfo.server)
