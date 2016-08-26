@@ -66,7 +66,7 @@ namespace PogoLocationFeeder.Bot
                         {
                             if (e.Message.Contains("PokemonCaptureEvent") && !supportsDiscover)
                             {
-                                PokemonCaptureEvent pokemonCaptureEvent = null;
+                                NewPokemonCaptureEvent pokemonCaptureEvent = null;
                                 try
                                 {
                                     pokemonCaptureEvent =
@@ -75,10 +75,11 @@ namespace PogoLocationFeeder.Bot
                                 }
                                 catch (Exception exception)
                                 {
-                                    pokemonCaptureEvent = JsonConvert.DeserializeObject<PokemonCaptureEvent>(e.Message,
-                                        new JsonSerializerSettingsCultureInvariant());
+                                    //This probably means it's an old captureEvent
+                                    //We aren't really interested because some of the data is missing
                                 }
-                                if (pokemonCaptureEvent != null && pokemonCaptureEvent.Attempt == 1)
+                                if (pokemonCaptureEvent != null && pokemonCaptureEvent.Attempt == 1 &&
+                                    pokemonCaptureEvent.CatchTypeText == "normal")
                                 {
                                     InputService.Instance.BotCapture(Map(pokemonCaptureEvent));
                                 }
@@ -122,8 +123,8 @@ namespace PogoLocationFeeder.Bot
             sniperInfo.ChannelInfo = new ChannelInfo() {server = Constants.Bot};
             sniperInfo.IV = pokemonCaptureEvent.Perfection;
             sniperInfo.Id = pokemonCaptureEvent.Id;
-            sniperInfo.Latitude = Math.Round(pokemonCaptureEvent.Latitude,7);
-            sniperInfo.Longitude = Math.Round(pokemonCaptureEvent.Longitude,7);
+            sniperInfo.Latitude = Math.Round(pokemonCaptureEvent.Latitude, 7);
+            sniperInfo.Longitude = Math.Round(pokemonCaptureEvent.Longitude, 7);
             sniperInfo.Verified = true;
             sniperInfo.VerifiedOn = DateTime.Now;
             if (pokemonCaptureEvent is NewPokemonCaptureEvent)
@@ -145,7 +146,7 @@ namespace PogoLocationFeeder.Bot
         private static SniperInfo Map(PokemonDiscoverEvent pokemonDiscoverEvent)
         {
             var sniperInfo = new SniperInfo();
-            sniperInfo.ChannelInfo = new ChannelInfo() { server = Constants.Bot };
+            sniperInfo.ChannelInfo = new ChannelInfo() {server = Constants.Bot};
             sniperInfo.IV = pokemonDiscoverEvent.Perfection;
             sniperInfo.Id = pokemonDiscoverEvent.Id;
             sniperInfo.Latitude = Math.Round(pokemonDiscoverEvent.Latitude, 7);
@@ -159,6 +160,7 @@ namespace PogoLocationFeeder.Bot
             sniperInfo.EncounterId = pokemonDiscoverEvent.EncounterId;
             return sniperInfo;
         }
+
         private static DateTime FromUnixTime(double unixTime)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -202,15 +204,13 @@ namespace PogoLocationFeeder.Bot
 
 
         public class NewPokemonCaptureEvent : PokemonCaptureEvent
-            {
-                public string SpawnPointId;
-                public ulong EncounterId;
-                public PokemonMove Move1;
-                public PokemonMove Move2;
-                public long Expires;
-                public string CatchTypeText;
-            }
+        {
+            public string SpawnPointId;
+            public ulong EncounterId;
+            public PokemonMove Move1;
+            public PokemonMove Move2;
+            public long Expires;
+            public string CatchTypeText;
         }
-
-
+    }
 }
