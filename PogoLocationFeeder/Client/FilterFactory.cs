@@ -77,6 +77,7 @@ namespace PogoLocationFeeder.Client
             filter.VerifiedOnly = GlobalSettings.VerifiedOnly;
             filter.Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             filter.AreaBounds = GlobalSettings.UseGeoLocationBoundsFilter ? GlobalSettings.GeoLocationBounds : null;
+            filter.MinimumIV = GlobalSettings.MinimumIV;
             return filter;
         }
     }

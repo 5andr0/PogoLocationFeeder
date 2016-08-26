@@ -16,12 +16,12 @@ namespace PogoLocationFeeder.Helper
             var pokemonIds = PokemonFilterParser.ParseBinary(filter.Pokemon);
             var channels = filter.Channels;
             var areaBounds = filter.AreaBounds;
-
+            var minimumIV = filter.MinimumIV;
             return sniperInfos.Where(
-                s => Matches(s, pokemonIds, verifiedOnly, channels, areaBounds)).ToList();
+                s => Matches(s, pokemonIds, verifiedOnly, channels, areaBounds, minimumIV)).ToList();
         }
 
-        private static bool Matches(SniperInfo sniperInfo, List<PokemonId> pokemonIds,  bool verifiedOnly, List<Channel> channels, LatLngBounds areaBounds ) 
+        private static bool Matches(SniperInfo sniperInfo, List<PokemonId> pokemonIds,  bool verifiedOnly, List<Channel> channels, LatLngBounds areaBounds, double minimumIV ) 
         {
             if (!pokemonIds.Contains(sniperInfo.Id))
             {
@@ -41,6 +41,11 @@ namespace PogoLocationFeeder.Helper
             if (areaBounds != null && !areaBounds.Intersects(sniperInfo.Latitude, sniperInfo.Longitude))
             {
                 Log.Trace($"Skipped {sniperInfo} because the lat & long isn't the areabounds {areaBounds}");
+                return false;
+            }
+            if (minimumIV > sniperInfo.IV)
+            {
+                Log.Trace($"Skipped {sniperInfo} because the IV was lower than {minimumIV}");
                 return false;
             }
             return true;

@@ -27,6 +27,7 @@ namespace PogoLocationFeeder.Client
         public bool VerifiedOnly { get; set; }
         public string Version { get; set; }
         public LatLngBounds AreaBounds;
+        public double MinimumIV { get; set; } = 0.0;
     }
 
     public class Channel

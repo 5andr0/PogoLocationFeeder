@@ -49,6 +49,7 @@ namespace PogoLocationFeeder.Config
         public static bool UsePokeSnipe = true;
         public static bool UseFilter = true;
         public static bool UseGeoLocationBoundsFilter = false;
+        public static double MinimumIV = 0.0;
         public static LatLngBounds GeoLocationBounds = new LatLngBounds(new GeoCoordinates(40.71461026176555, -74.033173578125), new GeoCoordinates(40.750381950874413, -73.981846826416017));
         public static string AppTheme = "Dark";
         public static bool IsServer = false;
@@ -110,6 +111,7 @@ namespace PogoLocationFeeder.Config
                 ShareBotCaptures = set.ShareBotCaptures;
                 BotWebSocketPorts = set.BotWebSocketPorts;
                 VerifiedOnly = set.VerifiedOnly;
+                MinimumIV = set.MinimumIV;
             }
             else
             {
@@ -269,6 +271,9 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool VerifiedOnly = GlobalSettings.VerifiedOnly;
+        [DefaultValue(0.0)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public double MinimumIV = GlobalSettings.MinimumIV;
 
     }
 }

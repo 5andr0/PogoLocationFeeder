@@ -27,6 +27,8 @@
             <RowDefinition Height="10" />
             <RowDefinition Height="30" />
             <RowDefinition Height="10" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="10" />
             <RowDefinition Height="33" />
             <RowDefinition Height="10" />
             <RowDefinition Height="33"/>
@@ -123,8 +125,10 @@
             <TextBox VerticalAlignment="Center" Text="{Binding NorthEast.Longitude, Mode=TwoWay}" Margin="10, 0"
                  PreviewTextInput="DoubleValidationTextBox" Width="100" HorizontalAlignment="Left" />
         </StackPanel>
+        <TextBlock Grid.Row="25" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Minimum IV</TextBlock>
+        <TextBox  Grid.Row="25" Grid.Column="3" HorizontalAlignment="Left" Text="{Binding MinimumIV, Mode=TwoWay}" Width="100" PreviewTextInput="NumberValidationTextBox" />
 
-        <Button Grid.Row="25" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
+        <Button Grid.Row="27" Grid.Column="3"  Command="{Binding SaveCommand}">Save Settings</Button>
 
     </Grid>
 </UserControl>

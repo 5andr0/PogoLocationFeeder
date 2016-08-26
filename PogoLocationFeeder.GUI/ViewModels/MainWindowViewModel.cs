@@ -135,7 +135,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public bool UseGeoLocationBoundsFilter { get; set; }
         public LatLngBounds GeoLocationBounds { get; set; }
         public LatLngBounds LocationBoundsSettingToSave { get; set; }
-
+        public double MinimumIV { get; set; } = 0.0;
         public PokemonFilterModel SelectedPokemonFilter { get; set; }
         public PokemonFilterModel SelectedPokemonFiltered { get; set; }
         public int IndexPokemonToFilter { get; set; }
@@ -213,6 +213,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             VerifiedOnly = GlobalSettings.VerifiedOnly;
             RemoveMinutes = GlobalSettings.RemoveAfter.ToString();
             UseFilter = GlobalSettings.UseFilter;
+            MinimumIV = GlobalSettings.MinimumIV;
             UseGeoLocationBoundsFilter = GlobalSettings.UseGeoLocationBoundsFilter;
             GeoLocationBounds = GlobalSettings.GeoLocationBounds;
             AppThemeText = GlobalSettings.AppTheme;
@@ -239,6 +240,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
             GlobalSettings.VerifyOnSkiplagged = UseSkiplagged;
             GlobalSettings.VerifiedOnly = VerifiedOnly;
             GlobalSettings.UseFilter = UseFilter;
+            GlobalSettings.MinimumIV = MinimumIV;
             GlobalSettings.UseGeoLocationBoundsFilter = UseGeoLocationBoundsFilter;
             GlobalSettings.GeoLocationBounds = GeoLocationBounds;
             GlobalSettings.AppTheme = AppThemeText;

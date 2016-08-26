@@ -36,8 +36,7 @@ namespace PogoLocationFeeder.Server
         private WebSocketServer _webSocketServer;
         private readonly SniperInfoRepository _serverRepository;
         private readonly SniperInfoRepositoryManager _sniperInfoRepositoryManager;
-        private List<PokemonId> _pokemonIds;
-
+        private ServerUploadFilter _serverUploadFilter;
         public PogoServer()
         {
             _serverRepository = new SniperInfoRepository();
@@ -59,10 +58,13 @@ namespace PogoLocationFeeder.Server
             _webSocketServer.NewMessageReceived += new SessionHandler<WebSocketSession, string>(socketServer_NewMessageReceived);
             _webSocketServer.NewSessionConnected += socketServer_NewSessionConnected;
             _webSocketServer.SessionClosed += socketServer_SessionClosed;
-            _pokemonIds = GlobalSettings.UseFilter
-                ? PokemonParser.ParsePokemons(new List<string>(GlobalSettings.PokekomsToFeedFilter))
-                : Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
+
             UpdateTitle();
+            var pokemonIds = GlobalSettings.UseFilter
+? PokemonParser.ParsePokemons(new List<string>(GlobalSettings.PokekomsToFeedFilter))
+: Enum.GetValues(typeof(PokemonId)).Cast<PokemonId>().ToList();
+            _serverUploadFilter = ServerUploadFilterFactory.Create(pokemonIds);
+
         }
 
         private void UpdateTitle()
@@ -73,7 +75,7 @@ namespace PogoLocationFeeder.Server
 
         private void socketServer_NewSessionConnected(WebSocketSession session)
         {
-            var uploadFilter = JsonConvert.SerializeObject(ServerUploadFilterFactory.Create(_pokemonIds));
+            var uploadFilter = JsonConvert.SerializeObject(_serverUploadFilter);
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:{uploadFilter}");
             Log.Info($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session started");
             UpdateTitle();
@@ -99,9 +101,13 @@ namespace PogoLocationFeeder.Server
                     {
                         foreach (SniperInfo sniperInfo in sniperInfos)
                         {
-                            if (_pokemonIds == null || _pokemonIds.Contains(sniperInfo.Id))
+                            if (_serverUploadFilter.Matches(sniperInfo))
                             {
                                 OnReceivedViaClients(sniperInfo);
+                            }
+                            else
+                            {
+                                Log.Trace($"Not allowing upload of {sniperInfo} but it doesn't match the upload filter");
                             }
                         }
                     }

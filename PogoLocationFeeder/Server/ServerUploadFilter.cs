@@ -30,15 +30,24 @@ namespace PogoLocationFeeder.Server
     {
         public string Pokemon { get; set; }
         public LatLngBounds AreaBounds { get; set; }
+        public double MinimumIV { get; set; } = 0.0;
 
         public bool Matches(SniperInfo sniperInfo)
         {
             var pokemonIds = PokemonFilterParser.ParseBinary(Pokemon);
-            if (pokemonIds == null || pokemonIds.Contains(sniperInfo.Id))
+            if (pokemonIds != null && !pokemonIds.Contains(sniperInfo.Id))
             {
-                return AreaBounds == null || AreaBounds.Intersects(sniperInfo.Latitude, sniperInfo.Longitude);
+                return false;
             }
-            return false;
+            if (AreaBounds != null && !AreaBounds.Intersects(sniperInfo.Latitude, sniperInfo.Longitude))
+            {
+                return false;
+            }
+            if (MinimumIV > sniperInfo.IV)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
