@@ -1,51 +1,77 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PogoLocationFeeder.Helper;
+﻿/*
+PogoLocationFeeder gathers pokemon data from various sources and serves it to connected clients
+Copyright (C) 2016  PogoLocationFeeder Development Team <admin@pokefeeder.live>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PogoLocationFeeder.Helper;
 
-namespace PogoLocationFeeder.Helper.Tests
+namespace PogoLocationFeederTests.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class MessageCacheTests
     {
+        [TestMethod]
+        public void FindUnSentMessagesTest()
+         {
+            var messageCache = MessageCache.Instance;
+            var sniperInfo = new SniperInfo
+            {
+                Latitude = 1,
+                Longitude = 2,
+                ExpirationTimestamp = DateTime.Now.AddMilliseconds(100),
+                ReceivedTimeStamp = DateTime.Now
+            };
+            var sniperInfo2 = new SniperInfo
+            {
+                Latitude = 1,
+                Longitude = 2,
+                ReceivedTimeStamp = DateTime.Now
+            };
 
-        [TestMethod()]
-        public void findUnSentMessagesTest()
-        {
-            MessageCache messageCache = new MessageCache();
-            SniperInfo sniperInfo =  new SniperInfo();
-            sniperInfo.Latitude = 1;
-            sniperInfo.Longitude = 2;
-            sniperInfo.ExpirationTimestamp = DateTime.Now.AddMilliseconds(100);
+            var differntSniperInfo = new SniperInfo
+            {
+                Latitude = 4,
+                Longitude = 5,
+                ExpirationTimestamp = DateTime.Now.AddMilliseconds(100),
+                ReceivedTimeStamp = DateTime.Now
+            };
 
-            SniperInfo sniperInfo2= new SniperInfo();
-            sniperInfo2.Latitude = 1;
-            sniperInfo2.Longitude = 2;
-
-            SniperInfo differntSniperInfo = new SniperInfo();
-            differntSniperInfo.Latitude = 4;
-            differntSniperInfo.Longitude = 5;
-            differntSniperInfo.ExpirationTimestamp = DateTime.Now.AddMilliseconds(100);
-
-            List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(new List<SniperInfo>() { sniperInfo });
+            var unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {sniperInfo});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(1, unsentMessages.Count);
+            Assert.AreEqual(1, MessageCache.Instance._clientRepository.Count());
 
-            unsentMessages = messageCache.findUnSentMessages(new List<SniperInfo>() { sniperInfo2 });
+            unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {sniperInfo2});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(0, unsentMessages.Count);
+            Assert.AreEqual(1, MessageCache.Instance._clientRepository.Count());
 
-            unsentMessages = messageCache.findUnSentMessages(new List<SniperInfo>() { differntSniperInfo });
+            unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {differntSniperInfo});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(1, unsentMessages.Count);
+            Assert.AreEqual(2, MessageCache.Instance._clientRepository.Count());
 
-            Thread.Sleep(110);
+            Thread.Sleep(200);
+            Assert.AreEqual(0, MessageCache.Instance._clientRepository.Count());
 
-            unsentMessages = messageCache.findUnSentMessages(new List<SniperInfo>() { sniperInfo2 });
+            unsentMessages = messageCache.FindUnSentMessages(new List<SniperInfo> {sniperInfo2});
             Assert.IsNotNull(unsentMessages);
             Assert.AreEqual(1, unsentMessages.Count);
         }
