@@ -52,6 +52,7 @@ namespace PogoLocationFeeder.Server
             serverConfig.Ip = "Any";
             serverConfig.Port = GlobalSettings.OutgoingServerPort;
             serverConfig.MaxRequestLength = 4096;
+            serverConfig.MaxConnectionNumber = 100*1000;
             var socketServerFactory = new SuperSocket.SocketEngine.SocketServerFactory();
             _webSocketServer.Setup(rootConfig, serverConfig, socketServerFactory);
             _webSocketServer.Start();
