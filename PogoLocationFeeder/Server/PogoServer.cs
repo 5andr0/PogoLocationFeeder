@@ -37,6 +37,7 @@ namespace PogoLocationFeeder.Server
         private readonly SniperInfoRepository _serverRepository;
         private readonly SniperInfoRepositoryManager _sniperInfoRepositoryManager;
         private ServerUploadFilter _serverUploadFilter;
+
         public PogoServer()
         {
             _serverRepository = new SniperInfoRepository();

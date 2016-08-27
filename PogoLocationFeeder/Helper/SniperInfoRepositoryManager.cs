@@ -45,61 +45,32 @@ namespace PogoLocationFeeder.Helper
 
         private void AddCaptureExisting(SniperInfo oldSniperInfo, SniperInfo sniperInfo)
         {
-            if (PokemonId.Missingno.Equals(oldSniperInfo.Id))
+            if (!ValidateVerifiedSniperInfo(sniperInfo) && ValidateVerifiedSniperInfo(sniperInfo))
             {
                 oldSniperInfo.Id = sniperInfo.Id;
-            }
-            if (oldSniperInfo.IV == 0 && sniperInfo.IV != 0)
-            {
+                oldSniperInfo.Verified = sniperInfo.Verified;
                 oldSniperInfo.IV = sniperInfo.IV;
+                oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
+                oldSniperInfo.EncounterId = sniperInfo.EncounterId;
+                oldSniperInfo.Move1 = sniperInfo.Move1;
+                oldSniperInfo.Move2 = sniperInfo.Move2;
+                oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
             }
-            if (!oldSniperInfo.Verified)
-            {
-                if (sniperInfo.Verified)
-                {
-                    oldSniperInfo.Verified = sniperInfo.Verified;
-                    oldSniperInfo.VerifiedOn = DateTime.Now;
-                    if (oldSniperInfo.ExpirationTimestamp == default(DateTime))
-                    {
-                        if (sniperInfo.ExpirationTimestamp != default(DateTime))
-                        {
-                            oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
-                        }
-                    }
-                    if (oldSniperInfo.EncounterId == default(ulong))
-                    {
-                        if (sniperInfo.EncounterId != default(ulong))
-                        {
-                            oldSniperInfo.EncounterId = sniperInfo.EncounterId;
-                        }
-                    }
-                    if (oldSniperInfo.Move1 == PokemonMove.MoveUnset)
-                    {
-                        if (sniperInfo.Move1 != PokemonMove.MoveUnset)
-                        {
-                            oldSniperInfo.Move1 = sniperInfo.Move1;
-                        }
-                    }
-                    if (oldSniperInfo.Move2 == PokemonMove.MoveUnset)
-                    {
-                        if (sniperInfo.Move2 != PokemonMove.MoveUnset)
-                        {
-                            oldSniperInfo.Move2 = sniperInfo.Move2;
-                        }
-                    }
-                    if (oldSniperInfo.SpawnPointId == default(string))
-                    {
-                        if (sniperInfo.SpawnPointId != default(string))
-                        {
-                            oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
-                        }
-                    }
-                }
-            }
-
             oldSniperInfo.OtherChannelInfos.Add(sniperInfo.ChannelInfo);
             var captures = _sniperInfoRepository.Increase(oldSniperInfo);
             Log.Pokemon($"Captured existing: {FormatPokemonLog(oldSniperInfo, sniperInfo.ChannelInfo, captures)}");
+        }
+
+        private bool ValidateVerifiedSniperInfo(SniperInfo sniperInfo)
+        {
+            return !PokemonId.Missingno.Equals(sniperInfo.Id) 
+                && sniperInfo.Verified 
+                && sniperInfo.Move1 != PokemonMove.MoveUnset 
+                && sniperInfo.EncounterId != default(ulong) 
+                && sniperInfo.Move1 != PokemonMove.MoveUnset 
+                && sniperInfo.Move2 != PokemonMove.MoveUnset
+                && sniperInfo.SpawnPointId != default(string) 
+                && sniperInfo.IV > 0;
         }
 
         private void AddDuplicateDiscovery(SniperInfo oldSniperInfo, SniperInfo sniperInfo)

@@ -39,12 +39,12 @@ namespace PogoLocationFeeder.Server
 
         private void StartCleanupThread()
         {
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(async () =>
             {
                 while (true)
                 {
                     RemoveExpired();
-                    Thread.Sleep(100);
+                    await Task.Delay(100);
                 }
             }, TaskCreationOptions.LongRunning);
         }

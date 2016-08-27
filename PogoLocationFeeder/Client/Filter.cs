@@ -28,6 +28,8 @@ namespace PogoLocationFeeder.Client
         public string Version { get; set; }
         public LatLngBounds AreaBounds;
         public double MinimumIV { get; set; } = 0.0;
+        public bool UseUploadedPokemon { get; set; } = true;
+        public bool UnverifiedOnly { get; set; } = false;
     }
 
     public class Channel

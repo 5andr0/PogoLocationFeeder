@@ -17,20 +17,41 @@ namespace PogoLocationFeeder.Helper
             var channels = filter.Channels;
             var areaBounds = filter.AreaBounds;
             var minimumIV = filter.MinimumIV;
+            var useUploadedPokemon = filter.UseUploadedPokemon;
+            var unverifiedOnly = filter.UnverifiedOnly;
             return sniperInfos.Where(
-                s => Matches(s, pokemonIds, verifiedOnly, channels, areaBounds, minimumIV)).ToList();
+                s => Matches(s, pokemonIds, verifiedOnly, channels, areaBounds, minimumIV, useUploadedPokemon, unverifiedOnly)).ToList();
         }
 
-        private static bool Matches(SniperInfo sniperInfo, List<PokemonId> pokemonIds,  bool verifiedOnly, List<Channel> channels, LatLngBounds areaBounds, double minimumIV ) 
+        private static bool Matches(SniperInfo sniperInfo, List<PokemonId> pokemonIds,  
+            bool verifiedOnly, List<Channel> channels, LatLngBounds areaBounds, double minimumIV, bool useUploadedPokemon, 
+            bool unverifiedOnly) 
         {
-            if (!pokemonIds.Contains(sniperInfo.Id))
+
+            if (!useUploadedPokemon && (Constants.Bot == sniperInfo.ChannelInfo.server
+                || Constants.PogoFeeder == sniperInfo.ChannelInfo.server))
             {
-                Log.Trace($"Skipped {sniperInfo} because not in pokemon list");
+                Log.Trace($"Skipped {sniperInfo} because useUploadedPokemon is false.");
                 return false;
             }
             if (verifiedOnly && !sniperInfo.Verified)
             {
                 Log.Trace($"Skipped {sniperInfo} because verifiedOnly is on, but this isn't verified");
+                return false;
+            }
+            if (unverifiedOnly && sniperInfo.Verified)
+            {
+                Log.Trace($"Skipped {sniperInfo} because unverifiedOnly was true.");
+                return false;
+            }
+            if (minimumIV > sniperInfo.IV)
+            {
+                Log.Trace($"Skipped {sniperInfo} because the IV was lower than {minimumIV}");
+                return false;
+            }
+            if (!pokemonIds.Contains(sniperInfo.Id))
+            {
+                Log.Trace($"Skipped {sniperInfo} because not in pokemon list");
                 return false;
             }
             if (channels != null && !MatchesChannel(channels, sniperInfo.GetAllChannelInfos()))
@@ -41,11 +62,6 @@ namespace PogoLocationFeeder.Helper
             if (areaBounds != null && !areaBounds.Intersects(sniperInfo.Latitude, sniperInfo.Longitude))
             {
                 Log.Trace($"Skipped {sniperInfo} because the lat & long isn't the areabounds {areaBounds}");
-                return false;
-            }
-            if (minimumIV > sniperInfo.IV)
-            {
-                Log.Trace($"Skipped {sniperInfo} because the IV was lower than {minimumIV}");
                 return false;
             }
             return true;

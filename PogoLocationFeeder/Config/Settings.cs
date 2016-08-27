@@ -63,13 +63,15 @@ namespace PogoLocationFeeder.Config
         public static bool VerifyOnSkiplagged = true;
         public static bool ShareBotCaptures = true;
         public static bool VerifiedOnly = true;
+        public static bool UseUploadedPokemon = true;
+        public static bool UnverifiedOnly = false;
+
         public static List<string> PokekomsToFeedFilter;
         public static List<int> BotWebSocketPorts = new List<int>() { 14251 };
 
         public static bool SniperVisibility => IsOneClickSnipeSupported();
         public static GlobalSettings Default => new GlobalSettings();
         public static string ConfigFile = Path.Combine(Directory.GetCurrentDirectory(), "Config", "config.json");
-
         public static string FilterPath = Path.Combine(Directory.GetCurrentDirectory(), "Config", "filter.json");
 
 
@@ -112,6 +114,8 @@ namespace PogoLocationFeeder.Config
                 BotWebSocketPorts = set.BotWebSocketPorts;
                 VerifiedOnly = set.VerifiedOnly;
                 MinimumIV = set.MinimumIV;
+                UnverifiedOnly = set.UnverifedOnly;
+                UseUploadedPokemon = set.UseUploadedPokemon;
             }
             else
             {
@@ -274,6 +278,12 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(0.0)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public double MinimumIV = GlobalSettings.MinimumIV;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool UnverifedOnly = GlobalSettings.UnverifiedOnly;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool UseUploadedPokemon = GlobalSettings.UseUploadedPokemon;
 
     }
 }

@@ -215,7 +215,7 @@ namespace PogoLocationFeeder
                 catch (WebException)
                 {
                     Log.Warn($"Experiencing connection issues. Throttling...");
-                    Thread.Sleep(30 * 1000);
+                    await Task.Delay(30 * 1000);
                     _discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
@@ -225,7 +225,7 @@ namespace PogoLocationFeeder
                 }
                 finally
                 {
-                    Thread.Sleep(20 * 1000);
+                    await Task.Delay(20 * 1000);
                 }
             }
         }
@@ -295,7 +295,7 @@ namespace PogoLocationFeeder
                             Log.Warn($"Exception:", e);
                         }
                     }
-                    Thread.Sleep(delay);
+                    await Task.Delay(delay);
                 }
             }
         }
@@ -345,7 +345,7 @@ namespace PogoLocationFeeder
                         }
                         break;
                     }
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                 }
             }
         }

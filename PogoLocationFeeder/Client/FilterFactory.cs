@@ -78,6 +78,8 @@ namespace PogoLocationFeeder.Client
             filter.Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             filter.AreaBounds = GlobalSettings.UseGeoLocationBoundsFilter ? GlobalSettings.GeoLocationBounds : null;
             filter.MinimumIV = GlobalSettings.MinimumIV;
+            filter.UnverifiedOnly = GlobalSettings.UnverifiedOnly;
+            filter.UseUploadedPokemon = GlobalSettings.UseUploadedPokemon;
             return filter;
         }
     }

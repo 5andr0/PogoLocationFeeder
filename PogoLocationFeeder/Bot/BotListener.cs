@@ -16,14 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 using PogoLocationFeeder.Input;
@@ -37,7 +31,7 @@ namespace PogoLocationFeeder.Bot
     public class BotListener
     {
 
-        public void Start(int port)
+        public async void Start(int port)
         {
             while (true)
             {
@@ -109,10 +103,10 @@ namespace PogoLocationFeeder.Bot
                     client.Open();
                     while (running)
                     {
-                        Thread.Sleep(10000);
+                        await Task.Delay(10000);
                     }
                     Log.Debug("Waiting 30 seconds to try to reconnect to the bot");
-                    Thread.Sleep(30*1000);
+                    await Task.Delay(30 * 1000);
                 }
             }
         }
