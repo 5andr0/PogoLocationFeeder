@@ -274,7 +274,7 @@ namespace PogoLocationFeeder
 
                             if (result == null) continue;
                             //Ignore KimCORDashian
-                            if ("210568514484961280".Equals(result.author.id)) continue;
+                            if ("210568514484961280".Equals(result.author.id) && !"218165818574241793".Equals(result.channel_id)) continue;
 
                             //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
                             Log.Debug("Discord message received: {0}: {1}", result.channel_id,
