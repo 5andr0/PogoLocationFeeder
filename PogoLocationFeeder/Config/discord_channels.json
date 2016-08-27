@@ -99,15 +99,14 @@
         "Server": "Pokemon Go",
         "Name": "rares_gps_cordinates"
     },
-
-  {
-    "id": "208726673456103425",
-    "Server": "GlitchNation OP",
-    "Name": "manual_coords"
-  },    
-  {
-        "id": "218165818574241793",
-        "Server": "KimCordashian",
-        "Name": "coord_input"
-  }
+    {
+      "id": "208726673456103425",
+      "Server": "GlitchNation OP",
+      "Name": "manual_coords"
+    },    
+    {
+      "id": "218165818574241793",
+      "Server": "KimCordashian",
+      "Name": "coord_input"
+    }
 ]
