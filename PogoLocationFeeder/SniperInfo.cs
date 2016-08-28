@@ -20,18 +20,21 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Common;
 using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Helper
 {
     public class SniperInfo
     {
+        [JsonIgnore]
         public ulong EncounterId { get; set; }
         public DateTime ExpirationTimestamp { get; set; } = default(DateTime);
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public PokemonId Id { get; set; } = PokemonId.Missingno;
-        public string SpawnPointId { get; set; }
+        [JsonIgnore]
+        public string SpawnPointId { get; set; } = null;
         public PokemonMove Move1 { get; set; }
         public PokemonMove Move2 { get; set; }
         public double IV { get; set; }
@@ -41,15 +44,6 @@ namespace PogoLocationFeeder.Helper
         [JsonIgnore]
         public List<ChannelInfo> OtherChannelInfos { get; set; } = new List<ChannelInfo>();
         public DateTime ReceivedTimeStamp { get; set; } = DateTime.Now;
-
-
-        public override int GetHashCode()
-        {
-            var hash = 13;
-            hash = (hash * 7) + Math.Round(Latitude, 5).GetHashCode();
-            hash = (hash * 7) + Math.Round(Longitude, 5).GetHashCode();
-            return hash;
-        }
 
         public override string ToString()
         {
@@ -83,6 +77,40 @@ namespace PogoLocationFeeder.Helper
             return channelInfos;
         }
 
+        public override bool Equals(object obj)
+        {
+
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            return SniperInfoEquals(this, (SniperInfo) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = 13;
+            hash = (hash * 7) + Math.Round(Latitude, 4).GetHashCode();
+            hash = (hash * 7) + Math.Round(Longitude, 4).GetHashCode();
+            return hash;
+        }
+
+        private static bool SniperInfoEquals(SniperInfo a, SniperInfo b)
+        {
+            if (Math.Abs(a.Latitude - b.Latitude) <= Constants.CoordinatesOffsetAllowed
+                && Math.Abs(a.Longitude - b.Longitude) <= Constants.CoordinatesOffsetAllowed)
+            {
+                if (a.Id.Equals(PokemonId.Missingno) || b.Id.Equals(PokemonId.Missingno))
+                {
+                    return true;
+                }
+                if (a.Id.Equals(b.Id))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
     }
 }

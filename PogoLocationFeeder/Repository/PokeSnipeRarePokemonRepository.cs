@@ -19,9 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using CloudFlareUtilities;
 using Newtonsoft.Json;
-using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder.Repository
@@ -80,9 +78,9 @@ namespace PogoLocationFeeder.Repository
             var sniperInfo = new SniperInfo();
             var pokemonId = PokemonParser.ParsePokemon(result.name);
             sniperInfo.Id = pokemonId;
-
             sniperInfo.Latitude = result.lat;
             sniperInfo.Longitude = result.lon;
+
             sniperInfo.ChannelInfo = new ChannelInfo { server = Channel };
             return sniperInfo;
         }

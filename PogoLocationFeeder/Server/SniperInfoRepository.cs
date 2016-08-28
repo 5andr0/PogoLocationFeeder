@@ -18,19 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
-using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
-using POGOProtos.Enums;
 
 namespace PogoLocationFeeder.Server
 {
     public class SniperInfoRepository
     {
         private const int MinutesToKeepInCache = 20;
-        private const double CoordinatesOffsetAllowed = 0.000003;
-
+        private const int CleanUpInterval = 60*1000;
 
         public SniperInfoRepository()
         {
@@ -44,7 +41,7 @@ namespace PogoLocationFeeder.Server
                 while (true)
                 {
                     RemoveExpired();
-                    await Task.Delay(100);
+                    await Task.Delay(CleanUpInterval);
                 }
             }, TaskCreationOptions.LongRunning);
         }
@@ -54,31 +51,16 @@ namespace PogoLocationFeeder.Server
 
         public SniperInfo Find(SniperInfo newSniperInfo)
         {
-            SniperInfo foundSniperInfo = null;
-            foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
-            {
-                if (SniperInfoEquals(sniperInfo,newSniperInfo))
-                {
-                    foundSniperInfo = sniperInfo;
-                }
-            }
-            return foundSniperInfo;
+            return _sniperInfoSet.Keys.
+                FirstOrDefault(x => x.GetHashCode() == newSniperInfo.GetHashCode()
+                && x.Equals(newSniperInfo));
         }
 
         public List<SniperInfo> FindAllNew(long lastReceived, bool findNewVerified = false)
         {
-            List<SniperInfo> sniperInfos = new List<SniperInfo>();
-            foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
-            {
-                if (ToEpoch(sniperInfo.ReceivedTimeStamp) > lastReceived)
-                {
-                    sniperInfos.Add(sniperInfo);
-                } else if(findNewVerified && ToEpoch(sniperInfo.VerifiedOn) > lastReceived)
-                {
-                    sniperInfos.Add(sniperInfo);
-                }
-            }
-            return sniperInfos;
+            return _sniperInfoSet.Keys.
+                Where(x => !IsExpired(x) && ToEpoch(x.ReceivedTimeStamp) > lastReceived 
+                    || findNewVerified && ToEpoch(x.VerifiedOn) > lastReceived).ToList();
         }
 
         public int Count()
@@ -119,10 +101,9 @@ namespace PogoLocationFeeder.Server
 
         public void RemoveExpired()
         {
-            SniperInfo foundSniperInfo = null;
             foreach (SniperInfo sniperInfo in _sniperInfoSet.Keys)
             {
-                if (IsExpired(sniperInfo))
+                if (ShouldBeRemoved(sniperInfo))
                 {
                     Log.Trace("Expired: " + sniperInfo);
                     Remove(sniperInfo);
@@ -130,23 +111,6 @@ namespace PogoLocationFeeder.Server
             }
         }
 
-        private static bool SniperInfoEquals(SniperInfo a, SniperInfo b)
-        {
-
-            if (Math.Abs(a.Latitude - b.Latitude) <= CoordinatesOffsetAllowed
-                && Math.Abs(a.Longitude - b.Longitude) <= CoordinatesOffsetAllowed)
-            {
-                if (a.Id.Equals(PokemonId.Missingno) || b.Id.Equals(PokemonId.Missingno))
-                {
-                    return true;
-                }
-                if (a.Id.Equals(b.Id))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         private static bool IsExpired(SniperInfo sniperInfo)
         {
             var xMinuteAgo = DateTime.Now.AddMinutes(-1 * MinutesToKeepInCache);
@@ -154,6 +118,12 @@ namespace PogoLocationFeeder.Server
                      sniperInfo.ReceivedTimeStamp < xMinuteAgo) ||
                     (sniperInfo.ExpirationTimestamp != default(DateTime)
                     && sniperInfo.ExpirationTimestamp < DateTime.Now);
+        }
+
+        private static bool ShouldBeRemoved(SniperInfo sniperInfo)
+        {
+            var xMinuteAgo = DateTime.Now.AddMinutes(-1 * MinutesToKeepInCache);
+            return sniperInfo.ReceivedTimeStamp < xMinuteAgo;
         }
     }
 }

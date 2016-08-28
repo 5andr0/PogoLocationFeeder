@@ -51,7 +51,7 @@ namespace PogoLocationFeeder.Client
                     using (
                         var client = new WebSocket($"ws://{GlobalSettings.ServerHost}:{GlobalSettings.ServerPort}", "basic", WebSocketVersion.Rfc6455))
                     {
-                        long timeStamp = GetEpoch2MinAgo();
+                        long timeStamp = GetEpoch10MinAgo();
 
                         client.Opened += (s, e) =>
                         {
@@ -106,7 +106,8 @@ namespace PogoLocationFeeder.Client
 
                         while (running)
                         {
-                            for (int i = 0; i < 20; i++)
+                            var secondsToWait = GlobalSettings.UnverifiedOnly ? 10 : 30;
+                            for (int i = 0; i < secondsToWait; i++)
                             {
                                 Thread.Sleep(1000);
                                 List<SniperInfo> newSniperInfos = new List<SniperInfo>();
@@ -150,9 +151,9 @@ namespace PogoLocationFeeder.Client
         }
 
 
-        private static long GetEpoch2MinAgo()
+        private static long GetEpoch10MinAgo()
         {
-            return (long)DateTime.Now.AddMinutes(-2).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+            return (long)DateTime.Now.AddMinutes(-10).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
         private static long GetEpochNow()

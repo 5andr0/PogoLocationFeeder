@@ -16,9 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PogoLocationFeeder.Client;
 using PogoLocationFeeder.Common;
@@ -37,11 +39,24 @@ namespace PogoLocationFeeder.Server
         private readonly SniperInfoRepository _serverRepository;
         private readonly SniperInfoRepositoryManager _sniperInfoRepositoryManager;
         private ServerUploadFilter _serverUploadFilter;
+        ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
 
         public PogoServer()
         {
             _serverRepository = new SniperInfoRepository();
             _sniperInfoRepositoryManager = new SniperInfoRepositoryManager(_serverRepository);
+
+            Task.Factory.StartNew(async () => {
+                while (true)
+                {
+                    string item = null;
+                    while (_incomingMessages.TryDequeue(out item))
+                    {
+                        HandleIncomingPokemonMessage(item);
+                    }
+                    await Task.Delay(100);
+                }
+            });
         }
         public void Start()
         {
@@ -54,6 +69,8 @@ namespace PogoLocationFeeder.Server
             serverConfig.Port = GlobalSettings.OutgoingServerPort;
             serverConfig.MaxRequestLength = 4096;
             serverConfig.MaxConnectionNumber = 100*1000;
+            serverConfig.SendingQueueSize = 25;
+            serverConfig.SendTimeOut = 5000;
             var socketServerFactory = new SuperSocket.SocketEngine.SocketServerFactory();
             _webSocketServer.Setup(rootConfig, serverConfig, socketServerFactory);
             _webSocketServer.Start();
@@ -79,13 +96,13 @@ namespace PogoLocationFeeder.Server
         {
             var uploadFilter = JsonConvert.SerializeObject(_serverUploadFilter);
             session.Send($"{GetEpoch()}:Hello Darkness my old friend.:{uploadFilter}");
-            Log.Info($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session started");
+            Log.Trace($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session started");
             UpdateTitle();
         }
 
         private void socketServer_SessionClosed(WebSocketSession session, CloseReason closeReason)
         {
-           Log.Info($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session closed: " + closeReason);
+           Log.Trace($"[{_webSocketServer.SessionCount}:{session.SessionID}] Session closed: " + closeReason);
            UpdateTitle();
         }
 
@@ -98,31 +115,11 @@ namespace PogoLocationFeeder.Server
 
                 if (match.Success)
                 {
-                    var sniperInfos= JsonConvert.DeserializeObject<List<SniperInfo>>(match.Groups[2].Value);
-                    if (sniperInfos != null && sniperInfos.Any())
-                    {
-                        foreach (SniperInfo sniperInfo in sniperInfos)
-                        {
-                            if (_serverUploadFilter.Matches(sniperInfo))
-                            {
-                                OnReceivedViaClients(sniperInfo);
-                            }
-                            else
-                            {
-                                Log.Trace($"Not allowing upload of {sniperInfo} but it doesn't match the upload filter");
-                            }
-                        }
-                    }
+                    _incomingMessages.Enqueue(match.Groups[2].Value);
                 }
                 else if (matchRequest.Success)
                 {
-                    Filter filter = JsonConvert.DeserializeObject<Filter>(matchRequest.Groups[2].Value);
-
-                    var lastReceived = Convert.ToInt64(matchRequest.Groups[1].Value);
-                    var sniperInfos = _serverRepository.FindAllNew(lastReceived, filter.VerifiedOnly);
-
-                    var sniperInfoToSend = SniperInfoFilter.FilterUnmanaged(sniperInfos, filter);
-
+                    List<SniperInfo> sniperInfoToSend = FilterOnRequest(matchRequest);
                     session.Send($"{GetEpoch()}:Hear my words that I might teach you:" +
                                  JsonConvert.SerializeObject(sniperInfoToSend));
                 }
@@ -167,5 +164,33 @@ namespace PogoLocationFeeder.Server
             ReceivedViaClients?.Invoke(this, sniperInfo);
         }
 
+        private void HandleIncomingPokemonMessage(string message)
+        {
+            var sniperInfos = JsonConvert.DeserializeObject<List<SniperInfo>>(message);
+            if (sniperInfos != null && sniperInfos.Any())
+            {
+                foreach (SniperInfo sniperInfo in sniperInfos)
+                {
+                    if (_serverUploadFilter.Matches(sniperInfo))
+                    {
+                        OnReceivedViaClients(sniperInfo);
+                    }
+                    else
+                    {
+                        Log.Trace($"Not allowing upload of {sniperInfo} but it doesn't match the upload filter");
+                    }
+                }
+            }
+        }
+
+        private List<SniperInfo> FilterOnRequest(Match match)
+        {
+            Filter filter = JsonConvert.DeserializeObject<Filter>(match.Groups[2].Value);
+
+            var lastReceived = Convert.ToInt64(match.Groups[1].Value);
+            var sniperInfos = _serverRepository.FindAllNew(lastReceived, filter.VerifiedOnly);
+
+            return SniperInfoFilter.FilterUnmanaged(sniperInfos, filter);
+        }
     }
 }

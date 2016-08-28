@@ -96,7 +96,7 @@ namespace PogoLocationFeeder.Config
                 UsePokewatchers = set.UsePokewatchers;
                 UsePokezz = set.UsePokezz;
                 UsePokemonGoIVClub = set.UsePokemonGoIVClub;
-                UsePokeSnipe = set.UsePokeSnipers;
+                UsePokeSnipe = set.UsePokeSnipe;
                 VerifyOnSkiplagged = set.VerifyOnSkiplagged;
                 RemoveAfter = set.RemoveAfter;
                 ShowLimit = Math.Max(set.ShowLimit, 1);

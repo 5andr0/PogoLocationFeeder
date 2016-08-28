@@ -330,10 +330,8 @@ namespace PogoLocationFeeder
 
         private async Task RareRepoThread(IRarePokemonRepository rarePokemonRepository)
         {
-            const int delay = 30 * 1000;
             while (true)
             {
-                Thread.Sleep(delay);
                 for (var retrys = 0; retrys <= 2; retrys++)
                 {
                     var pokeSniperList = rarePokemonRepository.FindAll();

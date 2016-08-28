@@ -77,7 +77,10 @@ namespace PogoLocationFeeder.Common
         {
             var sw = this.SouthWest;
             var ne = this.NorthEast;
-
+            if (sw == null || ne == null)
+            {
+                return true;
+            }
             //simple check       
             if ((pointLat >= sw.Latitude && pointLat <= ne.Latitude) &&
                 (pointLng >= sw.Longitude && pointLng <= ne.Longitude))
