@@ -119,8 +119,7 @@ namespace PogoLocationFeeder.Repository
                     {
                         return null;
                     }
-                    sniperInfo.ExpirationTimestamp = DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) < untilTime ?
-                        DateTime.Now.AddMinutes(Constants.MaxExpirationInTheFuture) : untilTime;
+                    sniperInfo.ExpirationTimestamp = untilTime;
                 }
                 sniperInfo.ChannelInfo = new ChannelInfo {server = Channel};
                 return sniperInfo;

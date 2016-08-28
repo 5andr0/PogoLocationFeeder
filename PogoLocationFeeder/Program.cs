@@ -345,6 +345,7 @@ namespace PogoLocationFeeder
                     }
                     await Task.Delay(1000);
                 }
+                Thread.Sleep(30000);
             }
         }
 

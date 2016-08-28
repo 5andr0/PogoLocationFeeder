@@ -173,6 +173,11 @@ namespace PogoLocationFeeder.Server
                 {
                     if (_serverUploadFilter.Matches(sniperInfo))
                     {
+                        sniperInfo.ReceivedTimeStamp = DateTime.Now;
+                        if (sniperInfo.Verified)
+                        {
+                            sniperInfo.VerifiedOn = DateTime.Now;
+                        }
                         OnReceivedViaClients(sniperInfo);
                     }
                     else

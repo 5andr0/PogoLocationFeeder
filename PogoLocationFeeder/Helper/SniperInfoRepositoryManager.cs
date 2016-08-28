@@ -37,6 +37,11 @@ namespace PogoLocationFeeder.Helper
 
         public bool AddToRepository(SniperInfo sniperInfo)
         {
+            if (sniperInfo.ReceivedTimeStamp > DateTime.Now || sniperInfo.VerifiedOn > DateTime.Now
+                || sniperInfo.ExpirationTimestamp > DateTime.Now.AddMinutes(20))
+            {
+                return false;
+            }
             var oldSniperInfo = _sniperInfoRepository.Find(sniperInfo);
             if (oldSniperInfo != null)
             {

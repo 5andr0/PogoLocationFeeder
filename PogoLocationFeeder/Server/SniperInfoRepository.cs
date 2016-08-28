@@ -60,7 +60,7 @@ namespace PogoLocationFeeder.Server
         {
             return _sniperInfoSet.Keys.
                 Where(x => !IsExpired(x) && ToEpoch(x.ReceivedTimeStamp) > lastReceived 
-                    || findNewVerified && ToEpoch(x.VerifiedOn) > lastReceived).ToList();
+                    || (findNewVerified && ToEpoch(x.VerifiedOn) > lastReceived)).ToList();
         }
 
         public int Count()
