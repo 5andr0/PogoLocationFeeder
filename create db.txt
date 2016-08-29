@@ -1,0 +1,32 @@
+drop table channelinfo_link;
+drop table sniperinfo;
+drop table channelinfo;
+
+CREATE TABLE sniperinfo ( 
+  id SERIAL PRIMARY KEY,
+  location geography(POINT,4326),
+  pokemon int,
+  received timestamp,
+  expires timestamp,
+  move1 int,
+  move2 int,
+  iv numeric(2),
+  encounterid bigint,
+  spawnpointid VARCHAR(64),
+  verified boolean,
+  verifiedon timestamp,
+  captures int
+); 
+CREATE INDEX location_gix ON sniperinfo USING GIST ( location );
+
+ CREATE TABLE channelinfo ( 
+  id SERIAL PRIMARY KEY,
+  servername VARCHAR(200),
+  channelname VARCHAR(200)
+); 
+ CREATE TABLE channelinfo_link ( 
+  id SERIAL PRIMARY KEY,
+  source boolean,
+  sniperinfoid integer  REFERENCES sniperinfo(id),
+  channelinfoid integer REFERENCES channelinfo(id)
+); 

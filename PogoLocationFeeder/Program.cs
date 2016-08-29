@@ -330,9 +330,11 @@ namespace PogoLocationFeeder
 
         private async Task RareRepoThread(IRarePokemonRepository rarePokemonRepository)
         {
+            const int delay = 30 * 1000;
             while (true)
             {
-                for (var retrys = 0; retrys <= 2; retrys++)
+                Thread.Sleep(delay);
+                for (var retrys = 0; retrys <= 1; retrys++)
                 {
                     var pokeSniperList = rarePokemonRepository.FindAll();
                     if (pokeSniperList != null)
@@ -343,9 +345,8 @@ namespace PogoLocationFeeder
                         }
                         break;
                     }
-                    await Task.Delay(1000);
+                    Thread.Sleep(1000);
                 }
-                Thread.Sleep(30000);
             }
         }
 
