@@ -33,6 +33,8 @@ namespace PogoLocationFeeder.Server
             serverUploadFilter.Pokemon = pokemonsBinary;
             serverUploadFilter.AreaBounds = GlobalSettings.UseGeoLocationBoundsFilter ? GlobalSettings.GeoLocationBounds : null;
             serverUploadFilter.MinimumIV = GlobalSettings.MinimumIV;
+            serverUploadFilter.PokemonNotInFilterMinimumIV = GlobalSettings.PokemonNotInFilterMinimumIV;
+
             return serverUploadFilter;
         }
     }

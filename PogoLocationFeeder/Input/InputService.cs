@@ -36,7 +36,11 @@ namespace PogoLocationFeeder.Input
         public bool ParseAndSend(string text)
         {
             List<SniperInfo> sniperInfos = MessageParser.ParseMessage(text);
-            sniperInfos.ForEach(s => s.ChannelInfo = new ChannelInfo() { server= Constants.PogoFeeder});
+            sniperInfos.ForEach(s =>
+            {
+                s.ChannelInfo = new ChannelInfo() {server = Constants.PogoFeeder};
+                s.NeedVerification = true;
+            });
             var unsentInfos = MessageCache.Instance.FindUnSentMessages(sniperInfos);
             if (GlobalSettings.IsManaged)
             {
@@ -58,9 +62,8 @@ namespace PogoLocationFeeder.Input
         {
             if (GlobalSettings.IsManaged)
             {
-                MessageCache.Instance.Add(sniperInfo);
-
                 PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
+                MessageCache.Instance.Add(sniperInfo);
                 return true;
             }
             return false;
