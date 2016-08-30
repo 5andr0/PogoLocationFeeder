@@ -44,6 +44,7 @@ namespace PogoLocationFeeder.Helper
         [JsonIgnore]
         public List<ChannelInfo> OtherChannelInfos { get; set; } = new List<ChannelInfo>();
         public DateTime ReceivedTimeStamp { get; set; } = DateTime.Now;
+        public bool NeedVerification { get; set; }
 
         public override string ToString()
         {

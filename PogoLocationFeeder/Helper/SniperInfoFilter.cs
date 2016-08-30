@@ -36,13 +36,14 @@ namespace PogoLocationFeeder.Helper
             var minimumIV = filter.MinimumIV;
             var useUploadedPokemon = filter.UseUploadedPokemon;
             var unverifiedOnly = filter.UnverifiedOnly;
+            var pokemonNotInFilterMinimumIV = filter.PokemonNotInFilterMinimumIV;
             return sniperInfos.Where(
-                s => Matches(s, pokemonIds, verifiedOnly, channels, areaBounds, minimumIV, useUploadedPokemon, unverifiedOnly)).ToList();
+                s => Matches(s, pokemonIds, verifiedOnly, channels, areaBounds, minimumIV, useUploadedPokemon, unverifiedOnly, pokemonNotInFilterMinimumIV)).ToList();
         }
 
         private static bool Matches(SniperInfo sniperInfo, List<PokemonId> pokemonIds,  
             bool verifiedOnly, List<Channel> channels, LatLngBounds areaBounds, double minimumIV, bool useUploadedPokemon, 
-            bool unverifiedOnly) 
+            bool unverifiedOnly, double pokemonNotInFilterMinimumIV) 
         {
 
             if (!useUploadedPokemon && (Constants.Bot == sniperInfo.ChannelInfo.server
@@ -68,8 +69,10 @@ namespace PogoLocationFeeder.Helper
             }
             if (!pokemonIds.Contains(sniperInfo.Id))
             {
-                Log.Trace($"Skipped {sniperInfo} because not in pokemon list");
-                return false;
+                if(pokemonNotInFilterMinimumIV > sniperInfo.IV) { 
+                    Log.Trace($"Skipped {sniperInfo} because not in pokemon list and pokemonNotInFilterMinimumIV is higher than its IV");
+                    return false;
+                }
             }
             if (channels != null && !MatchesChannel(channels, sniperInfo.GetAllChannelInfos()))
             {

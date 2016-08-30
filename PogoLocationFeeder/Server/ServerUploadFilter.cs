@@ -15,12 +15,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using PogoLocationFeeder.Common;
 using PogoLocationFeeder.Helper;
 
@@ -31,13 +25,18 @@ namespace PogoLocationFeeder.Server
         public string Pokemon { get; set; }
         public LatLngBounds AreaBounds { get; set; }
         public double MinimumIV { get; set; } = 0.0;
+        public double PokemonNotInFilterMinimumIV { get; set; } = 101;
 
         public bool Matches(SniperInfo sniperInfo)
         {
             var pokemonIds = PokemonFilterParser.ParseBinary(Pokemon);
+
             if (pokemonIds != null && !pokemonIds.Contains(sniperInfo.Id))
             {
-                return false;
+                if (PokemonNotInFilterMinimumIV > sniperInfo.IV)
+                {
+                    return false;
+                }
             }
             if (AreaBounds != null && !AreaBounds.Intersects(sniperInfo.Latitude, sniperInfo.Longitude))
             {
@@ -47,6 +46,7 @@ namespace PogoLocationFeeder.Server
             {
                 return false;
             }
+
             return true;
         }
     }

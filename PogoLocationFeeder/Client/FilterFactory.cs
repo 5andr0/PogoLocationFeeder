@@ -80,6 +80,7 @@ namespace PogoLocationFeeder.Client
             filter.MinimumIV = GlobalSettings.MinimumIV;
             filter.UnverifiedOnly = GlobalSettings.UnverifiedOnly;
             filter.UseUploadedPokemon = GlobalSettings.UseUploadedPokemon;
+            filter.PokemonNotInFilterMinimumIV = GlobalSettings.PokemonNotInFilterMinimumIV;
             return filter;
         }
     }

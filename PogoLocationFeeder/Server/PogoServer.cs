@@ -120,6 +120,7 @@ namespace PogoLocationFeeder.Server
                 else if (matchRequest.Success)
                 {
                     List<SniperInfo> sniperInfoToSend = FilterOnRequest(matchRequest);
+                    sniperInfoToSend.ForEach(s=>s.NeedVerification = !SniperInfoRepositoryManager.ValidateVerifiedSniperInfo(s));
                     session.Send($"{GetEpoch()}:Hear my words that I might teach you:" +
                                  JsonConvert.SerializeObject(sniperInfoToSend));
                 }
@@ -158,7 +159,11 @@ namespace PogoLocationFeeder.Server
                 if(Constants.Bot == sniperInfo.ChannelInfo?.server ||
                         Constants.PogoFeeder == sniperInfo.ChannelInfo?.server)
                 {
-                    PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
+                    var oldSniperInfo = _serverRepository.Find(sniperInfo);
+                    if (oldSniperInfo == null || oldSniperInfo.NeedVerification)
+                    {
+                        PogoClient.sniperInfosToSend.Enqueue(sniperInfo);
+                    }
                 }
             }
             ReceivedViaClients?.Invoke(this, sniperInfo);
@@ -194,7 +199,7 @@ namespace PogoLocationFeeder.Server
 
             var lastReceived = Convert.ToInt64(match.Groups[1].Value);
             var sniperInfos = _serverRepository.FindAllNew(lastReceived, filter.VerifiedOnly);
-
+            
             return SniperInfoFilter.FilterUnmanaged(sniperInfos, filter);
         }
     }

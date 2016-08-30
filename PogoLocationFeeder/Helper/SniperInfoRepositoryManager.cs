@@ -81,41 +81,8 @@ namespace PogoLocationFeeder.Helper
                 {
                     oldSniperInfo.Verified = sniperInfo.Verified;
                     oldSniperInfo.VerifiedOn = DateTime.Now;
-                    if (oldSniperInfo.ExpirationTimestamp == default(DateTime))
-                    {
-                        if (sniperInfo.ExpirationTimestamp != default(DateTime))
-                        {
-                            oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
-                        }
-                    }
-                    if (oldSniperInfo.EncounterId == default(ulong))
-                    {
-                        if (sniperInfo.EncounterId != default(ulong))
-                        {
-                            oldSniperInfo.EncounterId = sniperInfo.EncounterId;
-                        }
-                    }
-                    if (oldSniperInfo.Move1 == PokemonMove.MoveUnset)
-                    {
-                        if (sniperInfo.Move1 != PokemonMove.MoveUnset)
-                        {
-                            oldSniperInfo.Move1 = sniperInfo.Move1;
-                        }
-                    }
-                    if (oldSniperInfo.Move2 == PokemonMove.MoveUnset)
-                    {
-                        if (sniperInfo.Move2 != PokemonMove.MoveUnset)
-                        {
-                            oldSniperInfo.Move2 = sniperInfo.Move2;
-                        }
-                    }
-                    if (oldSniperInfo.SpawnPointId == default(string))
-                    {
-                        if (sniperInfo.SpawnPointId != default(string))
-                        {
-                            oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
-                        }
-                    }
+
+
                 }
                 if (sniperInfo.ChannelInfo != null &&
                     !oldSniperInfo.GetAllChannelInfos()
@@ -125,11 +92,47 @@ namespace PogoLocationFeeder.Helper
                     oldSniperInfo.OtherChannelInfos.Add(sniperInfo.ChannelInfo);
                 }
             }
+            if (oldSniperInfo.Move1 == PokemonMove.MoveUnset)
+            {
+                if (sniperInfo.Move1 != PokemonMove.MoveUnset)
+                {
+                    oldSniperInfo.Move1 = sniperInfo.Move1;
+                }
+            }
+            if (oldSniperInfo.Move2 == PokemonMove.MoveUnset)
+            {
+                if (sniperInfo.Move2 != PokemonMove.MoveUnset)
+                {
+                    oldSniperInfo.Move2 = sniperInfo.Move2;
+                }
+            }
+            if (oldSniperInfo.EncounterId == default(ulong))
+            {
+                if (sniperInfo.EncounterId != default(ulong))
+                {
+                    oldSniperInfo.EncounterId = sniperInfo.EncounterId;
+                }
+            }
+
+            if (oldSniperInfo.SpawnPointId == default(string))
+            {
+                if (sniperInfo.SpawnPointId != default(string))
+                {
+                    oldSniperInfo.SpawnPointId = sniperInfo.SpawnPointId;
+                }
+            }
+            if (oldSniperInfo.ExpirationTimestamp == default(DateTime))
+            {
+                if (sniperInfo.ExpirationTimestamp != default(DateTime))
+                {
+                    oldSniperInfo.VerifiedOn = sniperInfo.ExpirationTimestamp;
+                }
+            }
             var captures = _sniperInfoRepository.Increase(oldSniperInfo);
             Log.Pokemon($"Captured existing: {FormatPokemonLog(oldSniperInfo, captures)}");
         }
 
-        private bool ValidateVerifiedSniperInfo(SniperInfo sniperInfo)
+        public static bool ValidateVerifiedSniperInfo(SniperInfo sniperInfo)
         {
             return !PokemonId.Missingno.Equals(sniperInfo.Id)
                 && sniperInfo.Verified

@@ -65,7 +65,7 @@ namespace PogoLocationFeeder.Config
         public static bool VerifiedOnly = true;
         public static bool UseUploadedPokemon = true;
         public static bool UnverifiedOnly = false;
-
+        public static double PokemonNotInFilterMinimumIV = 101;
         public static List<string> PokekomsToFeedFilter;
         public static List<int> BotWebSocketPorts = new List<int>() { 14251 };
 
@@ -116,6 +116,7 @@ namespace PogoLocationFeeder.Config
                 MinimumIV = set.MinimumIV;
                 UnverifiedOnly = set.UnverifedOnly;
                 UseUploadedPokemon = set.UseUploadedPokemon;
+                PokemonNotInFilterMinimumIV = set.PokemonNotInFilterMinimumIV;
             }
             else
             {
@@ -284,6 +285,8 @@ namespace PogoLocationFeeder.Config
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool UseUploadedPokemon = GlobalSettings.UseUploadedPokemon;
-
+        [DefaultValue(101)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public double PokemonNotInFilterMinimumIV = GlobalSettings.PokemonNotInFilterMinimumIV;
     }
 }
