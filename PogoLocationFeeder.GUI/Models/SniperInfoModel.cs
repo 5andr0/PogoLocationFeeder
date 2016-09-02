@@ -28,6 +28,7 @@ using MaterialDesignThemes.Wpf;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.ViewModels;
 using PogoLocationFeeder.Helper;
+using POGOProtos.Enums;
 using PropertyChanged;
 using Timer = System.Threading.Timer;
 
@@ -50,6 +51,10 @@ namespace PogoLocationFeeder.GUI.Models {
         public BitmapImage Icon { get; set; }
         public string Server { get; set; }
         public string Channel { get; set; }
+        public string Pokemon { get; set; }
+        public string Move1 { get; set; }
+        public string Move2 { get; set; }
+
         public bool SniperVisibility { get; set; }
         public PackIconKind VerifiedIcon { get; set; } = PackIconKind.Close;
         public string VerifiedTooltip { get; set; }
@@ -60,6 +65,10 @@ namespace PogoLocationFeeder.GUI.Models {
             set
             {
                 _info = value;
+                Pokemon = _info.Id != PokemonId.Missingno ? _info.Id.ToString() : "Unknown";
+                Move1 = _info.Move1 != PokemonMove.MoveUnset ? _info.Move1.ToString() : "NA";
+                Move2 = _info.Move2 != PokemonMove.MoveUnset ? _info.Move2.ToString() : "NA";
+
                 Date = Info.ExpirationTimestamp.Equals(default(DateTime))
                     ? "Unknown"
                     : Info.ExpirationTimestamp.ToString(CultureInfo.InvariantCulture);

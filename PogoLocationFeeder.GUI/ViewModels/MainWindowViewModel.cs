@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using log4net.Config;
@@ -53,7 +54,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public MainWindowViewModel()
         {
             Instance = this;
-            Pokemons = new ReadOnlyObservableCollection<SniperInfoModel>(GlobalVariables.PokemonsInternal);
+            Pokemons = new ListCollectionView(GlobalVariables.PokemonsInternal);
             PokemonFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.AllPokemonsInternal);
             PokemonToFilter = new ReadOnlyObservableCollection<PokemonFilterModel>(GlobalVariables.PokemonToFeedFilterInternal);
             SettingsComand = new ActionCommand(ShowSettings);
@@ -98,7 +99,7 @@ namespace PogoLocationFeeder.GUI.ViewModels
         public int TransitionerIndex { get; set; }
 
         public PackIconKind PausePlayButtonIcon { get; set; } = PackIconKind.Pause;
-        public ReadOnlyObservableCollection<SniperInfoModel> Pokemons { get; }
+        public ListCollectionView Pokemons { get; }
         public ReadOnlyObservableCollection<PokemonFilterModel> PokemonFilter { get; set; }
         public ReadOnlyObservableCollection<PokemonFilterModel> PokemonToFilter { get; set; }
 

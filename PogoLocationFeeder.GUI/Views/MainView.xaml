@@ -6,6 +6,8 @@
     xmlns:viewmodels="clr-namespace:PogoLocationFeeder.GUI.ViewModels"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+    xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=System"
+    xmlns:views="clr-namespace:PogoLocationFeeder.GUI.Views"
     x:Class="PogoLocationFeeder.GUI.Views.MainView"
     mc:Ignorable="d"
     d:DesignHeight="300" d:DesignWidth="800"
@@ -14,10 +16,12 @@
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <DataGrid x:Name="DataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
-                  SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True" Background="Transparent">
+        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
+                  SelectionMode="Single" VerticalContentAlignment="Center" IsReadOnly="True" Background="Transparent"
+                  >
             <DataGrid.Resources>
                 <viewmodels:BindingProxy x:Key="proxy" Data="{Binding}"/>
+
             </DataGrid.Resources>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
@@ -74,10 +78,10 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Binding="{Binding Server}" Header="Server" />
                 <DataGridTextColumn Binding="{Binding Channel}" Header="Channel" />
-                <DataGridTextColumn Binding="{Binding Info.Id}" Header="Name" />
-                <DataGridTextColumn Binding="{Binding IV}" Header="IV" />
-                <DataGridTextColumn Binding="{Binding Info.Move1}" Header="Move1" />
-                <DataGridTextColumn Binding="{Binding Info.Move2}" Header="Move2" />
+                <DataGridTextColumn Binding="{Binding Pokemon}" Header="Name"/>
+                <DataGridTextColumn Binding="{Binding IV}" Header="IV" SortMemberPath="Info.IV" />
+                <DataGridTextColumn Binding="{Binding Move1}" Header="Move1" />
+                <DataGridTextColumn Binding="{Binding Move2}" Header="Move2" />
                 <DataGridTextColumn Binding="{Binding Info.Latitude}" Header="Latitude" />
                 <DataGridTextColumn Binding="{Binding Info.Longitude}" Header="Longitude" />
                 <DataGridTextColumn Binding="{Binding Date}" Header="Expiration" />

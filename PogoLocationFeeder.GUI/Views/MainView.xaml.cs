@@ -16,10 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Forms;
 using PogoLocationFeeder.Config;
 using PogoLocationFeeder.GUI.Properties;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace PogoLocationFeeder.GUI.Views
 {
@@ -28,8 +35,29 @@ namespace PogoLocationFeeder.GUI.Views
     /// </summary>
     public partial class MainView : UserControl
     {
+        private DataGridColumn _sortableColumn;
+        private ListSortDirection _direction;
+
         public MainView() {
             InitializeComponent();
         }
+
+        private void dataGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            _sortableColumn = e.Column;
+            _direction = (e.Column.SortDirection != ListSortDirection.Ascending) ?
+                                ListSortDirection.Ascending : ListSortDirection.Descending;
+
+        }
+
+        private void DataGridView1_CellValueChanged(
+    object sender, DataGridViewCellEventArgs e)
+        {
+            if (_sortableColumn != null && _direction != null)
+            {
+                _sortableColumn.SortDirection = _direction;
+            }
+        }
+
     }
 }
