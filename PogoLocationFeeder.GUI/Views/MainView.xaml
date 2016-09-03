@@ -87,36 +87,5 @@
                 <DataGridTextColumn Binding="{Binding Date}" Header="Expiration" />
             </DataGrid.Columns>
         </DataGrid>
-        <!--<ListBox HorizontalContentAlignment="Stretch" ItemsSource="{Binding Pokemons}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-                        <Image Source="{Binding Icon}" Grid.Column="0"/>
-                        <TextBlock Text="{Binding Id}" Grid.Column="1" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" VerticalAlignment="Center">
-                             <Run Text="IV: "></Run>
-                             <Run Text="{Binding IV}"></Run>
-                             <Run Text="%"></Run>
-                         </TextBlock>
-                        <TextBlock Grid.Column="3" VerticalAlignment="Center">
-                             <Run Text="lat: "></Run>
-                             <Run Text="{Binding Latitude}"></Run>
-                             <Run Text=" "></Run>
-                             <Run Text="lng: "></Run>
-                             <Run Text="{Binding Longitude}"></Run>
-                        </TextBlock>
-                        <TextBlock Text="{Binding ExpirationTimestamp}" Grid.Column="4" VerticalAlignment="Center"/>
-
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>-->
     </Grid>
 </UserControl>
