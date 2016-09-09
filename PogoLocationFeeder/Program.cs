@@ -1,254 +1,375 @@
-﻿using System;
+﻿/*
+PogoLocationFeeder gathers pokemon data from various sources and serves it to connected clients
+Copyright (C) 2016  PogoLocationFeeder Development Team <admin@pokefeeder.live>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Discord;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using log4net.Config;
 using Newtonsoft.Json;
+using PogoLocationFeeder.Bot;
+using PogoLocationFeeder.Client;
+using PogoLocationFeeder.Common;
+using PogoLocationFeeder.Config;
 using PogoLocationFeeder.Helper;
-using PoGo.LocationFeeder.Settings;
-using static PogoLocationFeeder.DiscordWebReader;
+using PogoLocationFeeder.Readers;
+using PogoLocationFeeder.Repository;
+using PogoLocationFeeder.Server;
+using PogoLocationFeeder.Writers;
+using PoGoLocationFeeder.Helper;
 
 namespace PogoLocationFeeder
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args) => new Program().Start();
-
-        private TcpListener listener;
-        private List<TcpClient> arrSocket = new List<TcpClient>();
-        private MessageParser parser = new MessageParser();
-        private DiscordChannelParser channel_parser = new DiscordChannelParser();
-        private PokeSniperReader pokeSniperReader = new PokeSniperReader();
-        private MessageCache messageCache = new MessageCache();
-
-        // A socket is still connected if a nonblocking, zero-byte Send call either:
-        // 1) returns successfully or 
-        // 2) throws a WAEWOULDBLOCK error code(10035)
-        public static bool IsConnected(Socket client)
+        private readonly ChannelParser _channelParser = new ChannelParser();
+        private readonly PogoServer _server = new PogoServer();
+        private DiscordWebReader _discordWebReader;
+        private readonly PogoClient _pogoClient = new PogoClient();
+        private static void Main(string[] args)
         {
-            // This is how you can determine whether a socket is still connected.
-            bool blockingState = client.Blocking;
+            System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
+
+            Console.Title = "PogoLocationFeeder";
+            XmlConfigurator.Configure(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("PogoLocationFeeder.App.config"));
 
             try
             {
-                byte[] tmp = new byte[1];
-
-                client.Blocking = false;
-                client.Send(tmp, 0, 0);
-                return true;
+                new Program().Start();
             }
-            catch (SocketException e)
+            catch (Exception e)
             {
-                // 10035 == WSAEWOULDBLOCK
-                return (e.NativeErrorCode.Equals(10035));
-            }
-            finally
-            {
-                client.Blocking = blockingState;
+                Log.Fatal("Error during startup", e);
             }
         }
 
-        public void StartNet(int port)
+        public Program()
         {
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
-            Console.WriteLine("PogoLocationFeeder is brought to you via https://github.com/5andr0/PogoLocationFeeder/wiki");
-            Console.WriteLine("This software is 100% free and open-source.\n");
-            Console.WriteLine("Connecting to feeder service pogo-feed.mmoex.com");
-            StartAccept();
+            _server.ReceivedViaClients += SniperInfoReceived;
+            _pogoClient._receivedViaServer += SniperInfoReceived;
         }
-        private void StartAccept()
+
+        private void SniperInfoReceived(object sender, SniperInfo sniperInfo)
         {
-            listener.BeginAcceptTcpClient(HandleAsyncConnection, listener);
+            WriteOutListeners(new List<SniperInfo>() { sniperInfo});
         }
-        private void HandleAsyncConnection(IAsyncResult res)
+        private void SniperInfoReceived(object sender, List<SniperInfo> sniperInfo)
         {
-            StartAccept();
-            TcpClient client = listener.EndAcceptTcpClient(res);
-            if (client != null && IsConnected(client.Client))
+            WriteOutListeners( sniperInfo);
+        }
+
+        public async Task RelayMessageToClients(string message, ChannelInfo channelInfo)
+        {
+            var snipeList = MessageParser.ParseMessage(message);
+            snipeList.ForEach(s=>s.ChannelInfo = channelInfo);
+            WriteOutListeners(snipeList);
+        }
+
+
+        public void Start()
+        {
+            var settings = GlobalSettings.Load();
+            _channelParser.LoadChannelSettings();
+
+            if (settings == null) return;
+            GlobalSettings.Output?.SetStatus("Connecting...");
+
+            VersionCheckState.Execute(new CancellationToken());
+            if (GlobalSettings.IsServer)
             {
-                arrSocket.Add(client);
-                Console.WriteLine($"New connection from {getIp(client.Client)}");
+                Task.Run(() =>
+                {
+                   _server.Start();
+                });
+            } else 
+            {
+                ClientWriter.Instance.StartNet(GlobalSettings.Port);
+                Log.Info($"Starting with Port: {GlobalSettings.Port}");
+            }
+            if (GlobalSettings.IsManaged)
+            {
+				Task.Run(() =>
+				{
+					_pogoClient.Start(_channelParser.Settings);
+				});
+				StartBotListeners();
+            } else if(GlobalSettings.VerifyOnSkiplagged)
+			{
+				SkipLaggedPokemonLocationValidator.Instance.StartVerifierThread();
+			}
+            WebSourcesManager(settings);
+
+            Console.Read();
+        }
+
+        private void StartBotListeners()
+        {
+            if (GlobalSettings.ShareBotCaptures && !GlobalSettings.IsServer)
+            {
+                List<int> ports = new List<int>(GlobalSettings.BotWebSocketPorts);
+                if (ports.Any())
+                {
+                    foreach (int port in ports)
+                    {
+                        Task.Run(() =>
+                        {
+                            new BotListener().Start(port);
+                        });
+                    }
+                }
             }
         }
-
-        private string getIp(Socket s)
+        private void WebSourcesManager(GlobalSettings settings)
         {
-            IPEndPoint remoteIpEndPoint = s.RemoteEndPoint as IPEndPoint;
-            return remoteIpEndPoint.ToString();
-        }
+            var rarePokemonRepositories = RarePokemonRepositoryFactory.CreateRepositories(settings);
 
-        private async Task feedToClients(List<SniperInfo> snipeList, string source)
-        {
-            // Remove any clients that have disconnected
-            arrSocket.RemoveAll(x => !IsConnected(x.Client));
-            List<SniperInfo> unsentMessages = messageCache.findUnSentMessages(snipeList);
-            foreach (var target in unsentMessages)
+            List<Task> repoTasks = new List<Task>();
+            Task discordTask = null;
+            if (!GlobalSettings.IsManaged)
             {
-                foreach (var socket in arrSocket) // Repeat for each connected client (socket held in a dynamic array)
+                discordTask = TryStartDiscordReader();
+                repoTasks =
+                    rarePokemonRepositories.Select(
+                        rarePokemonRepository => StartPollRarePokemonRepository(settings, rarePokemonRepository))
+                        .Cast<Task>()
+                        .ToList();
+            }
+
+            while (true)
+            {
+                if (!GlobalSettings.IsServer)
+                {
+                    if (!ClientWriter.Instance.Listener.Server.IsBound)
+                    {
+                        Log.Info("Server has lost connection. Restarting...");
+                        ClientWriter.Instance.StartNet(GlobalSettings.Port);
+                    }
+                }
+                if (!GlobalSettings.IsManaged)
                 {
                     try
                     {
-                        NetworkStream networkStream = socket.GetStream();
-                        StreamWriter s = new StreamWriter(networkStream);
+                        // Manage repo tasks
+                        for (var i = 0; i < repoTasks.Count; ++i)
+                        {
+                            var t = repoTasks[i];
+                            if (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun &&
+                                t.Status != TaskStatus.WaitingForActivation)
+                            {
+                                // Replace broken tasks with a new one
+                                repoTasks[i].Dispose();
+                                repoTasks[i] = StartPollRarePokemonRepository(settings, rarePokemonRepositories[i]);
+                            }
+                        }
 
-                        s.WriteLine(JsonConvert.SerializeObject(target));
-                        s.Flush();
+                        // Manage Discord task
+                        if (discordTask.Status != TaskStatus.Running && discordTask.Status != TaskStatus.WaitingToRun &&
+                            discordTask.Status != TaskStatus.WaitingForActivation)
+                        {
+                            // Replace broken task with a new one
+                            discordTask.Dispose();
+                            discordTask = TryStartDiscordReader();
+                        }
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Caught exception: {e.ToString()}");
+                        Log.Error($"Exception in thread manager: {e}");
+                        throw;
                     }
                 }
-                // debug output
-                Console.WriteLine($"{source} ID: {target.Id}, Lat:{target.Latitude}, Lng:{target.Longitude}, IV:{target.IV}");
-                if (target.ExpirationTimestamp != default(DateTime))
-                    Console.WriteLine($"Expires: {target.ExpirationTimestamp}");
+                Thread.Sleep(20 * 1000);
             }
         }
 
-        public async Task relayMessageToClients(string message, string channel)
+        private async Task<Task> TryStartDiscordReader()
         {
-            var snipeList = parser.parseMessage(message);
-            await feedToClients(snipeList, channel);
-        }
-
-        public async void Start()
-        {
-            var settings = GlobalSettings.Load();
-            channel_parser.Init();
-
-            if (settings == null) return;
-
-            StartNet(settings.Port);
-            if (settings.usePokeSnipers)
+            while (true)
             {
-                pollPokesniperFeed();
-            }
+                _discordWebReader = new DiscordWebReader();
 
-            var discordWebReader = new DiscordWebReader();
-
-            while(true)
-            {
                 try
                 {
-                    Console.WriteLine($"Connection issues. Retrying...");
-                    discordWebReader.InitializeWebClient();
-                    Thread.Sleep(10 * 1000);
-                    Console.WriteLine($"Connection established. Waiting for data...");
-                    pollDiscordFeed(discordWebReader.stream);
+                    return await StartPollDiscordFeed(_discordWebReader.stream);
                 }
-                catch (WebException e)
+                catch (WebException)
                 {
-                    Console.WriteLine($"Experiencing connection issues. Throttling...");
-                    Thread.Sleep(30 * 1000);
+                    Log.Warn($"Experiencing connection issues. Throttling...");
+                    await Task.Delay(30 * 1000);
+                    _discordWebReader.InitializeWebClient();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Unknown exception: {e.ToString()}\n\n\n");
-                    break;
+                    Log.Warn($"Unknown exception", e);
+                    continue;
+                }
+                finally
+                {
+                    await Task.Delay(20 * 1000);
                 }
             }
-            
-            Console.ReadKey(true);
-
         }
 
-        private void pollDiscordFeed(Stream stream)
+        private static IEnumerable<string> ReadLines(StreamReader stream)
         {
-            int delay = 30 * 1000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () =>
+            var sb = new StringBuilder();
+
+            var symbol = stream.Peek();
+            while (symbol != -1)
             {
-                Thread.Sleep(5 * 1000);
-                while (true)
-                {
-                    var encoder = new UTF8Encoding();
-                    var buffer = new byte[2048];
+                symbol = stream.Read();
+                sb.Append((char)symbol);
 
-                    for (int retrys = 0; retrys <= 3; retrys++)
-                    {
-                        if (stream.CanRead)
-                        {
-                            int len = stream.Read(buffer, 0, 2048);
-                            if (len > 0)
-                            {
-                                var serverPayload = encoder.GetString(buffer, 0, len);
-                                if (serverPayload == null) continue;
-                                //Console.WriteLine("text={0}", serverPayload);
+                if (stream.Peek() != 10) continue;
 
-                                try
-                                {   
-                                    var split = serverPayload.Split(new[] { '\r', '\n' });
-                                    if (split.Length < 3) continue;
+                stream.Read();
+                var line = sb.ToString();
+                sb.Clear();
 
-                                    var message = split[2];
-                                    if (message.Length == 0) continue;
+                yield return line;
+            }
 
-                                    var jsonPayload = message.Substring(5);
-                                    //Console.WriteLine($"JSON: {jsonPayload}");
-
-                                    var result = JsonConvert.DeserializeObject<DiscordMessage>(jsonPayload);
-                                    if (result != null)
-                                    {
-                                        //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
-                                        var pokeSniperList = pokeSniperReader.readAll();
-                                        await relayMessageToClients(result.content, channel_parser.ToName(result.channel_id));
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine($"Exception: {e.ToString()}\n\n\n");
-                                }
-                            }
-                        }
-                        if (token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(delay);
-                    }
-                }
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);   
+            yield return sb.ToString();
         }
 
-        private void pollPokesniperFeed()
+        private async Task DiscordThread(Stream stream)
         {
-            int delay = 30 * 1000;
-            var cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            var listener = Task.Factory.StartNew(async () =>
+            const int delay = 10 * 1000;
+            while (true)
             {
-                Thread.Sleep(5 * 1000);
-                while (true)
+                for (var retrys = 0; retrys <= 3; retrys++)
                 {
-                    Thread.Sleep(delay);
-                    for (int retrys = 0; retrys <= 3; retrys++)
+                    foreach (var line in ReadLines(new StreamReader(stream)))
                     {
-                        var pokeSniperList = pokeSniperReader.readAll();
-                        if (pokeSniperList != null)
+                        try
                         {
-                            if (pokeSniperList.Any())
+                            var splitted = line.Split(new[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                            if (splitted.Length != 2 || splitted[0] != "data") continue;
+
+                            var jsonPayload = splitted[1];
+                            //Log.Debug($"JSON: {jsonPayload}");
+
+                            var result = JsonConvert.DeserializeObject<DiscordWebReader.DiscordMessage>(jsonPayload);
+
+                            if (result == null) continue;
+                            //Ignore KimCORDashian
+                            if ("210568514484961280".Equals(result.author.id) && !"218165818574241793".Equals(result.channel_id)) continue;
+
+                            //Console.WriteLine($"Discord message received: {result.channel_id}: {result.content}");
+                            Log.Debug("Discord message received: {0}: {1}", result.channel_id,
+                                result.content);
+                            var channelInfo = _channelParser.ToChannelInfo(result.channel_id);
+                            if (channelInfo.isValid)
                             {
-                                await feedToClients(pokeSniperList, "PokeSnipers");
+                                await RelayMessageToClients(result.content, channelInfo);
                             }
                             else
                             {
-                                Console.WriteLine("No new pokemon on PokeSnipers");
+                                Log.Debug("Channelid {0} was not found in discord_channels.json",
+                                    result.channel_id);
                             }
-                            break;
                         }
-                        if (token.IsCancellationRequested)
-                            break;
-                        Thread.Sleep(1000);
+                        catch (Exception e)
+                        {
+                            Log.Warn($"Exception:", e);
+                        }
                     }
+                    await Task.Delay(delay);
                 }
-
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
         }
+
+        private async void WriteOutListeners(List<SniperInfo> sniperInfos)
+        {
+            List<SniperInfo> sniperInfosToSend = sniperInfos;
+            if (!GlobalSettings.IsManaged)
+            {
+                sniperInfosToSend = SkipLaggedPokemonLocationValidator.Instance.FilterNonAvailableAndUpdateMissingPokemonId(sniperInfosToSend);
+                var filter = FilterFactory.Create(_channelParser.Settings);
+                sniperInfosToSend = SniperInfoFilter.FilterUnmanaged(sniperInfosToSend, filter);
+            }
+            sniperInfosToSend = sniperInfosToSend.OrderBy(m => m.ExpirationTimestamp).ToList();
+
+            if (!GlobalSettings.IsServer)
+            {
+                sniperInfosToSend = MessageCache.Instance.FindUnSentMessages(sniperInfosToSend);
+            }
+            if (sniperInfosToSend.Any())
+            {
+                if (GlobalSettings.IsServer)
+                {
+                    _server.QueueAll(sniperInfosToSend);
+                }
+                else
+                {
+                    await ClientWriter.Instance.FeedToClients(sniperInfosToSend);
+                }
+            }
+        }
+
+        private async Task RareRepoThread(IRarePokemonRepository rarePokemonRepository)
+        {
+            const int delay = 30 * 1000;
+            while (true)
+            {
+                Thread.Sleep(delay);
+                for (var retrys = 0; retrys <= 1; retrys++)
+                {
+                    var pokeSniperList = rarePokemonRepository.FindAll();
+                    if (pokeSniperList != null)
+                    {
+                        if (pokeSniperList.Any())
+                        {
+                            WriteOutListeners(pokeSniperList);
+                        }
+                        break;
+                    }
+                    Thread.Sleep(1000);
+                }
+            }
+        }
+
+        private async Task<Task> StartPollDiscordFeed(Stream stream)
+        {
+            return await Task.Factory.StartNew(async () => await DiscordThread(stream), TaskCreationOptions.LongRunning);
+        }
+
+        private async Task<Task> StartPollRarePokemonRepository(GlobalSettings globalSettings, IRarePokemonRepository rarePokemonRepository)
+        {
+            return await Task.Factory.StartNew(async () => await RareRepoThread(rarePokemonRepository), TaskCreationOptions.LongRunning);
+        }
+
+        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Error("Uncaught fatal error", e.ExceptionObject.ToString());
+            Console.ReadKey();
+            Environment.Exit(1);
+        }
+    }
+
+    public class ThreadManager
+    {
+        // TODO: Refactor
     }
 }
