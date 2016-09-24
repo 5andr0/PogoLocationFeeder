@@ -52,7 +52,13 @@ namespace PogoLocationFeeder.Server
                     string item = null;
                     while (_incomingMessages.TryDequeue(out item))
                     {
-                        HandleIncomingPokemonMessage(item);
+                        try
+                        {
+                            HandleIncomingPokemonMessage(item);
+                        } catch(Exception e)
+                        {
+                            Log.Warn($"Could not parse incoming message: {item}", e);
+                        }
                     }
                     await Task.Delay(100);
                 }
@@ -198,7 +204,7 @@ namespace PogoLocationFeeder.Server
             Filter filter = JsonConvert.DeserializeObject<Filter>(match.Groups[2].Value);
 
             var lastReceived = Convert.ToInt64(match.Groups[1].Value);
-            var sniperInfos = _serverRepository.FindAllNew(lastReceived, filter.VerifiedOnly);
+            var sniperInfos = _serverRepository.FindAllNew(lastReceived, filter.VerifiedOnly || filter.MinimumIV>0 || filter.PokemonNotInFilterMinimumIV < 101);
             
             return SniperInfoFilter.FilterUnmanaged(sniperInfos, filter);
         }
